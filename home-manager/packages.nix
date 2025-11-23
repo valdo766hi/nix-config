@@ -43,13 +43,11 @@ in {
       keepassxc
       telegram-desktop
       antigravityPackage
+      zed-editor
 
       # Wayland
       swaylock
       xwayland-satellite
-
-      # Zed - Using prebuild from github release
-      (pkgs.callPackage ./zed.nix {})
     ])
     ++ [
       winappsPkgs.winapps
