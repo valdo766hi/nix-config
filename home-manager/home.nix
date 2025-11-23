@@ -32,6 +32,7 @@
     ./fzf.nix
     ./zoxide.nix
     ./atuin.nix
+    ./zed.nix
     ./winapps
     ./nvf/default.nix
   ];
