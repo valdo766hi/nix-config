@@ -356,6 +356,29 @@ in {
       };
     };
 
+    luaConfigRC.telescope-open-in-tab = ''
+      local ok, telescope = pcall(require, 'telescope')
+      if not ok then
+        return
+      end
+
+      local actions = require('telescope.actions')
+      telescope.setup({
+        defaults = {
+          mappings = {
+            i = {
+              ['<CR>'] = actions.select_tab,
+              ['<C-o>'] = actions.select_default,
+            },
+            n = {
+              ['<CR>'] = actions.select_tab,
+              ['<C-o>'] = actions.select_default,
+            },
+          },
+        },
+      })
+    '';
+
     # Custom Lua configuration for arrow keys in nvim-cmp
     luaConfigRC.cmp-arrow-keys = ''
       local cmp = require('cmp')
