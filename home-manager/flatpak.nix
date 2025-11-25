@@ -12,4 +12,8 @@
   home.activation.flatpakTelegram = lib.hm.dag.entryAfter ["flatpakFlathub"] ''
     ${pkgs.flatpak}/bin/flatpak --user install -y --noninteractive flathub org.telegram.desktop
   '';
+
+  home.activation.flatpakHeadlamp = lib.hm.dag.entryAfter ["flatpakFlathub"] ''
+    ${pkgs.flatpak}/bin/flatpak --user install -y --noninteractive flathub io.kinvolk.Headlamp
+  '';
 }
