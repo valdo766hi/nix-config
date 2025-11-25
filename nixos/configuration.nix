@@ -128,6 +128,7 @@ in {
       PasswordAuthentication = false;
     };
   };
+  services.flatpak.enable = true;
 
   # Enable virtualisation
   virtualisation.podman = {
@@ -152,6 +153,16 @@ in {
   #For Pritunl
   systemd.packages = [pkgs.pritunl-client];
   systemd.targets.multi-user.wants = ["pritunl-client.service"];
+
+  xdg.portal = {
+    enable = true;
+    xdgOpenUsePortal = true;
+    extraPortals = with pkgs; [
+      xdg-desktop-portal-wlr
+      xdg-desktop-portal-gtk
+    ];
+    config.common.default = ["wlr" "gtk"];
+  };
 
   # Fonts
   fonts.packages = with pkgs; [

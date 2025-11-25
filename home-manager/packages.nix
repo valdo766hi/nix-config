@@ -41,7 +41,6 @@ in {
       mpv
       pritunl-client
       keepassxc
-      telegram-desktop
       antigravityPackage
       zed-editor
 

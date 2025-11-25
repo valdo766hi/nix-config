@@ -34,6 +34,7 @@
     ./yazi
     ./atuin.nix
     ./zed.nix
+    ./flatpak.nix
     ./winapps
     ./nvf/default.nix
   ];
