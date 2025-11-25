@@ -27,10 +27,11 @@
     ./git.nix
     ./packages.nix
     ./starship.nix
-    ./bat.nix
+    ./bat
     ./eza.nix
     ./fzf.nix
     ./zoxide.nix
+    ./yazi
     ./atuin.nix
     ./zed.nix
     ./winapps
