@@ -123,13 +123,29 @@ in {
           cmp-path
           cmp_luasnip
           cmp-nvim-lua
+          copilot-cmp
         ];
         sources = {
+          copilot = "[Copilot]";
           nvim_lsp = "[LSP]";
           buffer = "[Buffer]";
           path = "[Path]";
           nvim_lua = "[Lua]";
         };
+      };
+    };
+
+    # GitHub Copilot
+    extraPlugins = {
+      copilot-lua = {
+        package = pkgs.vimPlugins.copilot-lua;
+        setup = ''
+          require('copilot').setup({
+            suggestion = { enabled = false },
+            panel = { enabled = false },
+          })
+          require('copilot_cmp').setup()
+        '';
       };
     };
 
