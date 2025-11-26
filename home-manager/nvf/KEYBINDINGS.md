@@ -145,6 +145,63 @@ Configured languages with LSP, formatting, and diagnostics:
 - **Markdown**
 - **YAML/Kubernetes** (yaml-language-server, actionlint)
 
+## AI-Powered Coding
+
+### GitHub Copilot Chat
+
+| Keybind | Action | Description |
+|---------|--------|-------------|
+| `<leader>cc` | Toggle Chat | Open/close Copilot Chat window |
+| `<leader>ce` | Explain | Explain selected code |
+| `<leader>cr` | Review | Review selected code |
+| `<leader>cf` | Fix | Fix code issues |
+| `<leader>co` | Optimize | Optimize selected code |
+| `<leader>cd` | Docs | Generate documentation |
+| `<leader>ct` | Tests | Generate tests |
+
+**Usage:**
+1. Select code in visual mode (`v`)
+2. Press one of the keybindings above
+3. View AI response in chat window
+
+### Avante.nvim
+
+| Keybind | Action | Description |
+|---------|--------|-------------|
+| `<leader>aa` | Ask | Chat with AI about code |
+| `<leader>ae` | Edit | AI-powered code editing |
+| `<leader>ar` | Refresh | Regenerate AI response |
+| `<leader>ad` | Debug | Toggle debug mode |
+
+**Diff Navigation:**
+
+| Keybind | Action | Description |
+|---------|--------|-------------|
+| `co` | Ours | Accept your original code |
+| `ct` | Theirs | Accept AI suggestion |
+| `cb` | Both | Keep both versions |
+| `]x` | Next Conflict | Jump to next diff |
+| `[x` | Previous Conflict | Jump to previous diff |
+| `]]` | Next Section | Jump to next section |
+| `[[` | Previous Section | Jump to previous section |
+
+**Available Models (GitHub Copilot Pro):**
+- Claude Sonnet 4.5 (default)
+- Claude Haiku 4.5
+- Gemini 3 Pro
+- GPT-5.1-Codex
+- Grok Code Fast 1
+
+**Features:**
+- Thinking mode enabled by default for deeper reasoning
+- Switch models in Avante interface
+- Diff view for code changes
+
+**First-time setup:**
+1. Open Neovim: `nvim`
+2. Run: `:Copilot auth`
+3. Follow browser prompt to authenticate
+
 ## Tips
 
 1. **Format on save** is enabled for all languages
