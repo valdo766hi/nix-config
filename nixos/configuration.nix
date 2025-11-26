@@ -120,6 +120,7 @@ in {
   };
   niri-flake.cache.enable = true;
   programs.nm-applet.enable = true;
+  programs.nix-ld.enable = true;
 
   # Enable services
   services.openssh = {
