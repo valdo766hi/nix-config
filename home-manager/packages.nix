@@ -12,6 +12,7 @@ in {
   home.packages =
     (with pkgs; [
       # CLI
+      home-manager
       neovim
       git
       nil
@@ -43,6 +44,7 @@ in {
       keepassxc
       antigravityPackage
       zed-editor
+      steam
 
       # Wayland
       swaylock
