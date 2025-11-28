@@ -30,6 +30,7 @@ in {
       ignorecase = true;
       smartcase = true;
       termguicolors = true;
+      autoread = true;
 
       # Tabs and indentation
       tabstop = 2;
@@ -43,12 +44,23 @@ in {
     preventJunkFiles = true;
     hideSearchHighlight = false;
 
-    # Auto-close terminal when lazygit exits
     autocmds = [
+      # Auto-close terminal when lazygit exits
       {
         event = ["TermClose"];
         pattern = ["term://*lazygit"];
         command = "bdelete!";
+      }
+      # Force file tree to reload after LazyGit runs (keeps new files in sync)
+      {
+        event = ["TermClose"];
+        pattern = ["term://*lazygit"];
+        command = "lua local ok, api = pcall(require, 'nvim-tree.api'); if ok then api.tree.reload() end";
+      }
+      # Refresh buffers after external edits (e.g., LazyGit pulls)
+      {
+        event = ["FocusGained" "BufEnter" "TermClose" "TermLeave"];
+        command = "checktime";
       }
     ];
 
@@ -311,6 +323,11 @@ in {
       openOnSetup = false;
       setupOpts = {
         hijack_cursor = true;
+        reload_on_bufenter = true;
+        filesystem_watchers = {
+          enable = true;
+          debounce_delay = 50;
+        };
         view = {
           width = 36;
           relativenumber = true;
