@@ -44,7 +44,6 @@ in {
       keepassxc
       antigravityPackage
       zed-editor
-      steam
 
       # Wayland
       swaylock

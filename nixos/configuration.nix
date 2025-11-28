@@ -119,6 +119,12 @@ in {
     package = niriPackage;
   };
   niri-flake.cache.enable = true;
+  programs.steam = {
+    enable = true;
+    remotePlay.openFirewall = true;
+    localNetworkGameTransfers.openFirewall = true;
+  };
+  hardware.steam-hardware.enable = true;
   programs.nm-applet.enable = true;
   programs.nix-ld.enable = true;
 
