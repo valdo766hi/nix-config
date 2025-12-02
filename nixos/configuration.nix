@@ -60,6 +60,7 @@ in {
     configurationLimit = 3;
   };
   boot.loader.efi.canTouchEfiVariables = true;
+  boot.kernelPackages = pkgs.linuxPackages_latest;
 
   # Networking
   networking.hostName = "thinker";
