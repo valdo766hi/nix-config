@@ -125,6 +125,10 @@ in {
     remotePlay.openFirewall = true;
     localNetworkGameTransfers.openFirewall = true;
   };
+  hardware.graphics = {
+    enable = true;
+    enable32Bit = true;
+  };
   hardware.steam-hardware.enable = true;
   programs.nm-applet.enable = true;
   programs.nix-ld.enable = true;
