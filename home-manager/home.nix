@@ -9,6 +9,9 @@
 }: {
   # Import other home-manager modules
   imports = [
+    # Niri compositor (home-manager module)
+    inputs.niri.homeModules.niri
+
     # DankMaterialShell
     inputs.dankMaterialShell.homeModules.dankMaterialShell.default
 
@@ -45,11 +48,7 @@
     homeDirectory = "/home/rivaldo";
   };
 
-  programs.niri.package = inputs.niri.packages."${pkgs.stdenv.hostPlatform.system}".niri-stable;
-
   # Programs
-  programs.home-manager.enable = true;
-
   # Zen Browser
   programs.zen-browser.enable = true;
 

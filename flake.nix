@@ -87,7 +87,7 @@
         modules = [
           # Main nixos configuration file
           ./nixos/configuration.nix
-          
+
           # Home manager as a NixOS module
           home-manager.nixosModules.home-manager
           {
@@ -107,7 +107,10 @@
     # Available through 'home-manager --flake .#your-username@your-hostname'
     homeConfigurations = {
       "rivaldo@thinker" = home-manager.lib.homeManagerConfiguration {
-        pkgs = nixpkgs.legacyPackages.x86_64-linux;
+        pkgs = import nixpkgs {
+          system = "x86_64-linux";
+          config.allowUnfree = true;
+        };
         extraSpecialArgs = {inherit inputs outputs;};
         modules = [
           ./home-manager/home.nix

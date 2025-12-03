@@ -7,7 +7,6 @@
   ...
 }: let
   system = pkgs.stdenv.hostPlatform.system;
-  niriPackage = inputs.niri.packages."${system}".niri-stable;
 in {
   imports = [
     # If you want to use modules your own flake exports (from modules/nixos):
@@ -19,7 +18,6 @@ in {
 
     # Import your generated (nixos-generate-config) hardware configuration
     ./hardware-configuration.nix
-    inputs.niri.nixosModules.niri
   ];
 
   nixpkgs = {
@@ -115,11 +113,6 @@ in {
 
   # Enable programs
   programs.firefox.enable = true;
-  programs.niri = {
-    enable = true;
-    package = niriPackage;
-  };
-  niri-flake.cache.enable = true;
   programs.steam = {
     enable = true;
     remotePlay.openFirewall = true;
