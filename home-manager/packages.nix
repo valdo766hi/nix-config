@@ -34,6 +34,7 @@ in {
       sops
       gh
       podman-compose
+      argocd
 
       # GUI
       alacritty
