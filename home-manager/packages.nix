@@ -30,7 +30,7 @@ in {
       kubectl
       kustomize
       fluxcd
-      helm
+      kubernetes-helm
       sops
       gh
       podman-compose
