@@ -35,6 +35,7 @@ in {
       gh
       podman-compose
       argocd
+      jq
 
       # GUI
       alacritty
