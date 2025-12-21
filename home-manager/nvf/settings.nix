@@ -660,7 +660,7 @@ in {
 
       nix = {
         enable = true;
-        lsp.server = "nixd";
+        lsp.servers = ["nixd"];
         format.enable = true;
         extraDiagnostics.enable = true;
       };
@@ -668,7 +668,7 @@ in {
       rust = {
         enable = true;
         lsp.enable = true;
-        crates.enable = true;
+        extensions.crates-nvim.enable = true;
         format.enable = true;
       };
 
