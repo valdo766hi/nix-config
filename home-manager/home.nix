@@ -62,6 +62,7 @@
   # DankMaterialShell configuration
   programs.dankMaterialShell = {
     enable = true;
+    quickshell.package = pkgs.quickshell;
 
     systemd = {
       enable = true;
