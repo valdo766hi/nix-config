@@ -1,7 +1,8 @@
 # Declarative NVF settings
-{ pkgs, lib }:
-
-let
+{
+  pkgs,
+  lib,
+}: let
   lazygitBin = "${pkgs.lazygit}/bin/lazygit";
   fishShell = "${pkgs.fish}/bin/fish";
 in {
@@ -65,6 +66,8 @@ in {
     ];
 
     extraPackages = with pkgs; [
+      wl-clipboard
+
       # Search and navigation
       ripgrep
       fd
@@ -427,8 +430,8 @@ in {
 
         # Git
         "<leader>gg" = {
-          action = "<cmd>tabnew | terminal ${lazygitBin}<CR><cmd>startinsert<CR>";
-          desc = "Open LazyGit in new tab";
+          action = "<cmd>lua OpenLazygitFloating()<CR>";
+          desc = "Open LazyGit in floating terminal";
         };
 
         # Terminal helpers (fish shell)
@@ -631,6 +634,35 @@ in {
           vim.api.nvim_buf_delete(state.buf, { force = true })
         end
         state.buf = nil
+      end
+    '';
+
+    # Floating lazygit terminal (one-time session)
+    luaConfigRC.lazygit-floating = ''
+      function OpenLazygitFloating()
+        local buf = vim.api.nvim_create_buf(false, true)
+        local width = math.floor(vim.o.columns * 0.9)
+        local height = math.floor(vim.o.lines * 0.9)
+        local col = math.floor((vim.o.columns - width) / 2)
+        local row = math.floor((vim.o.lines - height) / 2)
+
+        local opts = {
+          relative = 'editor',
+          width = width,
+          height = height,
+          col = col,
+          row = row,
+          style = 'minimal',
+          border = 'rounded',
+        }
+
+        local win = vim.api.nvim_open_win(buf, true, opts)
+        vim.fn.termopen('${lazygitBin}', {
+          on_exit = function()
+            vim.api.nvim_buf_delete(buf, { force = true })
+          end
+        })
+        vim.cmd('startinsert')
       end
     '';
 
