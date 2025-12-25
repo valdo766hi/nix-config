@@ -32,6 +32,7 @@ in {
       smartcase = true;
       termguicolors = true;
       autoread = true;
+      mouse = "a";
 
       # Tabs and indentation
       tabstop = 2;
@@ -67,6 +68,12 @@ in {
 
     extraPackages = with pkgs; [
       wl-clipboard
+
+      # Media preview tools for Telescope
+      chafa          # Terminal image/video previews
+      imagemagick    # Image processing
+      poppler-utils  # PDF previews (pdftotext)
+      ffmpegthumbnailer  # Video thumbnails
 
       # Search and navigation
       ripgrep
@@ -522,28 +529,67 @@ in {
       };
     };
 
-    luaConfigRC.telescope-open-in-tab = ''
+    luaConfigRC.telescope-config = ''
       local ok, telescope = pcall(require, 'telescope')
       if not ok then
         return
       end
 
       local actions = require('telescope.actions')
+      local previewers = require('telescope.previewers')
+
+      local image_previewer = function(filepath, bufnr, opts)
+        local image_extensions = {'png', 'jpg', 'jpeg', 'gif', 'webp', 'svg', 'bmp'}
+        local ext = filepath:match("^.+%.(.+)$")
+        if ext and vim.tbl_contains(image_extensions, ext:lower()) then
+          local term = vim.api.nvim_open_term(bufnr, {})
+          local width = vim.api.nvim_win_get_width(opts.winid)
+          local height = vim.api.nvim_win_get_height(opts.winid)
+          vim.fn.jobstart({
+            'chafa',
+            '--format=symbols',
+            '--colors=256',
+            '--size=' .. width .. 'x' .. height,
+            filepath
+          }, {
+            on_stdout = function(_, data)
+              for _, line in ipairs(data) do
+                vim.api.nvim_chan_send(term, line .. '\r\n')
+              end
+            end,
+            stdout_buffered = true
+          })
+          return true
+        end
+        return false
+      end
+
       telescope.setup({
         defaults = {
+          file_previewer = function(...)
+            local args = {...}
+            local filepath = args[1]
+            local bufnr = args[2]
+            local opts = args[3] or {}
+
+            if not image_previewer(filepath, bufnr, opts) then
+              return previewers.cat.new(...)
+            end
+          end,
           mappings = {
             i = {
-              ['<CR>'] = actions.select_tab,
-              ['<C-o>'] = actions.select_default,
+              ['<CR>'] = actions.select_default,
+              ['<C-o>'] = actions.select_tab,
             },
             n = {
-              ['<CR>'] = actions.select_tab,
-              ['<C-o>'] = actions.select_default,
+              ['<CR>'] = actions.select_default,
+              ['<C-o>'] = actions.select_tab,
             },
           },
         },
       })
     '';
+
 
     # Custom Lua configuration for arrow keys in nvim-cmp
     luaConfigRC.cmp-arrow-keys = ''
@@ -659,7 +705,9 @@ in {
         local win = vim.api.nvim_open_win(buf, true, opts)
         vim.fn.termopen('${lazygitBin}', {
           on_exit = function()
-            vim.api.nvim_buf_delete(buf, { force = true })
+            if vim.api.nvim_buf_is_valid(buf) then
+              vim.api.nvim_buf_delete(buf, { force = true })
+            end
           end
         })
         vim.cmd('startinsert')
