@@ -79,17 +79,26 @@
   # Vicinae launcher configuration
   services.vicinae = {
     enable = true;
-    autoStart = true;
+    systemd = {
+      enable = true;
+      autoStart = true;
+    };
     settings = {
-      faviconService = "twenty";
-      font.size = 11;
-      popToRootOnClose = false;
-      rootSearch.searchFiles = false;
-      theme.name = "catppuccin-mocha";
-      window = {
-        csd = true;
+      favicon_service = "twenty";
+      font = {
+        normal = {
+          size = 11;
+        };
+      };
+      pop_to_root_on_close = false;
+      search_files_in_root = false;
+      theme = {
+        dark = {
+          name = "catppuccin-mocha";
+        };
+      };
+      launcher_window = {
         opacity = 0.95;
-        rounding = 10;
       };
     };
   };
