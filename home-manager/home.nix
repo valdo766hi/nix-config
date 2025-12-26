@@ -101,6 +101,13 @@
         opacity = 0.95;
       };
     };
+    extensions = with inputs.vicinae-extensions.packages.${pkgs.stdenv.hostPlatform.system}; [
+      bluetooth
+      nix
+      power-profile
+      ssh
+      # Extension names can be found in https://github.com/vicinaehq/extensions/tree/main/extensions
+    ];
   };
 
   # Nicely reload system units when changing configs

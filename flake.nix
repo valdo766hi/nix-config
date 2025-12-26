@@ -49,6 +49,9 @@
     # Vicinae - application launcher
     vicinae.url = "github:vicinaehq/vicinae";
 
+    # Vicinae Extensions
+    vicinae-extensions.url = "github:vicinaehq/extensions";
+
     # WinApps
     winapps = {
       url = "github:winapps-org/winapps";
@@ -70,6 +73,7 @@
     zen-browser,
     nvf,
     vicinae,
+    vicinae-extensions,
     winapps,
     ...
   } @ inputs: let
