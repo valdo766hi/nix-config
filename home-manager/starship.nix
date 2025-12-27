@@ -8,7 +8,7 @@
 
     settings = {
       add_newline = true;
-      format = "$directory$git_branch$git_status$status\n\n$character";
+      format = "$directory${"$"}{custom.dir_endcap}$git_branch$git_status\n\n$character";
       right_format = "$time";
 
       character = {
@@ -17,7 +17,7 @@
       };
 
       directory = {
-        format = "[ $path ]($style)[](fg:#313244 bg:#cba6f7)";
+        format = "[ $path ]($style)";
         home_symbol = "~";
         style = "bold fg:#a6adc8 bg:#313244";
         truncate_to_repo = false;
@@ -25,15 +25,21 @@
         truncation_symbol = ".../";
       };
 
+      custom.dir_endcap = {
+        command = "echo \"\"";
+        format = "[$output](fg:#313244)";
+        when = "test -z \"$(git rev-parse --is-inside-work-tree 2>/dev/null)\"";
+      };
+
       git_branch = {
-        format = "[ $symbol $branch ]($style)[](fg:#cba6f7)";
+        format = "[](fg:#313244 bg:#cba6f7)[ $symbol $branch ]($style)[](fg:#cba6f7)";
         style = "bold fg:#1e1e2e bg:#cba6f7";
         symbol = "";
       };
 
       git_status = {
         format = " $all_status$ahead_behind";
-        conflicted = "[!](bold fg:#f38ba8)";
+        conflicted = "[x](bold fg:#f38ba8)";
         untracked = "[?](bold fg:#f38ba8)";
         modified = "[!](bold fg:#f9e2af)";
         staged = "[+](bold fg:#a6e3a1)";
@@ -43,13 +49,7 @@
         ahead = "[⇡](bold fg:#a6e3a1)";
         behind = "[⇣](bold fg:#f38ba8)";
         diverged = "[⇕](bold fg:#fab387)";
-        up_to_date = "[✓](bold fg:#a6e3a1)";
-      };
-
-      status = {
-        disabled = false;
-        format = "[](fg:#b4befe bg:#f38ba8)[ $status ]($style)[](fg:#f38ba8)";
-        style = "fg:#1e1e2e bg:#f38ba8";
+        up_to_date = "";
       };
 
       time = {
