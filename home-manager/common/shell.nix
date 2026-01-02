@@ -1,7 +1,7 @@
-# Fish shell configuration
 {
   config,
   pkgs,
+  lib,
   ...
 }: {
   programs.fish = {
@@ -9,17 +9,17 @@
 
     interactiveShellInit = ''
       set -gx TERM "xterm-256color"
-      set -gx PATH ~/.npm-global/bin $PATH
 
-      # Disable greeting
+      ${lib.optionalString pkgs.stdenv.isLinux ''
+        set -gx PATH ~/.npm-global/bin $PATH
+      ''}
+
       set fish_greeting
 
-      # Load secrets if file exists (not tracked in git)
       if test -f ~/.config/fish/secrets.fish
         source ~/.config/fish/secrets.fish
       end
 
-      # Function to source bash-style .env files
       function envsource
         if test (count $argv) -eq 0; or test "$argv[1]" = "--help"
           echo "Usage: envsource <file>"
@@ -52,44 +52,36 @@
         echo "Sourced $envfile"
       end
 
-      # Enable Atuin
       atuin init fish | sed "s/-k up/up/g" | source
+
+      ${lib.optionalString pkgs.stdenv.isDarwin ''
+        eval (/opt/homebrew/bin/brew shellenv fish)
+
+        if test -f /opt/homebrew/opt/asdf/libexec/asdf.fish
+          source /opt/homebrew/opt/asdf/libexec/asdf.fish
+        end
+      ''}
+
+      zoxide init fish | source
+      starship init fish | source
     '';
 
     shellAliases = {
-      # System management
-      rebuild = "cd ~/.config/nixos && sudo nixos-rebuild switch --flake .#thinker";
-      rebuild-test = "cd ~/.config/nixos && sudo nixos-rebuild test --flake .#thinker";
-      update-flake = "cd ~/.config/nixos && nix flake update";
-
-      # Git shortcuts
+      rebuild = "${if pkgs.stdenv.isLinux then "cd ~/.config/nixos && sudo nixos-rebuild switch --flake .#thinker" else "cd ~/.config/nix-config && darwin-rebuild switch --flake .#darwin"}";
+      update-flake = "${if pkgs.stdenv.isLinux then "cd ~/.config/nixos && nix flake update" else "cd ~/.config/nix-config && nix flake update"}";
       g = "git";
       gs = "git status";
       ga = "git add";
       gc = "git commit";
       gp = "git push";
       gl = "git log --oneline --graph";
-
-      # Better ls
-      ls = "eza -l --icons";
-      la = "ez -l --all";
-
-      # Shortcuts
-      ff = "fastfetch";
-
-      # Zoxide
+      ll = "ls -la";
+      vim = "nvim";
+      nv = "nvim";
       cd = "z";
-
-      # NixOS specific
+      ff = "fastfetch";
+    } // lib.optionalAttrs pkgs.stdenv.isLinux {
       bjg = "echo I use NixOS, BTW";
     };
-
-    # Fish plugins (optional)
-    plugins = [
-      # {
-      #   name = "tide";
-      #   src = pkgs.fishPlugins.tide.src;
-      # }
-    ];
   };
 }

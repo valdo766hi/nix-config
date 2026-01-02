@@ -1,4 +1,3 @@
-# Declarative NVF settings
 {
   pkgs,
   lib,
@@ -34,7 +33,6 @@ in {
       autoread = true;
       mouse = "a";
 
-      # Tabs and indentation
       tabstop = 2;
       shiftwidth = 2;
       expandtab = true;
@@ -47,19 +45,16 @@ in {
     hideSearchHighlight = false;
 
     autocmds = [
-      # Auto-close terminal when lazygit exits
       {
         event = ["TermClose"];
         pattern = ["term://*lazygit"];
         command = "bdelete!";
       }
-      # Force file tree to reload after LazyGit runs (keeps new files in sync)
       {
         event = ["TermClose"];
         pattern = ["term://*lazygit"];
         command = "lua local ok, api = pcall(require, 'nvim-tree.api'); if ok then api.tree.reload() end";
       }
-      # Refresh buffers after external edits (e.g., LazyGit pulls)
       {
         event = ["FocusGained" "BufEnter" "TermClose" "TermLeave"];
         command = "checktime";
@@ -68,47 +63,27 @@ in {
 
     extraPackages = with pkgs; [
       wl-clipboard
-
-      # Media preview tools for Telescope
-      chafa          # Terminal image/video previews
-      imagemagick    # Image processing
-      poppler-utils  # PDF previews (pdftotext)
-      ffmpegthumbnailer  # Video thumbnails
-
-      # Search and navigation
+      chafa
+      imagemagick
+      poppler-utils
+      ffmpegthumbnailer
       ripgrep
       fd
-
-      # Git
       lazygit
       delta
-
-      # Nix
       nil
       nixd
       alejandra
       nixfmt-rfc-style
       statix
       deadnix
-
-      # Lua
       stylua
       lua-language-server
-
-      # Shell
       shfmt
       shellcheck
-
-      # Rust
       rust-analyzer
-
-      # Python
       pyright
-
-      # Node/TypeScript
       nodejs_22
-
-      # YAML/Kubernetes
       yaml-language-server
       actionlint
     ];
@@ -129,7 +104,7 @@ in {
 
     lsp = {
       enable = true;
-      formatOnSave = true;
+      formatOnSave = false;
       inlayHints.enable = true;
       lspkind.enable = true;
       trouble.enable = true;
@@ -157,7 +132,6 @@ in {
       };
     };
 
-    # GitHub Copilot
     extraPlugins = {
       copilot-lua = {
         package = pkgs.vimPlugins.copilot-lua;
@@ -359,7 +333,6 @@ in {
 
     maps = {
       normal = {
-        # Telescope
         "<leader>ff" = {
           action = "<cmd>Telescope find_files<CR>";
           desc = "Find files";
@@ -381,13 +354,11 @@ in {
           desc = "Recent files";
         };
 
-        # File tree
         "<leader>e" = {
           action = "<cmd>NvimTreeToggle<CR>";
           desc = "Toggle file tree (open/close)";
         };
 
-        # Better window navigation
         "<C-h>" = {
           action = "<C-w>h";
           desc = "Move to left window";
@@ -405,7 +376,6 @@ in {
           desc = "Move to right window";
         };
 
-        # Buffer navigation
         "<S-l>" = {
           action = "<cmd>bnext<CR>";
           desc = "Next buffer";
@@ -415,7 +385,6 @@ in {
           desc = "Previous buffer";
         };
 
-        # Bufferline "tabs" navigation
         "<leader>tn" = {
           action = "<cmd>BufferLineCycleNext<CR>";
           desc = "Next buffer tab";
@@ -429,19 +398,16 @@ in {
           desc = "Close buffer tab";
         };
 
-        # Clear search highlight
         "<leader>h" = {
           action = "<cmd>nohlsearch<CR>";
           desc = "Clear search highlight";
         };
 
-        # Git
         "<leader>gg" = {
           action = "<cmd>lua OpenLazygitFloating()<CR>";
           desc = "Open LazyGit in floating terminal";
         };
 
-        # Terminal helpers (fish shell)
         "<leader>tt" = {
           action = "<cmd>lua ToggleFishTerminal()<CR>";
           desc = "Toggle fish terminal";
@@ -463,7 +429,6 @@ in {
           desc = "Kill fish terminal session";
         };
 
-        # LSP
         "gd" = {
           action = "<cmd>lua vim.lsp.buf.definition()<CR>";
           desc = "Go to definition";
@@ -485,7 +450,6 @@ in {
           desc = "Code action";
         };
 
-        # CopilotChat
         "<leader>cc" = {
           action = "<cmd>CopilotChatToggle<CR>";
           desc = "Toggle Copilot Chat";
@@ -517,7 +481,6 @@ in {
       };
 
       visual = {
-        # Better indenting
         "<" = {
           action = "<gv";
           desc = "Indent left";
@@ -590,12 +553,9 @@ in {
       })
     '';
 
-
-    # Custom Lua configuration for arrow keys in nvim-cmp
     luaConfigRC.cmp-arrow-keys = ''
       local cmp = require('cmp')
 
-      -- Setup arrow keys for nvim-cmp
       cmp.setup({
         mapping = cmp.mapping.preset.insert({
           ['<Down>'] = cmp.mapping.select_next_item(),
@@ -619,7 +579,6 @@ in {
       })
     '';
 
-    # Floating fish terminal helper (persistent session)
     luaConfigRC.fish-terminal = ''
       local state = { buf = nil, win = nil }
 
@@ -683,7 +642,6 @@ in {
       end
     '';
 
-    # Floating lazygit terminal (one-time session)
     luaConfigRC.lazygit-floating = ''
       function OpenLazygitFloating()
         local buf = vim.api.nvim_create_buf(false, true)

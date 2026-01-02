@@ -1,5 +1,5 @@
 {
-  description = "Rivaldo's NixOS Configuration";
+  description = "Rivaldo's Unified NixOS + nix-darwin Configuration";
 
   nixConfig = {
     "extra-substituters" = [
@@ -13,52 +13,62 @@
   };
 
   inputs = {
-    # Nixpkgs
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
 
-    # Home manager
+    nix-darwin = {
+      url = "github:nix-darwin/nix-darwin/master";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # DankMaterialShell
+    nix-homebrew = {
+      url = "github:zhaofengli/nix-homebrew";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    homebrew-core = {
+      url = "github:homebrew/homebrew-core";
+      flake = false;
+    };
+
+    homebrew-cask = {
+      url = "github:homebrew/homebrew-cask";
+      flake = false;
+    };
+
     dankMaterialShell = {
       url = "github:AvengeMedia/DankMaterialShell";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Niri
     niri = {
       url = "github:sodiboo/niri-flake";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Zen Browser
     zen-browser = {
       url = "github:0xc000022070/zen-browser-flake";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # NVF - declarative Neovim configuration
     nvf = {
       url = "github:notashelf/nvf";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Vicinae - application launcher
     vicinae.url = "github:vicinaehq/vicinae";
 
-    # Vicinae Extensions
     vicinae-extensions.url = "github:vicinaehq/extensions";
 
-    # WinApps
     winapps = {
       url = "github:winapps-org/winapps";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Google Antigravity IDE
     antigravity-nix = {
       url = "github:jacopone/antigravity-nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -68,7 +78,11 @@
   outputs = {
     self,
     nixpkgs,
+    nix-darwin,
     home-manager,
+    nix-homebrew,
+    homebrew-core,
+    homebrew-cask,
     niri,
     zen-browser,
     nvf,
@@ -77,45 +91,56 @@
     winapps,
     ...
   } @ inputs: let
-    inherit (self) outputs;
     systems = [
       "x86_64-linux"
+      "aarch64-darwin"
     ];
     forAllSystems = nixpkgs.lib.genAttrs systems;
   in {
-    # NixOS configuration entrypoint
-    # Available through 'nixos-rebuild --flake .#your-hostname'
     nixosConfigurations = {
       thinker = nixpkgs.lib.nixosSystem {
-        specialArgs = {inherit inputs outputs;};
+        specialArgs = {inherit inputs;};
         modules = [
-          # Main nixos configuration file
-          ./nixos/configuration.nix
-
-          # Home manager as a NixOS module
+          ./hosts/nixos/thinker/default.nix
           home-manager.nixosModules.home-manager
           {
             home-manager = {
               useGlobalPkgs = true;
               useUserPackages = true;
-              users.rivaldo = import ./home-manager/home.nix;
-              extraSpecialArgs = {inherit inputs outputs;};
-              # backupFileExtension removed - managing backups via git
+              users.rivaldo = import ../../home-manager/home.nix;
+              extraSpecialArgs = {inherit inputs;};
             };
           }
         ];
       };
     };
 
-    # Standalone home-manager configuration entrypoint
-    # Available through 'home-manager --flake .#your-username@your-hostname'
+    darwinConfigurations = {
+      darwin = nix-darwin.lib.darwinSystem {
+        system = "aarch64-darwin";
+        specialArgs = {inherit inputs;};
+        modules = [
+          ./hosts/darwin/default.nix
+          home-manager.darwinModules.home-manager
+          {
+            home-manager = {
+              useGlobalPkgs = true;
+              useUserPackages = true;
+              users.rivaldo = import ../../home-manager/home.nix;
+              extraSpecialArgs = {inherit inputs;};
+            };
+          }
+        ];
+      };
+    };
+
     homeConfigurations = {
       "rivaldo@thinker" = home-manager.lib.homeManagerConfiguration {
         pkgs = import nixpkgs {
           system = "x86_64-linux";
           config.allowUnfree = true;
         };
-        extraSpecialArgs = {inherit inputs outputs;};
+        extraSpecialArgs = {inherit inputs;};
         modules = [
           ./home-manager/home.nix
         ];

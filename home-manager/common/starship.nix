@@ -1,10 +1,11 @@
-# Starship
-{ config, pkgs, ... }:
-
 {
+  config,
+  pkgs,
+  ...
+}: {
   programs.starship = {
     enable = true;
-    enableFishIntegration = true;
+    enableFishIntegration = false;
 
     settings = {
       add_newline = true;
@@ -32,7 +33,7 @@
       };
 
       git_branch = {
-        format = "[](fg:#313244 bg:#cba6f7)[ $symbol $branch ]($style)[](fg:#cba6f7)";
+        format = "[](fg:#313244 bg:#cba6f7)[ $symbol $branch ]($style)[](fg:#cba6f7)";
         style = "bold fg:#1e1e2e bg:#cba6f7";
         symbol = "";
       };

@@ -1,8 +1,9 @@
-# FZF
-{ config, pkgs, ... }:
-
 {
-  programs.fzf = {
+  config,
+  pkgs,
+  ...
+}: {
+  programs.atuin = {
     enable = true;
     enableFishIntegration = false;
   };

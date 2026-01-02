@@ -1,4 +1,3 @@
-# My Home-manager config
 {
   inputs,
   outputs,
@@ -7,59 +6,42 @@
   pkgs,
   ...
 }: {
-  # Import other home-manager modules
   imports = [
-    # Niri compositor (home-manager module)
     inputs.niri.homeModules.niri
-
-    # DankMaterialShell
     inputs.dankMaterialShell.homeModules.dank-material-shell
-
-    # Zen Browser (using beta module)
     inputs.zen-browser.homeModules.beta
-
-    # NVF Home-Manager module
     inputs.nvf.homeManagerModules.default
-
-    # Vicinae launcher/service
     inputs.vicinae.homeManagerModules.default
-
-    # Custom configurations
-    ./niri
-    ./fish.nix
-    ./git.nix
-    ./packages.nix
-    ./starship.nix
-    ./bat
-    ./eza.nix
-    ./fzf.nix
-    ./zoxide.nix
-    ./yazi
-    ./atuin.nix
-    ./zed.nix
-    ./flatpak.nix
-    ./winapps
-    ./nvf/default.nix
+    ./common/shell.nix
+    ./common/git.nix
+    ./common/packages.nix
+    ./common/starship.nix
+    ./common/bat.nix
+    ./common/zoxide.nix
+    ./common/atuin.nix
+    ./common/tmux.nix
+    ./nixos/niri.nix
+    ./nixos/vicinae.nix
+    ./nixos/dank-material-shell.nix
+    ./nixos/nvf/default.nix
+    ./nixos/winapps.nix
+    ./darwin/aerospace.nix
+    ./darwin/homebrew.nix
   ];
 
-  # User info
   home = {
     username = "rivaldo";
-    homeDirectory = "/home/rivaldo";
+    homeDirectory = if pkgs.stdenv.isLinux then "/home/rivaldo" else "/Users/rivaldo";
   };
 
-  # Programs
-  # Zen Browser
   programs.zen-browser.enable = true;
 
-  # WinApps
   programs.winapps = {
     enable = true;
     manageConfigFile = false;
     manageComposeFile = false;
   };
 
-  # DankMaterialShell configuration
   programs.dank-material-shell = {
     enable = true;
     quickshell.package = pkgs.quickshell;
@@ -76,7 +58,6 @@
     enableCalendarEvents = true;
   };
 
-  # Vicinae launcher configuration
   services.vicinae = {
     enable = true;
     systemd = {
@@ -106,13 +87,10 @@
       nix
       power-profile
       ssh
-      # Extension names can be found in https://github.com/vicinaehq/extensions/tree/main/extensions
     ];
   };
 
-  # Nicely reload system units when changing configs
   systemd.user.startServices = "sd-switch";
 
-  # https://nixos.wiki/wiki/FAQ/When_do_I_update_stateVersion
   home.stateVersion = "25.05";
 }

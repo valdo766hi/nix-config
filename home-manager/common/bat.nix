@@ -1,4 +1,3 @@
-# Bat - Cat but with wing
 {...}: {
   programs.bat = {
     enable = true;

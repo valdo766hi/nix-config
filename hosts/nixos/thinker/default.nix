@@ -5,29 +5,18 @@
   config,
   pkgs,
   ...
-}: let
-  system = pkgs.stdenv.hostPlatform.system;
-in {
+}: {
   imports = [
-    # If you want to use modules your own flake exports (from modules/nixos):
-    # outputs.nixosModules.example
-
-    # Or modules from other flakes (such as nixos-hardware):
-    # inputs.hardware.nixosModules.common-cpu-amd
-    # inputs.hardware.nixosModules.common-ssd
-
-    # Import your generated (nixos-generate-config) hardware configuration
     ./hardware-configuration.nix
+    ../../modules/nixos/desktop.nix
+    ../../modules/nixos/virtualisation.nix
   ];
 
   nixpkgs = {
     overlays = [
-      # Add overlays your own flake exports (from overlays and pkgs dir):
-      # outputs.overlays.additions
-      # outputs.overlays.modifications
-      # outputs.overlays.unstable-packages
+      inputs.self.overlays.additions
+      inputs.self.overlays.modifications
     ];
-    # Configure your nixpkgs instance
     config = {
       allowUnfree = true;
     };
@@ -35,10 +24,7 @@ in {
 
   nix = {
     settings = {
-      experimental-features = "nix-command flakes";
-      auto-optimise-store = true;
-
-      # Binary caches for faster builds
+      experimental-features = "nix-command flakes auto-optimise-store";
       substituters = [
         "https://cache.nixos.org"
         "https://niri.cachix.org"
@@ -50,8 +36,6 @@ in {
         "vicinae.cachix.org-1:1kDrfienkGHPYbkpNj1mWTr7Fm1+zcenzgTizIcI3oc="
       ];
     };
-
-    # Automatic garbage collection
     gc = {
       automatic = true;
       dates = "monthly";
@@ -59,7 +43,6 @@ in {
     };
   };
 
-  # Bootloader
   boot.loader.systemd-boot = {
     enable = true;
     configurationLimit = 3;
@@ -67,7 +50,6 @@ in {
   boot.loader.efi.canTouchEfiVariables = true;
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
-  # Networking
   networking.hostName = "thinker";
   networking.networkmanager = {
     enable = true;
@@ -76,37 +58,13 @@ in {
       networkmanager-openvpn
     ];
   };
-
-  # Custom hosts entries
   networking.hosts = {
     "127.0.0.345" = ["example.com"];
   };
 
-  # Set your time zone
   time.timeZone = "Asia/Jakarta";
-
-  # Select internationalisation properties
   i18n.defaultLocale = "en_US.UTF-8";
 
-  # Enable the X11 windowing system
-  services.xserver.enable = true;
-
-  # GNOME Desktop
-  services.desktopManager.gnome.enable = true;
-  services.displayManager.gdm.enable = false;
-
-  # Greetd display manager
-  services.greetd = {
-    enable = true;
-    settings = {
-      default_session = {
-        command = "${pkgs.tuigreet}/bin/tuigreet --time --cmd niri-session";
-        user = "greeter";
-      };
-    };
-  };
-
-  # Define a user account
   users.users.rivaldo = {
     isNormalUser = true;
     extraGroups = ["wheel" "networkmanager"];
@@ -118,7 +76,6 @@ in {
     ];
   };
 
-  # Enable programs
   programs.firefox.enable = true;
   programs.steam = {
     enable = true;
@@ -133,7 +90,6 @@ in {
   programs.nm-applet.enable = true;
   programs.nix-ld.enable = true;
 
-  # Enable services
   services.openssh = {
     enable = true;
     settings = {
@@ -141,47 +97,15 @@ in {
     };
   };
   services.flatpak.enable = true;
-
-  # Enable virtualisation
-  virtualisation.podman = {
-    enable = true;
-  };
-
-  # List packages installed in system profile
-  environment.systemPackages = with pkgs; [
-    vim
-    wget
-    ghostty
-    git
-    curl
-    tailscale
-    openvpn
-  ];
-
-  # Enable Service
   services.tailscale.enable = true;
 
-  #Systemd
-  #For Pritunl
   systemd.packages = [pkgs.pritunl-client];
   systemd.targets.multi-user.wants = ["pritunl-client.service"];
 
-  xdg.portal = {
-    enable = true;
-    xdgOpenUsePortal = true;
-    extraPortals = with pkgs; [
-      xdg-desktop-portal-wlr
-      xdg-desktop-portal-gtk
-    ];
-    config.common.default = ["wlr" "gtk"];
-  };
-
-  # Fonts
   fonts.packages = with pkgs; [
     nerd-fonts.jetbrains-mono
     nerd-fonts.fira-code
   ];
 
-  # https://nixos.wiki/wiki/FAQ/When_do_I_update_stateVersion
   system.stateVersion = "25.05";
 }
