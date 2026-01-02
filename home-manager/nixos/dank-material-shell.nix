@@ -1,9 +1,10 @@
 {
   config,
   pkgs,
+  lib,
   ...
 }: {
-  programs.dank-material-shell = {
+  programs.dank-material-shell = lib.mkIf pkgs.stdenv.isLinux {
     enable = true;
     quickshell.package = pkgs.quickshell;
 

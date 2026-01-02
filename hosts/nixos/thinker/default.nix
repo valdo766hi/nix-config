@@ -1,6 +1,5 @@
 {
   inputs,
-  outputs,
   lib,
   config,
   pkgs,
@@ -8,15 +7,12 @@
 }: {
   imports = [
     ./hardware-configuration.nix
-    ../../modules/nixos/desktop.nix
-    ../../modules/nixos/virtualisation.nix
+    inputs.niri.nixosModules.niri
+    inputs.self.nixosModules.desktop
+    inputs.self.nixosModules.virtualisation
   ];
 
   nixpkgs = {
-    overlays = [
-      inputs.self.overlays.additions
-      inputs.self.overlays.modifications
-    ];
     config = {
       allowUnfree = true;
     };
@@ -24,7 +20,8 @@
 
   nix = {
     settings = {
-      experimental-features = "nix-command flakes auto-optimise-store";
+      experimental-features = "nix-command flakes";
+      auto-optimise-store = true;
       substituters = [
         "https://cache.nixos.org"
         "https://niri.cachix.org"
@@ -38,8 +35,8 @@
     };
     gc = {
       automatic = true;
-      dates = "monthly";
-      options = "--delete-older-than 30d";
+      dates = "weekly";
+      options = "--delete-older-than 7d";
     };
   };
 
@@ -101,6 +98,18 @@
 
   systemd.packages = [pkgs.pritunl-client];
   systemd.targets.multi-user.wants = ["pritunl-client.service"];
+
+  # System packages
+  environment.systemPackages = with pkgs; [
+    vim
+    wget
+    curl
+    git
+    alacritty
+    tailscale
+    openvpn
+    pritunl-client
+  ];
 
   fonts.packages = with pkgs; [
     nerd-fonts.jetbrains-mono

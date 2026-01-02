@@ -4,6 +4,24 @@
 }: let
   lazygitBin = "${pkgs.lazygit}/bin/lazygit";
   fishShell = "${pkgs.fish}/bin/fish";
+
+  # Use nvim-treesitter.withPlugins for proper grammar and query installation
+  # Kubernetes files use yaml grammar; completion comes from yaml-language-server
+  treesitterWithGrammars = pkgs.vimPlugins.nvim-treesitter.withPlugins (p: [
+    p.nix
+    p.bash
+    p.fish
+    p.lua
+    p.markdown
+    p.markdown_inline
+    p.yaml
+    p.rust
+    p.go
+    p.python
+    p.vim
+    p.vimdoc
+    p.query
+  ]);
 in {
   vim = {
     package = pkgs.neovim-unwrapped;
@@ -133,6 +151,25 @@ in {
     };
 
     extraPlugins = {
+      # Manual treesitter setup using new API (nvf's built-in is broken - issue #1312)
+      nvim-treesitter = {
+        package = treesitterWithGrammars;
+        setup = ''
+          -- Configure folding with treesitter
+          vim.opt.foldmethod = "expr"
+          vim.opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+          vim.opt.foldenable = false
+          vim.opt.foldlevel = 99
+
+          -- Enable treesitter highlighting for supported filetypes
+          vim.api.nvim_create_autocmd("FileType", {
+            callback = function()
+              pcall(vim.treesitter.start)
+            end,
+          })
+        '';
+      };
+
       copilot-lua = {
         package = pkgs.vimPlugins.copilot-lua;
         setup = ''
@@ -144,105 +181,107 @@ in {
         '';
       };
 
-      copilot-chat = {
-        package = pkgs.vimPlugins.CopilotChat-nvim;
-        setup = ''
-          require('CopilotChat').setup({
-            model = 'claude-sonnet-4.5',
-            allow_think = true,
-            prompts = {
-              Explain = {
-                prompt = '/COPILOT_EXPLAIN Write an explanation for the selected code as paragraphs of text.',
-              },
-              Review = {
-                prompt = '/COPILOT_REVIEW Review the selected code.',
-              },
-              Fix = {
-                prompt = '/COPILOT_FIX There is a problem in this code. Rewrite the code to show it with the bug fixed.',
-              },
-              Optimize = {
-                prompt = '/COPILOT_REFACTOR Optimize the selected code to improve performance and readability.',
-              },
-              Docs = {
-                prompt = '/COPILOT_GENERATE Please add documentation comment for the selection.',
-              },
-              Tests = {
-                prompt = '/COPILOT_GENERATE Please generate tests for my code.',
-              },
-            },
-          })
-        '';
-      };
+      # FIXME: Disabled temporarily - re-enable when needed
+      # copilot-chat = {
+      #   package = pkgs.vimPlugins.CopilotChat-nvim;
+      #   setup = ''
+      #     require('CopilotChat').setup({
+      #       model = 'claude-sonnet-4.5',
+      #       allow_think = true,
+      #       prompts = {
+      #         Explain = {
+      #           prompt = '/COPILOT_EXPLAIN Write an explanation for the selected code as paragraphs of text.',
+      #         },
+      #         Review = {
+      #           prompt = '/COPILOT_REVIEW Review the selected code.',
+      #         },
+      #         Fix = {
+      #           prompt = '/COPILOT_FIX There is a problem in this code. Rewrite the code to show it with the bug fixed.',
+      #         },
+      #         Optimize = {
+      #           prompt = '/COPILOT_REFACTOR Optimize the selected code to improve performance and readability.',
+      #         },
+      #         Docs = {
+      #           prompt = '/COPILOT_GENERATE Please add documentation comment for the selection.',
+      #         },
+      #         Tests = {
+      #           prompt = '/COPILOT_GENERATE Please generate tests for my code.',
+      #         },
+      #       },
+      #     })
+      #   '';
+      # };
 
-      avante-nvim = {
-        package = pkgs.vimPlugins.avante-nvim;
-        setup = ''
-          require('avante').setup({
-            provider = "copilot",
-            providers = {
-              copilot = {
-                endpoint = "https://api.githubcopilot.com",
-                model = "claude-sonnet-4.5",
-                timeout = 30000,
-                temperature = 0,
-                extra_request_body = {
-                  max_tokens = 4096,
-                },
-              },
-            },
-            behaviour = {
-              auto_suggestions = false,
-              auto_set_highlight_group = true,
-              auto_set_keymaps = true,
-              auto_apply_diff_after_generation = false,
-              support_paste_from_clipboard = false,
-            },
-            dual_boost = {
-              enabled = true,
-              first_provider = "copilot",
-              second_provider = "copilot",
-              prompt = "Based on the two reference outputs below, generate a response that incorporates the best aspects of both.",
-              timeout = 60000,
-            },
-            mappings = {
-              ask = "<leader>aa",
-              edit = "<leader>ae",
-              refresh = "<leader>ar",
-              diff = {
-                ours = "co",
-                theirs = "ct",
-                both = "cb",
-                next = "]x",
-                prev = "[x",
-              },
-              jump = {
-                next = "]]",
-                prev = "[[",
-              },
-              submit = {
-                normal = "<CR>",
-                insert = "<C-s>",
-              },
-              toggle_debug = "<leader>ad",
-            },
-            hints = { enabled = true },
-            windows = {
-              wrap = true,
-              width = 30,
-              sidebar_header = {
-                align = "center",
-                rounded = true,
-              },
-            },
-            highlights = {
-              diff = {
-                current = "DiffText",
-                incoming = "DiffAdd",
-              },
-            },
-          })
-        '';
-      };
+      # FIXME: Disabled - requires copilot to be set up first (load order issue)
+      # avante-nvim = {
+      #   package = pkgs.vimPlugins.avante-nvim;
+      #   setup = ''
+      #     require('avante').setup({
+      #       provider = "copilot",
+      #       providers = {
+      #         copilot = {
+      #           endpoint = "https://api.githubcopilot.com",
+      #           model = "claude-sonnet-4.5",
+      #           timeout = 30000,
+      #           temperature = 0,
+      #           extra_request_body = {
+      #             max_tokens = 4096,
+      #           },
+      #         },
+      #       },
+      #       behaviour = {
+      #         auto_suggestions = false,
+      #         auto_set_highlight_group = true,
+      #         auto_set_keymaps = true,
+      #         auto_apply_diff_after_generation = false,
+      #         support_paste_from_clipboard = false,
+      #       },
+      #       dual_boost = {
+      #         enabled = true,
+      #         first_provider = "copilot",
+      #         second_provider = "copilot",
+      #         prompt = "Based on the two reference outputs below, generate a response that incorporates the best aspects of both.",
+      #         timeout = 60000,
+      #       },
+      #       mappings = {
+      #         ask = "<leader>aa",
+      #         edit = "<leader>ae",
+      #         refresh = "<leader>ar",
+      #         diff = {
+      #           ours = "co",
+      #           theirs = "ct",
+      #           both = "cb",
+      #           next = "]x",
+      #           prev = "[x",
+      #         },
+      #         jump = {
+      #           next = "]]",
+      #           prev = "[[",
+      #         },
+      #         submit = {
+      #           normal = "<CR>",
+      #           insert = "<C-s>",
+      #         },
+      #         toggle_debug = "<leader>ad",
+      #       },
+      #       hints = { enabled = true },
+      #       windows = {
+      #         wrap = true,
+      #         width = 30,
+      #         sidebar_header = {
+      #           align = "center",
+      #           rounded = true,
+      #         },
+      #       },
+      #       highlights = {
+      #         diff = {
+      #           current = "DiffText",
+      #           incoming = "DiffAdd",
+      #         },
+      #       },
+      #     })
+      #   '';
+      # };
     };
 
     snippets.luasnip = {
@@ -258,10 +297,13 @@ in {
 
     git.gitsigns.enable = true;
 
+    # FIXME: Temporarily disabled due to nvf bug #1312
+    # nvim-treesitter.configs module was removed in newer treesitter versions
+    # Re-enable once nvf releases a fix
     treesitter = {
-      enable = true;
-      fold = true;
-      autotagHtml = true;
+      enable = false;
+      # fold = true;
+      # autotagHtml = true;
     };
 
     telescope = {
@@ -692,7 +734,8 @@ in {
     };
 
     languages = {
-      enableTreesitter = true;
+      # FIXME: Disabled due to nvf bug #1312 (treesitter main branch incompatibility)
+      enableTreesitter = false;
       enableFormat = true;
       enableExtraDiagnostics = true;
 

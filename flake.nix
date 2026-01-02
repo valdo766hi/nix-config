@@ -107,7 +107,7 @@
             home-manager = {
               useGlobalPkgs = true;
               useUserPackages = true;
-              users.rivaldo = import ../../home-manager/home.nix;
+              users.rivaldo = import ./home-manager/home.nix;
               extraSpecialArgs = {inherit inputs;};
             };
           }
@@ -116,7 +116,7 @@
     };
 
     darwinConfigurations = {
-      darwin = nix-darwin.lib.darwinSystem {
+      "Rivaldos-MacBook-Pro" = nix-darwin.lib.darwinSystem {
         system = "aarch64-darwin";
         specialArgs = {inherit inputs;};
         modules = [
@@ -126,12 +126,17 @@
             home-manager = {
               useGlobalPkgs = true;
               useUserPackages = true;
-              users.rivaldo = import ../../home-manager/home.nix;
+              users.rivaldo = import ./home-manager/home.nix;
               extraSpecialArgs = {inherit inputs;};
             };
           }
         ];
       };
+    };
+
+    nixosModules = {
+      desktop = import ./modules/nixos/desktop.nix;
+      virtualisation = import ./modules/nixos/virtualisation.nix;
     };
 
     homeConfigurations = {

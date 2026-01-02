@@ -33,7 +33,7 @@ let
     floatApps;
 
 in {
-  services.aerospace = {
+  services.aerospace = lib.mkIf pkgs.stdenv.isDarwin {
     enable = true;
     package = pkgs.aerospace;
 

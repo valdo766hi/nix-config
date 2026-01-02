@@ -10,7 +10,6 @@
     btop
     pwgen
     zoxide
-    yazi
     starship
     atuin
     gh
@@ -20,7 +19,6 @@
     kustomize
     podman
     podman-compose
-    eza
     fzf
   ];
 }

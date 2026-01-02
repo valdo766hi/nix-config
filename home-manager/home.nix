@@ -1,17 +1,17 @@
 {
   inputs,
-  outputs,
   lib,
   config,
   pkgs,
   ...
 }: {
   imports = [
-    inputs.niri.homeModules.niri
+    # Flake inputs
     inputs.dankMaterialShell.homeModules.dank-material-shell
     inputs.zen-browser.homeModules.beta
     inputs.nvf.homeManagerModules.default
     inputs.vicinae.homeManagerModules.default
+    # Common modules (cross-platform)
     ./common/shell.nix
     ./common/git.nix
     ./common/packages.nix
@@ -20,13 +20,16 @@
     ./common/zoxide.nix
     ./common/atuin.nix
     ./common/tmux.nix
-    ./nixos/niri.nix
+    ./common/lazygit.nix
+    ./common/eza.nix
+    ./common/yazi/default.nix
+    ./common/zed.nix
+    # NixOS-specific modules (have platform guards)
+    ./nixos/niri/default.nix
     ./nixos/vicinae.nix
     ./nixos/dank-material-shell.nix
     ./nixos/nvf/default.nix
-    ./nixos/winapps.nix
-    ./darwin/aerospace.nix
-    ./darwin/homebrew.nix
+    ./nixos/flatpak.nix
   ];
 
   home = {
@@ -34,63 +37,14 @@
     homeDirectory = if pkgs.stdenv.isLinux then "/home/rivaldo" else "/Users/rivaldo";
   };
 
-  programs.zen-browser.enable = true;
-
-  programs.winapps = {
+  programs.zen-browser = lib.mkIf pkgs.stdenv.isLinux {
     enable = true;
-    manageConfigFile = false;
-    manageComposeFile = false;
   };
 
-  programs.dank-material-shell = {
-    enable = true;
-    quickshell.package = pkgs.quickshell;
+  # Let home-manager manage itself
+  programs.home-manager.enable = true;
 
-    systemd = {
-      enable = true;
-      restartIfChanged = true;
-    };
-
-    enableSystemMonitoring = true;
-    enableVPN = true;
-    enableDynamicTheming = true;
-    enableAudioWavelength = true;
-    enableCalendarEvents = true;
-  };
-
-  services.vicinae = {
-    enable = true;
-    systemd = {
-      enable = true;
-      autoStart = true;
-    };
-    settings = {
-      favicon_service = "twenty";
-      font = {
-        normal = {
-          size = 11;
-        };
-      };
-      pop_to_root_on_close = false;
-      search_files_in_root = false;
-      theme = {
-        dark = {
-          name = "catppuccin-mocha";
-        };
-      };
-      launcher_window = {
-        opacity = 0.95;
-      };
-    };
-    extensions = with inputs.vicinae-extensions.packages.${pkgs.stdenv.hostPlatform.system}; [
-      bluetooth
-      nix
-      power-profile
-      ssh
-    ];
-  };
-
-  systemd.user.startServices = "sd-switch";
+  systemd.user.startServices = lib.mkIf pkgs.stdenv.isLinux "sd-switch";
 
   home.stateVersion = "25.05";
 }

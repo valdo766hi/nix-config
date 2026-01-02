@@ -1,35 +1,33 @@
-{lib, ...}: {
-  xdg.configFile."lazygit/config.yml" = {
-    force = true;
-    text = ''
-      gui:
-        theme:
-          activeBorderColor:
-            - '#89b4fa'
-            - bold
-          inactiveBorderColor:
-            - '#a6adc8'
-          searchingActiveBorderColor:
-            - '#f9e2af'
-            - bold
-          optionsTextColor:
-            - '#89b4fa'
-          selectedLineBgColor:
-            - '#313244'
-          selectedRangeBgColor:
-            - '#313244'
-          cherryPickedCommitBgColor:
-            - '#45475a'
-          cherryPickedCommitFgColor:
-            - '#89b4fa'
-          unstagedChangesColor:
-            - '#f38ba8'
-          defaultFgColor:
-            - '#cdd6f4'
-      git:
-        pagers:
-          - colorArg: always
-            pager: delta --dark --paging=never
-    '';
+{config, pkgs, lib, inputs, ...}: {
+  services.vicinae = lib.mkIf pkgs.stdenv.isLinux {
+    enable = true;
+    systemd = {
+      enable = true;
+      autoStart = true;
+    };
+    settings = {
+      favicon_service = "twenty";
+      font = {
+        normal = {
+          size = 11;
+        };
+      };
+      pop_to_root_on_close = false;
+      search_files_in_root = false;
+      theme = {
+        dark = {
+          name = "catppuccin-mocha";
+        };
+      };
+      launcher_window = {
+        opacity = 0.95;
+      };
+      extensions = with inputs.vicinae-extensions.packages.${pkgs.stdenv.hostPlatform.system}; [
+        bluetooth
+        nix
+        power-profile
+        ssh
+      ];
+    };
   };
 }
