@@ -1,11 +1,10 @@
-# Complete OmniWM 0.6.5 schema. OmniWM rejects partial settings files.
-schemaVersion = 2
+# Complete OmniWM 0.6.8 schema. OmniWM rejects partial settings files.
+schemaVersion = 3
 monitorBarOverrides = []
 monitorDwindleOverrides = []
 monitorGapOverrides = []
 monitorNiriOverrides = []
 monitorOrientationOverrides = []
-monitorRoutingOverrides = []
 
 [appearance]
 mode = "dark"
@@ -138,6 +137,7 @@ widthPercent = 50.0
 
 [routing]
 mode = "macOS"
+arrangements = []
 
 [scratchpads.labels]
 

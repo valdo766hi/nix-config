@@ -17,7 +17,7 @@ in {
 
   nix = {
     settings = {
-      experimental-features = "nix-command flakes";
+      experimental-features = ["nix-command" "flakes"];
       auto-optimise-store = true;
       substituters = ["https://cache.nixos.org"] ++ caches.substituters;
       trusted-public-keys = [
