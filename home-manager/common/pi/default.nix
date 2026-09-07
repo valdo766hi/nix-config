@@ -48,6 +48,7 @@ in {
       force = true;
     };
     ".pi/agent/plannotator.json".source = ./extensions/plannotator/config.json;
+    ".pi/agent/pi-fff.json".text = builtins.toJSON {mode = "override";};
     ".local/bin/pi-package-security-check" = {
       source = ./scripts/pi-package-security-check;
       executable = true;
