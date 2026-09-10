@@ -31,6 +31,7 @@ This means common commands like `git status`, `rg`, `cat`, `cargo test`, and sim
 
 ## Important Notes
 
+- The plugin implements the OpenCode 2 plugin API and only loads in `opencode2`; the V1 `opencode` CLI cannot load it
 - OpenCode plugin hooks only affect Bash or shell tool calls
 - OpenCode built-in tools like `Read`, `Grep`, and `Glob` are not rewritten by RTK automatically
 - OpenCode currently does not apply plugin hooks to subagent tool calls, so subagents will not benefit from this hook until upstream changes that behavior
@@ -153,8 +154,10 @@ rtk gain
 
 - If `rtk gain` does not exist, confirm you are using the RTK binary from this repo-managed setup, not a different `rtk` package installed elsewhere
 - If OpenCode does not appear to rewrite commands, restart OpenCode after the rebuild
+- After a Home Manager rebuild, also restart the background service (`opencode2 service restart`): the running beta caches the plugin module for the plugin path and a file watcher reload can keep serving the previous version
 - If a command is executed through a non-Bash tool path, RTK rewrite will not apply
 - If a subagent runs the command, the OpenCode plugin limitation still applies
+- If the OpenCode log shows `Plugin must export a default definition with an id and an effect or setup function`, the plugin file is still the V1 version or the Home Manager rebuild has not linked the new one yet; rebuild and restart OpenCode
 
 ## Comparison To npm-Only Plugin Setups
 
