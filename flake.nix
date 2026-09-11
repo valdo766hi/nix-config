@@ -49,11 +49,6 @@
       flake = false;
     };
 
-    omniwm-tap = {
-      url = "github:BarutSRB/homebrew-tap";
-      flake = false;
-    };
-
     dankMaterialShell = {
       url = "github:AvengeMedia/DankMaterialShell";
       inputs.nixpkgs.follows = "nixpkgs";

@@ -1,8 +1,8 @@
 # Updating OmniWM
 
-OmniWM is installed by nix-darwin from the official `BarutSRB/tap` Homebrew
-cask. The tap is a non-flake input named `omniwm-tap`, so `flake.lock` pins the
-cask definition used by this configuration.
+OmniWM is installed by nix-darwin from Homebrew's official `omniwm`
+cask. The cask definition is pinned via the `homebrew-cask` flake input, so
+`flake.lock` pins the version used by this configuration.
 
 Do not update OmniWM by running an unreviewed `brew upgrade`. Use the workflow
 below so the tap revision, configuration evaluation, and documentation remain
@@ -16,7 +16,7 @@ Before changing `flake.lock`, always review:
 2. [Open OmniWM issues](https://github.com/BarutSRB/OmniWM/issues?q=is%3Aissue%20is%3Aopen),
    plus issues relevant to the target release or affected features.
 3. The updated
-   [official cask](https://github.com/BarutSRB/homebrew-tap/blob/main/Casks/omniwm.rb)
+   [official cask](https://github.com/Homebrew/homebrew-cask/blob/main/Casks/o/omniwm.rb)
    for its version, checksum, macOS requirement, architecture requirement, and
    artifact layout.
 4. Upstream setup notes and default hotkey tables for permission, settings,
@@ -27,18 +27,18 @@ Monitoring changes, layout/state migrations, renamed commands, and changed
 default shortcuts. Delay the update if a relevant unresolved issue makes it
 unsafe for this host.
 
-## 2. Update Only the Pinned Tap
+## 2. Update Only the Pinned Cask Input
 
 From the repository root:
 
 ```bash
-nix flake update omniwm-tap
+nix flake lock --update-input homebrew-cask
 git diff -- flake.lock
 ```
 
-Confirm the diff changes the expected `omniwm-tap` revision and does not
-unexpectedly update unrelated inputs. Check the cask version at the newly
-pinned tap revision against the release reviewed above.
+Confirm the diff only repins `homebrew-cask` (this input backs every cask,
+so avoid unrelated churn). Check the cask version at the newly pinned
+revision against the release reviewed above.
 
 If upstream default shortcuts changed, update
 [`OMNIWM_KEYBINDINGS.md`](./OMNIWM_KEYBINDINGS.md) in the same change. Confirm
@@ -67,7 +67,8 @@ when the release and issue review is incomplete.
 
 ## 4. Activate
 
-On the target Mac:
+On the target Mac, quit OmniWM first (Homebrew replaces the app bundle
+underneath a running instance), then:
 
 ```bash
 sudo darwin-rebuild switch --flake .#Rivaldos-MacBook-Pro
@@ -106,7 +107,7 @@ new regression appears.
 
 ## Rollback
 
-First, return the repository to the previously reviewed `omniwm-tap` lock
+First, return the repository to the previously reviewed `homebrew-cask` lock
 revision, then rebuild:
 
 ```bash

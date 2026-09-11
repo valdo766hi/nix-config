@@ -2,7 +2,7 @@
 
 <!-- markdownlint-disable MD013 -->
 
-This reference records the upstream OmniWM **0.6.0** hotkeys plus the managed
+This reference records the upstream OmniWM **0.6.9** hotkeys plus the managed
 navigation overrides. Home Manager replaces the arrow-based focus and move
 bindings with Vim-style keys so macOS can keep `Option + Arrow` for text editing.
 
@@ -105,15 +105,17 @@ controls whether focus follows it.
 | Move to Root | `Unassigned` | `Dwindle` |
 | Toggle Split | `Unassigned` | `Dwindle` |
 | Swap Split | `Unassigned` | `Dwindle` |
-| Grow Left / Right / Up / Down | `Unassigned` | `Dwindle` |
-| Shrink Left / Right / Up / Down | `Unassigned` | `Dwindle` |
+| Grow Horizontally / Vertically | `Unassigned` | `Dwindle` |
+| Shrink Horizontally / Vertically | `Unassigned` | `Dwindle` |
 | Grow / Shrink Focused Window | `Unassigned` | `Dwindle` |
 | Preselect Left / Right / Up / Down | `Unassigned` | `Dwindle` |
 | Clear Preselection | `Unassigned` | `Dwindle` |
 | Raise All Floating Windows | `Option + Shift + R` | `Shared` |
 | Toggle Focused Window Floating | `Unassigned` | `Shared` |
-| Assign Focused Window to Scratchpad | `Unassigned` | `Shared` |
-| Toggle Scratchpad Window | `Unassigned` | `Shared` |
+| Assign Focused Window to Scratchpad 1 | `Unassigned` | `Shared` |
+| Toggle Scratchpad 1 | `Unassigned` | `Shared` |
+| Assign Focused Window to Scratchpad 2-10 | `Unassigned` | `Shared` |
+| Toggle Scratchpad 2-10 | `Unassigned` | `Shared` |
 | Toggle Workspace Layout | `Control + Option + Shift + L` | `Shared` |
 
 ## Container and Column
@@ -151,11 +153,11 @@ Structural Dwindle moves are unavailable while Overview is open.
 
 ## Sources and Version Drift
 
-- [OmniWM 0.6.0 release](https://github.com/BarutSRB/OmniWM/releases/tag/v0.6.0)
+- [OmniWM 0.6.9 release](https://github.com/BarutSRB/OmniWM/releases/tag/v0.6.9)
 - [Upstream Keyboard Shortcuts tables](https://github.com/BarutSRB/OmniWM#keyboard-shortcuts)
-- [Official Homebrew cask](https://github.com/BarutSRB/homebrew-tap/blob/main/Casks/omniwm.rb)
+- [Official Homebrew cask](https://github.com/Homebrew/homebrew-cask/blob/main/Casks/o/omniwm.rb)
 
-This document is pinned to the defaults published for OmniWM 0.6.0. Upstream
+This document is pinned to the defaults published for OmniWM 0.6.9. Upstream
 may add actions or change defaults in later releases. Before updating OmniWM,
 follow [OMNIWM_UPDATES.md](./OMNIWM_UPDATES.md), review the release notes and
 relevant issues, and compare the upstream tables with this document.

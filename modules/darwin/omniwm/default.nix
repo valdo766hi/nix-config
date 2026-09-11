@@ -1,18 +1,5 @@
-{
-  inputs,
-  ...
-}: {
-  nix-homebrew.taps = {
-    "BarutSRB/homebrew-tap" = inputs.omniwm-tap;
-  };
-
+{...}: {
   homebrew = {
-    taps = [
-      {
-        name = "BarutSRB/tap";
-        trusted = true;
-      }
-    ];
     casks = ["omniwm"];
   };
 
