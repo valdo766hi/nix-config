@@ -53,6 +53,9 @@ in {
     };
     ".pi/agent/plannotator.json".source = ./extensions/plannotator/config.json;
     ".pi/agent/pi-fff.json".text = builtins.toJSON {mode = "override";};
+    ".pi/agent/lazy-skill.json".text = builtins.toJSON {
+      routing = "adaptive";
+    };
     ".local/bin/pi-package-security-check" = {
       source = ./scripts/pi-package-security-check;
       executable = true;
