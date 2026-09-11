@@ -42,6 +42,10 @@ in {
   home.packages = [skillSecCheck];
 
   home.file = {
+    # The flake-provided Pi is a standalone binary, so keep subagents in-process.
+    ".pi/agent/extensions/subagent/config.json".text = builtins.toJSON {
+      asyncByDefault = false;
+    };
     ".pi/agent/extensions/rtk.ts".source = ./extensions/rtk/rtk.ts;
     ".pi/agent/extensions/pi-permission-system/config.json" = {
       source = ./extensions/pi-permission-system/config.json;
