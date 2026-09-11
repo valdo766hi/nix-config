@@ -136,7 +136,7 @@ in {
         "npm:@valdo766hi/pi-fast@0.1.2"
         "npm:@valdo766hi/pi-footer@0.1.0"
         "npm:@valdo766hi/pi-yolo@0.1.5"
-        "npm:@valdo766hi/pi-lazy-skill-tool@0.2.0"
+        "npm:@valdo766hi/pi-lazy-skill-tool@0.3.0"
         "npm:@mtrojnar/pi-usage@0.1.6"
         "npm:@ff-labs/pi-fff@0.10.6"
       ];
