@@ -36,6 +36,7 @@
 
     casks = [
       "chatgpt"
+      "grok-bot"
       "ghostty"
       "google-chrome"
       "iterm2"
