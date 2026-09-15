@@ -1,4 +1,4 @@
-# Complete OmniWM 0.6.8 schema. OmniWM rejects partial settings files.
+# Complete OmniWM 0.6.10 schema. OmniWM rejects partial settings files.
 schemaVersion = 3
 monitorBarOverrides = []
 monitorDwindleOverrides = []

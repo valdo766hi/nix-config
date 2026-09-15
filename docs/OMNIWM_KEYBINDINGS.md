@@ -2,7 +2,7 @@
 
 <!-- markdownlint-disable MD013 -->
 
-This reference records the upstream OmniWM **0.6.9** hotkeys plus the managed
+This reference records the upstream OmniWM **0.6.10** hotkeys plus the managed
 navigation overrides. Home Manager replaces the arrow-based focus and move
 bindings with Vim-style keys so macOS can keep `Option + Arrow` for text editing.
 
@@ -153,11 +153,11 @@ Structural Dwindle moves are unavailable while Overview is open.
 
 ## Sources and Version Drift
 
-- [OmniWM 0.6.9 release](https://github.com/BarutSRB/OmniWM/releases/tag/v0.6.9)
+- [OmniWM 0.6.10 release](https://github.com/BarutSRB/OmniWM/releases/tag/v0.6.10)
 - [Upstream Keyboard Shortcuts tables](https://github.com/BarutSRB/OmniWM#keyboard-shortcuts)
 - [Official Homebrew cask](https://github.com/Homebrew/homebrew-cask/blob/main/Casks/o/omniwm.rb)
 
-This document is pinned to the defaults published for OmniWM 0.6.9. Upstream
+This document is pinned to the defaults published for OmniWM 0.6.10. Upstream
 may add actions or change defaults in later releases. Before updating OmniWM,
 follow [OMNIWM_UPDATES.md](./OMNIWM_UPDATES.md), review the release notes and
 relevant issues, and compare the upstream tables with this document.
