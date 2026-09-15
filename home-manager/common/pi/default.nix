@@ -130,17 +130,17 @@ in {
       hideThinkingBlock = true;
       defaultThinkingLevel = "max";
       packages = [
-        "npm:pi-lens@4.1.3"
-        "npm:pi-mcp-adapter@2.32.1"
+        "npm:pi-lens@4.1.6"
+        "npm:pi-mcp-adapter@2.34.0"
         "git:github.com/algal/pi-openai-server-compaction@8a3de2f3b0c178fdd6f73f2f94172dfc3943e466"
-        "npm:@plannotator/pi-extension@0.27.12"
-        "npm:pi-subagents@0.65.1"
-        "npm:@gotgenes/pi-permission-system@31.1.1"
+        "npm:@plannotator/pi-extension@0.27.14"
+        "npm:pi-subagents@0.68.0"
+        "npm:@gotgenes/pi-permission-system@32.0.2"
         "npm:@valdo766hi/pi-fast@0.1.2"
         "npm:@valdo766hi/pi-footer@0.1.0"
-        "npm:@valdo766hi/pi-yolo@0.1.5"
-        "npm:@valdo766hi/pi-lazy-skill-tool@0.2.0"
-        "npm:@mtrojnar/pi-usage@0.1.6"
+        "npm:@valdo766hi/pi-yolo@0.1.6"
+        "npm:@valdo766hi/pi-lazy-skill-tool@0.3.0"
+        "npm:@mtrojnar/pi-usage@0.2.0"
         "npm:@ff-labs/pi-fff@0.10.6"
       ];
     };
