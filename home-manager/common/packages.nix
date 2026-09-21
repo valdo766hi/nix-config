@@ -19,6 +19,7 @@ in {
     fluxcd
     cilium-cli
     kustomize
+    teleport
     fzf
     kubernetes-helm
     jq
