@@ -12,8 +12,8 @@ reviewable.
 
 Before changing `flake.lock`, always review:
 
-1. [OmniWM releases and release notes](https://github.com/BarutSRB/OmniWM/releases).
-2. [Open OmniWM issues](https://github.com/BarutSRB/OmniWM/issues?q=is%3Aissue%20is%3Aopen),
+1. [OmniWM releases and release notes](https://github.com/OmniNull/OmniWM/releases).
+2. [Open OmniWM issues](https://github.com/OmniNull/OmniWM/issues?q=is%3Aissue%20is%3Aopen),
    plus issues relevant to the target release or affected features.
 3. The updated
    [official cask](https://github.com/Homebrew/homebrew-cask/blob/main/Casks/o/omniwm.rb)
@@ -92,11 +92,9 @@ Then check manually:
 
 - OmniWM opens at login and shows its menu bar item.
 - Accessibility permission still applies to the updated signed application.
-- Input Monitoring is present only if a System Hyper Trigger or sided-modifier
-  binding is enabled.
+- Input Monitoring is granted (required for OmniWM 0.7.2).
 - **Displays have separate Spaces** remains enabled.
-- The Home Manager-managed border width, gap, and corner radius still apply
-  without migration warnings.
+- The Home Manager-managed borders and gaps still apply without migration warnings.
 - Representative bindings work: `Option + H/J/K/L`, `Option + 1-9`,
   `Option + Shift + H/J/K/L`, `Option + Return`, and
   `Control + Option + Shift + L`.

@@ -2,7 +2,7 @@
 
 <!-- markdownlint-disable MD013 -->
 
-This reference records the upstream OmniWM **0.6.10** hotkeys plus the managed
+This reference records the upstream OmniWM **0.7.2** hotkeys plus the managed
 navigation overrides. Home Manager replaces the arrow-based focus and move
 bindings with Vim-style keys so macOS can keep `Option + Arrow` for text editing.
 
@@ -13,13 +13,11 @@ OmniWM requires:
 - macOS 26 Tahoe or newer on Apple Silicon.
 - **Displays have separate Spaces** enabled in **System Settings > Desktop &
   Dock > Mission Control**. Log out and back in if you change this setting.
-- Accessibility access in **System Settings > Privacy & Security >
-  Accessibility**.
-- Input Monitoring only if you enable a **System Hyper Trigger** or a binding
-  that distinguishes left- and right-side modifier keys.
+- Accessibility and Input Monitoring access in **System Settings > Privacy &
+  Security**.
 
 The nix-darwin module installs OmniWM and opens it at login. On the first
-launch, grant Accessibility access when prompted. Keep one macOS Space per
+launch, grant Accessibility and Input Monitoring access when prompted. Keep one macOS Space per
 display and use OmniWM workspaces for normal navigation.
 
 All shortcuts can be changed in **OmniWM Settings > Hotkeys**. Changes made
@@ -153,11 +151,11 @@ Structural Dwindle moves are unavailable while Overview is open.
 
 ## Sources and Version Drift
 
-- [OmniWM 0.6.10 release](https://github.com/BarutSRB/OmniWM/releases/tag/v0.6.10)
-- [Upstream Keyboard Shortcuts tables](https://github.com/BarutSRB/OmniWM#keyboard-shortcuts)
+- [OmniWM 0.7.2 release](https://github.com/OmniNull/OmniWM/releases/tag/v0.7.2)
+- [Upstream Keyboard Shortcuts tables](https://github.com/OmniNull/OmniWM#keyboard-shortcuts)
 - [Official Homebrew cask](https://github.com/Homebrew/homebrew-cask/blob/main/Casks/o/omniwm.rb)
 
-This document is pinned to the defaults published for OmniWM 0.6.10. Upstream
+This document is pinned to the defaults published for OmniWM 0.7.2. Upstream
 may add actions or change defaults in later releases. Before updating OmniWM,
 follow [OMNIWM_UPDATES.md](./OMNIWM_UPDATES.md), review the release notes and
 relevant issues, and compare the upstream tables with this document.
