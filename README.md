@@ -75,6 +75,7 @@ nix run github:valdo766hi/nix-config#neovim
 nix run github:valdo766hi/nix-config#yazi
 nix run github:valdo766hi/nix-config#lazygit
 nix run github:valdo766hi/nix-config#pi
+nix run github:valdo766hi/nix-config#pig
 ```
 
 If `home-manager` is not yet on `PATH`, bootstrap the current profile with:
@@ -90,7 +91,8 @@ configuration directory, so its `y` shell wrapper cannot change the parent
 shell's directory when launched through `nix run`. LazyGit uses the managed
 Catppuccin configuration and Nix-provided Delta. Pi uses the Nix package while
 its extensions, settings, authentication, and mutable state remain under
-`~/.pi`.
+`~/.pi`. PiG is separately installed from a pinned upstream release; its
+independent configuration and compatibility limits are in [docs/PIG.md](docs/PIG.md).
 
 Other installed tools come from nixpkgs and can be run directly with `nix run nixpkgs#<package>` when they provide an executable.
 

@@ -229,6 +229,9 @@
         pi = configuredApps.mkPi {
           package = home.config.programs."pi-coding-agent".package;
         };
+        pig = configuredApps.mkPiG {
+          package = pkgs.callPackage ./pkgs/pig {};
+        };
       });
 
     checks.x86_64-linux = {
@@ -238,7 +241,17 @@
         assert self.nixosConfigurations.thinker.config.system.build.toplevel.drvPath != "";
         assert self.darwinConfigurations."Rivaldos-MacBook-Pro".system.drvPath != "";
         pkgs.runCommand "check-configurations" {} "touch $out";
-      inherit (self.packages.x86_64-linux) rtk neovim yazi lazygit pi;
+      inherit (self.packages.x86_64-linux) rtk neovim yazi lazygit pi pig;
+
+      pig-config = let
+        pkgs = nixpkgs.legacyPackages.x86_64-linux;
+        files = self.homeConfigurations."rivaldo@thinker".config.home.file;
+      in pkgs.runCommand "check-pig-config" {nativeBuildInputs = [pkgs.jq];} ''
+        jq -e '.defaultTools == [] and .theme == "catppuccin-mocha" and .defaultProvider == "openai-codex"' ${files.".pig/agent/settings.json".source} > /dev/null
+        jq -e '.name == "catppuccin-mocha"' ${files.".pig/agent/themes/catppuccin-mocha.json".source} > /dev/null
+        test -s ${files.".pig/agent/APPEND_SYSTEM.md".source}
+        touch $out
+      '';
 
       home-profile = self.homeConfigurations."rivaldo@thinker".activationPackage;
 

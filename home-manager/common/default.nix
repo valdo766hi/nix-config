@@ -13,6 +13,7 @@
     ./lazygit.nix
     ./opencode/default.nix
     ./pi/default.nix
+    ./pig/default.nix
     ./nvf/default.nix
     ./nushell.nix
     ./packages.nix
