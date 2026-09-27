@@ -1,4 +1,4 @@
-# OmniWM 0.7.2 schema 3; new 0.7.x settings are optional.
+# OmniWM 0.7.3 schema 3; new 0.7.x settings are optional.
 schemaVersion = 3
 monitorBarOverrides = []
 monitorDwindleOverrides = []
