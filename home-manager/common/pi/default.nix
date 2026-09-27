@@ -99,11 +99,11 @@ in {
       hideThinkingBlock = true;
       defaultThinkingLevel = "max";
       packages = [
-        "npm:pi-lens@4.2.1"
-        "npm:pi-mcp-adapter@2.37.0"
+        "npm:pi-lens@4.3.0"
+        "npm:pi-mcp-adapter@3.0.0"
         "git:github.com/algal/pi-openai-server-compaction@8a3de2f3b0c178fdd6f73f2f94172dfc3943e466"
-        "npm:@plannotator/pi-extension@0.27.19"
-        "npm:pi-subagents@0.71.0"
+        "npm:@plannotator/pi-extension@0.27.21"
+        "npm:pi-subagents@0.72.1"
         "npm:@gotgenes/pi-permission-system@32.1.0"
         "npm:@valdo766hi/pi-fast@0.1.2"
         "npm:@valdo766hi/pi-footer@0.1.0"
