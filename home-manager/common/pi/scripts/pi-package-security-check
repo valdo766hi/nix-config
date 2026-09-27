@@ -207,7 +207,7 @@ NODE
   (cd "$TEMP_DIR" && npm audit fix --include=dev --package-lock-only --ignore-scripts)
   fix_status=$?
   set -e
-  if [[ $fix_status -gt 1 ]]; then
+  if [[ $fix_status -ne 0 ]]; then
     fail "npm could not repair the candidate dependency tree."
     return 2
   fi

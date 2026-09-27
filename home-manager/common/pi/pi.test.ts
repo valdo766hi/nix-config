@@ -104,6 +104,27 @@ exit "$AUDIT_STATUS"
 	rmSync(dir, { recursive: true, force: true });
 });
 
+test("candidate check rejects failed npm audit fix", () => {
+	const dir = tempDir("pi-candidate-");
+	const tree = join(dir, "tree");
+	mkdirSync(tree);
+	writeFileSync(join(tree, "package.json"), '{"dependencies":{"test-package":"1.0.0"}}\n');
+	writeFileSync(join(tree, "package-lock.json"), "{}\n");
+	executable(join(dir, "npm"), `#!/bin/sh
+if [ "$1" = install ]; then exit 0; fi
+if [ "$1" = audit ] && [ "$2" = fix ]; then exit 1; fi
+exit 99
+`);
+
+	const result = run("./pi-package-security-check", ["--candidate", "test-package@2.0.0"], {
+		PATH: `${dir}:${process.env.PATH}`,
+		PI_NPM_DIR: tree,
+	});
+	assert.equal(result.status, 2, result.stderr);
+	assert.match(result.stderr, /could not repair the candidate dependency tree/);
+	rmSync(dir, { recursive: true, force: true });
+});
+
 test("yolo command atomically updates the native permission setting", async () => {
 	const agentDir = tempDir("pi-yolo-");
 	const configDir = join(agentDir, "extensions", "pi-permission-system");
