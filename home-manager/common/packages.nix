@@ -1,9 +1,11 @@
 {
+  inputs,
   pkgs,
   lib,
   ...
 }: let
   rtk = pkgs.callPackage ../../pkgs/rtk {};
+  antigravityCli = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.antigravity-cli;
 in {
   home.packages = with pkgs; [
     # CLI
@@ -37,7 +39,7 @@ in {
     hunk
     tree
     fastfetch
-  ] ++ lib.optionals pkgs.stdenv.hostPlatform.isLinux [
+  ] ++ [antigravityCli] ++ lib.optionals pkgs.stdenv.hostPlatform.isLinux [
     ghostty
     keepassxc
     obs-studio

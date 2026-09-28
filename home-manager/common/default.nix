@@ -25,4 +25,6 @@
     #./zed.nix
     ./zoxide.nix
   ];
+
+  home.file.".gemini/GEMINI.md".source = ./agent-instructions.md;
 }
