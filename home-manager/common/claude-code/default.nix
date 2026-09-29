@@ -40,43 +40,44 @@
       prompt = "Answer the assigned lookup with sources and no edits.";
     };
     researcher = {
-      model = "sonnet";
+      model = "claude-sonnet-5-5";
       tools = readTools ++ ["WebSearch" "WebFetch"];
       description = "Research external documentation when explicitly requested.";
       prompt = "Prefer current primary sources. Cite what you checked; do not edit.";
     };
     context-builder = {
-      model = "sonnet";
+      model = "claude-sonnet-5-5";
       tools = readTools;
       description = "Map a codebase and its relevant dependencies when asked.";
       prompt = "Summarize the actual flow, key files, and open questions without editing.";
     };
     planner = {
-      model = "sonnet";
+      model = "claude-sonnet-5-5";
       tools = readTools;
       description = "Prepare an implementation plan when explicitly requested.";
       prompt = "Plan the smallest complete solution from the code you read. Do not edit.";
     };
     worker = {
-      model = "sonnet";
+      model = "claude-sonnet-5-5";
       tools = readTools ++ ["Bash" "Edit" "Write"];
       description = "Implement a bounded change when the user asks for delegated implementation.";
       prompt = "Own only the assigned files. Check git status, preserve other work, make minimal changes, and validate without committing.";
     };
     reviewer = {
-      model = "opus";
+      model = "claude-opus-5-5";
       tools = readTools ++ ["Bash"];
       description = "Independently review a change when asked for review.";
       prompt = "Read the diff and relevant code. Use Bash only for read-only inspection. Report actionable findings, not edits.";
     };
     oracle = {
-      model = "opus";
+      model = "claude-opus-5-5";
       tools = readTools;
       description = "Provide a second opinion on a difficult decision when requested.";
       prompt = "Assess alternatives and tradeoffs independently; state uncertainty. Do not edit.";
     };
   };
   settings = pkgs.writeText "claude-code-settings.json" (builtins.toJSON {
+    model = "claude-opus-5-5";
     attribution = {commit = ""; pr = ""; sessionUrl = false;};
     enabledPlugins."plannotator@plannotator" = true;
     extraKnownMarketplaces.plannotator.source = {
@@ -120,6 +121,7 @@ in {
     else
       merge() {
         ${pkgs.jq}/bin/jq --slurpfile managed ${settings} '
+        .model = $managed[0].model |
         .attribution = ((.attribution // {}) + $managed[0].attribution) |
         .enabledPlugins = ((.enabledPlugins // {}) + $managed[0].enabledPlugins) |
         .extraKnownMarketplaces = ((.extraKnownMarketplaces // {}) + $managed[0].extraKnownMarketplaces) |
