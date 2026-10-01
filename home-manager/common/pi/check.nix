@@ -1,6 +1,6 @@
-{runCommand, nodejs_24, bash, coreutils}:
+{runCommand, nodejs_24, python3, bash, coreutils}:
 runCommand "check-pi-tools" {
-  nativeBuildInputs = [nodejs_24 bash coreutils];
+  nativeBuildInputs = [nodejs_24 python3 bash coreutils];
 } ''
   mkdir -p node_modules/@earendil-works/pi-coding-agent
   cat > node_modules/@earendil-works/pi-coding-agent/package.json <<'EOF'
@@ -20,6 +20,8 @@ EOF
   cp ${./extensions/rtk/rtk.ts} rtk.ts
   cp ${./scripts/pi-package-update} pi-package-update
   cp ${./scripts/pi-package-security-check} pi-package-security-check
+  cp ${./scripts/pi-tmp-rm.py} pi-tmp-rm.py
+  cp ${./extensions/pi-permission-system/config.json} permissions.json
   chmod +x pi-package-update pi-package-security-check
   # The Linux build sandbox does not provide /usr/bin/env.
   substituteInPlace pi-package-update \

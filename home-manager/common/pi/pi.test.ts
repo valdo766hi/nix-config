@@ -3,10 +3,13 @@ import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
 import {
 	chmodSync,
+	existsSync,
 	mkdirSync,
 	mkdtempSync,
 	readFileSync,
+	realpathSync,
 	rmSync,
+	symlinkSync,
 	writeFileSync,
 } from "node:fs";
 import { tmpdir } from "node:os";
@@ -174,6 +177,66 @@ test("yolo command atomically updates the native permission setting", async () =
 	assert.equal(JSON.parse(readFileSync(configPath, "utf8")).yoloMode, false);
 	assert.equal(reloads, 2);
 	rmSync(agentDir, { recursive: true, force: true });
+});
+
+test("permission policy retains hard credential and deletion denials", () => {
+	const { permission, yoloMode } = JSON.parse(readFileSync("permissions.json", "utf8"));
+	assert.equal(yoloMode, false);
+	for (const pattern of ["~/.pi/*", "*/auth.json*", "~/.config/sops*", "~/.kube*"]) {
+		assert.equal(permission.path[pattern], "deny", pattern);
+	}
+	const patterns = Object.keys(permission.path);
+	assert.ok(patterns.indexOf("*/auth.json*") > patterns.indexOf("~/.pi/agent/skills/*"));
+	assert.equal(permission.external_directory["*"], "deny");
+	assert.equal(permission.external_directory["~/.ssh/*"], "allow");
+	for (const tool of ["read", "write", "edit", "grep", "find", "ls"]) {
+		assert.equal(permission[tool]["~/.ssh*"], "deny", tool);
+	}
+	for (const tool of ["write", "edit"]) {
+		assert.equal(permission[tool]["~/.agents/skills/*"], undefined);
+		assert.equal(permission[tool]["~/.pi/agent/skills/*"], "allow");
+		assert.ok(Object.keys(permission[tool]).indexOf("~/.pi/agent/skills/*") >
+			Object.keys(permission[tool]).indexOf("~/.pi/*"));
+	}
+	assert.equal(permission.bash["*.ssh*"], "deny");
+	assert.equal(permission.bash["ssh *"], "ask");
+	assert.equal(permission.bash["rm *"].action, "deny");
+	assert.equal(permission.bash["*/rm *"], "deny");
+	assert.equal(permission.bash["git clean *"], "deny");
+	assert.equal(permission.bash["sudo *"], "deny");
+	assert.equal(permission.bash["pi-tmp-rm *"], "allow");
+});
+
+test("temp cleanup rejects escapes and never follows directory symlinks", () => {
+	const dir = mkdtempSync("/tmp/pi-tmp-rm-");
+	const remove = (...paths: string[]) => run("python3", ["-I", "pi-tmp-rm.py", ...paths], {});
+	try {
+		const file = join(dir, "file with spaces");
+		writeFileSync(file, "temporary fixture\n");
+		for (const path of ["/tmp", "/private/tmp", "/tmp/../nix/store", "/nix/store", "relative", "--help"]) {
+			assert.notEqual(remove(path).status, 0, path);
+		}
+		assert.notEqual(remove(file, "/nix/store").status, 0);
+		assert.ok(existsSync(file), "invalid argument list must not delete its first path");
+
+		const link = join(dir, "link");
+		symlinkSync("/nix/store", link);
+		assert.notEqual(remove(`${link}/anything`).status, 0);
+		assert.equal(remove(link).status, 0, "a leaf symlink is unlinked, never followed");
+		assert.ok(existsSync("/nix/store"));
+
+		assert.equal(remove(realpathSync(file)).status, 0);
+		assert.ok(!existsSync(file));
+		const tree = join(dir, "tree");
+		mkdirSync(join(tree, "nested"), { recursive: true });
+		writeFileSync(join(tree, "nested", "fixture"), "temporary fixture\n");
+		symlinkSync("/nix/store", join(tree, "outside"));
+		assert.equal(remove(tree).status, 0);
+		assert.ok(!existsSync(tree));
+		assert.ok(existsSync("/nix/store"));
+	} finally {
+		rmSync(dir, { recursive: true, force: true });
+	}
 });
 
 test("rtk passes a command through when rewriting fails", async () => {

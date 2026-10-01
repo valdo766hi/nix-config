@@ -93,24 +93,43 @@ pi-package-security-check
 The repair is limited to safe npm fixes and the pinned `fast-uri` override;
 it never uses `npm audit fix --force`.
 
-Pi is launched with an allowlisted environment: only the Context7 and Exa
-credentials needed by its configured MCP servers are passed through from the
-interactive shell. The permission rules are approval UX, not a process
-sandbox; keep the Bash default at `ask` and treat `/yolo` as an explicit
-opt-out.
+Pi is launched with an allowlisted environment: only the Context7, Exa, and
+OpenCode credentials used by its configured servers/providers are forwarded.
+`SSH_AUTH_SOCK` is preserved for normal SSH authentication.
+`TMPDIR=/tmp` keeps new temporary work in the approved cleanup location.
+Outside-project file access is denied except for approved tool/temp paths;
+credential and Pi-state denials still apply with `/yolo` on. The permission
+rules are not a process sandbox: arbitrary programs and extensions retain
+your account's privileges.
 
 Both scripts print stable `[INFO]`, `[PASS]`, `[SKIP]`, `[FAIL]`, `[AUDIT]`,
 and `[VULNERABLE]` messages plus meaningful exit codes so people and AI agents
 can use the same workflow.
 
+## SSH identities
+
+Normal `ssh -i ~/.ssh/<key> <destination>` remains available with Bash approval.
+Built-in file tools deny SSH directory access; Bash commands mentioning `.ssh`
+are denied except for SSH itself. No SSH wrapper or extra prompt is installed.
+These simple rules do not prevent arbitrary shell code or extension tools from
+reading keys; see [the policy limitations](../../../../docs/PI_YOLO.md).
+
+## Temporary cleanup
+
+`pi-tmp-rm /tmp/<file-or-directory>` deletes one temporary entry without flags.
+It refuses the temp root, parent traversal, outside paths, extra arguments,
+and symlinked parents; recursive cleanup does not follow symlinks. Raw deletion
+commands remain denied. See [Pi YOLO mode](../../../../docs/PI_YOLO.md) for
+policy details and limitations.
+
 ## Skill security checks
 
-Pi auto-allows read-only tools for global skills under `~/.agents/skills`, its
-built-in `~/.pi/agent` infrastructure, and Pi-created `pi-clipboard-*` files in
-the operating system's temporary directory. Writes, edits, and helper-script
-execution outside the working directory still require the normal external-path
-approval. Existing path denials for secrets such as `.env`, SSH keys, and cloud
-credentials still take precedence.
+Pi permits reads of global skills under `~/.agents/skills`, selected Pi
+package/skill directories, and Pi-created `pi-clipboard-*` temporary files.
+Broad Pi-state scans and credential paths are denied before infrastructure
+auto-allow applies. Skills under `~/.agents/skills` and `~/.pi/agent/skills`
+may be written and edited; other Pi state remains protected. Outside-project
+access otherwise requires an allowlisted path.
 
 Scan one skill or a directory containing multiple skills:
 

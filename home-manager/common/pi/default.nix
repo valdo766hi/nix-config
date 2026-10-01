@@ -9,6 +9,8 @@
     text = ''
       exec env -i \
         HOME="$HOME" \
+        TMPDIR=/tmp \
+        SSH_AUTH_SOCK="''${SSH_AUTH_SOCK:-}" \
         PATH="$PATH" \
         TERM="''${TERM:-xterm-256color}" \
         LANG="''${LANG:-}" \
@@ -36,10 +38,16 @@
     ];
     text = builtins.readFile ./scripts/skill-sec-check.sh;
   };
+  piTmpRm = pkgs.writeShellApplication {
+    name = "pi-tmp-rm";
+    text = ''
+      exec ${pkgs.python3}/bin/python3 -I ${./scripts/pi-tmp-rm.py} "$@"
+    '';
+  };
 in {
   imports = [ ./subagent ];
 
-  home.packages = [skillSecCheck];
+  home.packages = [skillSecCheck piTmpRm];
 
   home.file = {
     # The flake-provided Pi is a standalone binary, so keep subagents in-process.
