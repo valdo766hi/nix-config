@@ -1,11 +1,33 @@
 {
+  config,
   pkgs,
   lib,
   ...
 }: let
-  commonAliases = {
-    rebuild = "${if pkgs.stdenv.hostPlatform.isLinux then "cd ~/.config/nix && sudo nixos-rebuild switch --flake .#thinker" else "cd ~/.config/nix && sudo darwin-rebuild switch --flake .#Rivaldos-MacBook-Pro"}";
-    update-flake = "cd ~/.config/nix && nix flake update";
+  commonAliases =
+    {
+      rebuild =
+        if pkgs.stdenv.hostPlatform.isLinux
+        then "cd ~/.config/nix && sudo nixos-rebuild switch --flake .#thinker"
+        else "cd ~/.config/nix && sudo darwin-rebuild switch --flake .#Rivaldos-MacBook-Pro";
+      update-flake = "cd ~/.config/nix && nix flake update";
+      cd = "z";
+    }
+    // lib.optionalAttrs pkgs.stdenv.hostPlatform.isLinux {
+      bjg = "echo I use NixOS, BTW";
+    };
+
+  shellSecretsPath =
+    if pkgs.stdenv.hostPlatform.isDarwin
+    then "/run/secrets/rendered/shell-secrets"
+    else "$HOME/.config/shell-secrets.env";
+  shellSecretsSource = ''
+    if [ -r "${shellSecretsPath}" ]; then
+      . "${shellSecretsPath}"
+    fi
+  '';
+in {
+  home.shellAliases = {
     g = "git";
     gs = "git status";
     ga = "git add";
@@ -15,26 +37,10 @@
     ll = "ls -la";
     vim = "nvim";
     nv = "nvim";
-    cd = "z";
     ff = "fastfetch";
     k = "kubectl";
-  } // lib.optionalAttrs pkgs.stdenv.hostPlatform.isLinux {
-    bjg = "echo I use NixOS, BTW";
   };
 
-  shellSecretsSource =
-    if pkgs.stdenv.hostPlatform.isDarwin
-    then ''
-      if [ -r /run/secrets/rendered/shell-secrets ]; then
-        . /run/secrets/rendered/shell-secrets
-      fi
-    ''
-    else ''
-      if [ -r "$HOME/.config/shell-secrets.env" ]; then
-        . "$HOME/.config/shell-secrets.env"
-      fi
-    '';
-in {
   programs.bash = {
     enable = true;
     bashrcExtra = shellSecretsSource;
@@ -44,6 +50,7 @@ in {
 
   programs.zsh = {
     enable = true;
+    dotDir = config.home.homeDirectory;
     envExtra = shellSecretsSource;
     shellAliases = commonAliases;
   };
@@ -106,10 +113,7 @@ in {
         echo "Sourced $envfile"
       end
 
-      set -l shell_secrets_path ~/.config/shell-secrets.env
-      ${lib.optionalString pkgs.stdenv.hostPlatform.isDarwin ''
-        set shell_secrets_path /run/secrets/rendered/shell-secrets
-      ''}
+      set -l shell_secrets_path "${shellSecretsPath}"
 
       if test -f $shell_secrets_path
         envsource $shell_secrets_path >/dev/null

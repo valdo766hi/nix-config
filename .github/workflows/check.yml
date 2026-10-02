@@ -9,7 +9,9 @@ permissions:
   contents: read
 
 concurrency:
-  group: check-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}-${{ github.event_name }}
+  group: >-
+    check-${{ github.workflow }}-${{
+    github.event.pull_request.number || github.ref }}-${{ github.event_name }}
   cancel-in-progress: true
 
 jobs:
@@ -21,7 +23,9 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           persist-credentials: false
-      - uses: DeterminateSystems/nix-installer-action@ef8a148080ab6020fd15196c2084a2eea5ff2d25 # v22
+      # nix-installer-action v22
+      - uses: "DeterminateSystems/nix-installer-action@\
+          ef8a148080ab6020fd15196c2084a2eea5ff2d25"
       - run: nix flake check --all-systems --no-build --accept-flake-config
 
   lightweight-checks:
@@ -33,7 +37,9 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           persist-credentials: false
-      - uses: DeterminateSystems/nix-installer-action@ef8a148080ab6020fd15196c2084a2eea5ff2d25 # v22
+      # nix-installer-action v22
+      - uses: "DeterminateSystems/nix-installer-action@\
+          ef8a148080ab6020fd15196c2084a2eea5ff2d25"
       - run: |
           nix build \
             --no-link \
@@ -46,7 +52,8 @@ jobs:
             .#checks.x86_64-linux.lazygit \
             .#checks.x86_64-linux.pi \
             .#checks.x86_64-linux.pi-fast-extension \
-            .#checks.x86_64-linux.pi-tools
+            .#checks.x86_64-linux.pi-tools \
+            .#checks.x86_64-linux.nushell-config
 
   full-home-profile:
     name: Build full Linux home profile (manual)
@@ -57,7 +64,9 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           persist-credentials: false
-      - uses: DeterminateSystems/nix-installer-action@ef8a148080ab6020fd15196c2084a2eea5ff2d25 # v22
+      # nix-installer-action v22
+      - uses: "DeterminateSystems/nix-installer-action@\
+          ef8a148080ab6020fd15196c2084a2eea5ff2d25"
       - run: |
           nix build \
             --no-link \

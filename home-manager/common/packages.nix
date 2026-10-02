@@ -8,7 +8,6 @@
 in {
   home.packages = with pkgs; [
     # CLI
-    nushell
     btop
     pwgen
     nodejs
