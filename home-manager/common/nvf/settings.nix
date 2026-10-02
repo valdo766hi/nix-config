@@ -84,7 +84,6 @@ in {
         ffmpegthumbnailer
         ripgrep
         fd
-        lazygit
         delta
         nil
         nixd

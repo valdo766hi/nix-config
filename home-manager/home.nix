@@ -3,9 +3,8 @@
     ./common/default.nix
   ];
 
-  home = {
-    username = "rivaldo";
-  };
+  home.username = "rivaldo";
+  xdg.enable = true;
 
   # Let home-manager manage itself
   programs.home-manager.enable = true;

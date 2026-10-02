@@ -20,8 +20,8 @@ in {
     themeToml = home.config.xdg.configFile."yazi/theme.toml".source;
   };
   lazygit = configuredApps.mkLazygit {
-    package = pkgs.lazygit;
-    configFile = home.config.xdg.configFile."lazygit/config.yml".source;
+    package = home.config.programs.lazygit.package;
+    configFile = home.config.home.file."${home.config.xdg.configHome}/lazygit/config.yml".source;
   };
   pi = configuredApps.mkPi {
     package = home.config.programs."pi-coding-agent".package;
