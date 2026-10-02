@@ -1,5 +1,12 @@
-{lib, pkgs, ...}: {
+{
+  inputs,
+  lib,
+  pkgs,
+  ...
+}: {
   imports = [
+    ../home.nix
+    inputs.zen-browser.homeModules.beta
     ./dank-material-shell.nix
     ./niri/default.nix
     ./noctalia-shell.nix

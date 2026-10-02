@@ -1,9 +1,11 @@
 {
+  inputs,
   pkgs,
-  lib,
   ...
 }: {
-  programs.dank-material-shell = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
+  imports = [inputs.dankMaterialShell.homeModules.dank-material-shell];
+
+  programs.dank-material-shell = {
     enable = true;
     quickshell.package = pkgs.quickshell;
 

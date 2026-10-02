@@ -94,177 +94,51 @@
       url = "github:winapps-org/winapps";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
   };
 
-  outputs = {
-    self,
-    nixpkgs,
-    nix-darwin,
-    home-manager,
-    ...
-  } @ inputs: let
+  outputs = inputs @ {nixpkgs, ...}: let
     inherit (nixpkgs) lib;
-    systems = [
+    forAllSystems = lib.genAttrs [
       "x86_64-linux"
       "aarch64-darwin"
     ];
-    forAllSystems = lib.genAttrs systems;
-    specialArgs = {inherit inputs;};
-    mkPkgs = system:
+    pkgsFor = forAllSystems (system:
       import nixpkgs {
         inherit system;
         config.allowUnfree = true;
-      };
-    commonHomeModules = [./home-manager/home.nix];
-    linuxHomeModules =
-      commonHomeModules
-      ++ [
-        # Note: niri home module is provided via NixOS module integration
-        inputs.dankMaterialShell.homeModules.dank-material-shell
-        inputs.noctalia.homeModules.default
-        inputs.zen-browser.homeModules.beta
-        inputs.nvf.homeManagerModules.default
-        inputs.vicinae.homeManagerModules.default
-        ./home-manager/nixos/default.nix
-      ];
-    darwinHomeModules =
-      commonHomeModules
-      ++ [
-        inputs.nvf.homeManagerModules.default
-        ./home-manager/darwin/default.nix
-      ];
-    mkHomeManagerModule = modules: {
-      home-manager = {
-        useGlobalPkgs = true;
-        useUserPackages = true;
-        backupFileExtension = "hm-bak";
-        users.rivaldo.imports = modules;
-        extraSpecialArgs = specialArgs;
-      };
-    };
-    mkHomeConfiguration = {
-      system,
-      modules,
-    }:
-      home-manager.lib.homeManagerConfiguration {
-        pkgs = mkPkgs system;
-        inherit modules;
-        extraSpecialArgs = specialArgs;
-      };
-    homeConfigurations = {
-      "rivaldo@thinker" = mkHomeConfiguration {
-        system = "x86_64-linux";
-        modules = linuxHomeModules;
-      };
-      "rivaldo@Rivaldos-MacBook-Pro" = mkHomeConfiguration {
-        system = "aarch64-darwin";
-        modules = darwinHomeModules;
-      };
-    };
-  in {
-    nixosConfigurations = {
-      thinker = lib.nixosSystem {
-        inherit specialArgs;
-        modules = [
-          ./hosts/nixos/thinker/configuration.nix
-          home-manager.nixosModules.home-manager
-          (mkHomeManagerModule linuxHomeModules)
-        ];
-      };
-    };
-
-    darwinConfigurations = {
-      "Rivaldos-MacBook-Pro" = nix-darwin.lib.darwinSystem {
-        system = "aarch64-darwin";
-        inherit specialArgs;
-        modules = [
-          ./hosts/darwin/configuration.nix
-          home-manager.darwinModules.home-manager
-          (mkHomeManagerModule darwinHomeModules)
-        ];
-      };
-    };
-
-    nixosModules = {
-      common = ./modules/nixos/common/default.nix;
-      desktop = ./modules/nixos/desktop.nix;
-      secrets = ./modules/nixos/secrets.nix;
-      virtualisation = ./modules/nixos/virtualisation.nix;
-    };
-
-    darwinModules = {
-      aerospace = ./modules/darwin/aerospace/default.nix;
-      common = ./modules/darwin/common/default.nix;
-      homebrew = ./modules/darwin/homebrew/default.nix;
-      omniwm = ./modules/darwin/omniwm/default.nix;
-      secrets = ./modules/darwin/secrets.nix;
-    };
-
-    packages = forAllSystems (system:
-      let
-        pkgs = mkPkgs system;
-        home = {
-          "x86_64-linux" = homeConfigurations."rivaldo@thinker";
-          "aarch64-darwin" = homeConfigurations."rivaldo@Rivaldos-MacBook-Pro";
-        }.${system};
-        configuredApps = import ./pkgs/configured-apps {inherit lib pkgs;};
-        rtk = pkgs.callPackage ./pkgs/rtk {};
-      in {
-        inherit rtk;
-        home-manager = home-manager.packages.${system}.home-manager;
-        default = rtk;
-        neovim = configuredApps.mkNeovim {
-          package = home.config.programs.nvf.finalPackage;
-        };
-        yazi = configuredApps.mkYazi {
-          package = home.config.programs.yazi.package;
-          yaziToml = home.config.xdg.configFile."yazi/yazi.toml".source;
-          themeToml = home.config.xdg.configFile."yazi/theme.toml".source;
-        };
-        lazygit = configuredApps.mkLazygit {
-          package = pkgs.lazygit;
-          configFile = home.config.xdg.configFile."lazygit/config.yml".source;
-        };
-        pi = configuredApps.mkPi {
-          package = home.config.programs."pi-coding-agent".package;
-        };
-        pig = configuredApps.mkPiG {
-          package = pkgs.callPackage ./pkgs/pig {};
-        };
       });
-
-    checks.x86_64-linux = {
-      configurations = let
-        pkgs = nixpkgs.legacyPackages.x86_64-linux;
-      in
-        assert self.nixosConfigurations.thinker.config.system.build.toplevel.drvPath != "";
-        assert self.darwinConfigurations."Rivaldos-MacBook-Pro".system.drvPath != "";
-        pkgs.runCommand "check-configurations" {} "touch $out";
-      inherit (self.packages.x86_64-linux) rtk neovim yazi lazygit pi pig;
-
-      pig-config = let
-        pkgs = nixpkgs.legacyPackages.x86_64-linux;
-        files = self.homeConfigurations."rivaldo@thinker".config.home.file;
-      in pkgs.runCommand "check-pig-config" {nativeBuildInputs = [pkgs.jq];} ''
-        jq -e '.defaultTools == [] and .theme == "catppuccin-mocha" and .defaultProvider == "openai-codex"' ${files.".pig/agent/settings.json".source} > /dev/null
-        jq -e '.name == "catppuccin-mocha"' ${files.".pig/agent/themes/catppuccin-mocha.json".source} > /dev/null
-        test -s ${files.".pig/agent/APPEND_SYSTEM.md".source}
-        touch $out
-      '';
-
-      home-profile = self.homeConfigurations."rivaldo@thinker".activationPackage;
-
-      pi-fast-extension =
-        nixpkgs.legacyPackages.x86_64-linux.callPackage
-        ./home-manager/common/pi/extensions/fast/check.nix {};
-
-      pi-tools =
-        nixpkgs.legacyPackages.x86_64-linux.callPackage
-        ./home-manager/common/pi/check.nix {};
+    homeConfigurations = import ./outputs/home.nix {inherit inputs pkgsFor;};
+    homes = {
+      "x86_64-linux" = homeConfigurations."rivaldo@thinker";
+      "aarch64-darwin" = homeConfigurations."rivaldo@Rivaldos-MacBook-Pro";
     };
+  in
+    (import ./outputs/hosts.nix {inherit inputs;})
+    // {
+      inherit homeConfigurations;
 
-    inherit homeConfigurations;
+      nixosModules = {
+        common = ./modules/nixos/common/default.nix;
+        desktop = ./modules/nixos/desktop.nix;
+        secrets = ./modules/nixos/secrets.nix;
+        virtualisation = ./modules/nixos/virtualisation.nix;
+      };
 
-  };
+      darwinModules = {
+        aerospace = ./modules/darwin/aerospace/default.nix;
+        common = ./modules/darwin/common/default.nix;
+        homebrew = ./modules/darwin/homebrew/default.nix;
+        omniwm = ./modules/darwin/omniwm/default.nix;
+        secrets = ./modules/darwin/secrets.nix;
+      };
+
+      packages = forAllSystems (system:
+        import ./outputs/packages.nix {
+          inherit inputs;
+          pkgs = pkgsFor.${system};
+          home = homes.${system};
+        });
+
+      checks = import ./outputs/checks.nix {inherit inputs;};
+    };
 }

@@ -1,6 +1,11 @@
-{pkgs, lib, inputs, ...}:
 {
-  programs.vicinae = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
+  inputs,
+  pkgs,
+  ...
+}: {
+  imports = [inputs.vicinae.homeManagerModules.default];
+
+  programs.vicinae = {
     enable = true;
     systemd = {
       enable = true;
