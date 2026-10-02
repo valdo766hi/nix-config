@@ -2,7 +2,7 @@
 set -euo pipefail
 
 PI_NPM_DIR="${PI_NPM_DIR:-${PI_AGENT_DIR:-$HOME/.pi/agent}/npm}"
-FAST_URI_VERSION="${PI_FAST_URI_VERSION:-3.1.7}"
+FAST_URI_VERSION="${PI_FAST_URI_VERSION:-3.1.8}"
 TEMP_DIR=""
 AUDIT_OUTPUT=""
 
@@ -142,7 +142,7 @@ repair_installed() {
   info "Applying safe npm audit fixes to $PI_NPM_DIR"
   apply_npm_overrides "$PI_NPM_DIR/package.json"
   set +e
-  (cd "$PI_NPM_DIR" && npm audit fix --include=dev --ignore-scripts)
+  (cd "$PI_NPM_DIR" && npm audit fix --include=dev --ignore-scripts --legacy-peer-deps)
   status=$?
   set -e
   if [[ $status -gt 1 ]]; then
@@ -204,7 +204,7 @@ NODE
 
   info "Applying safe transitive dependency fixes"
   set +e
-  (cd "$TEMP_DIR" && npm audit fix --include=dev --package-lock-only --ignore-scripts)
+  (cd "$TEMP_DIR" && npm audit fix --include=dev --package-lock-only --ignore-scripts --legacy-peer-deps)
   fix_status=$?
   set -e
   if [[ $fix_status -ne 0 ]]; then

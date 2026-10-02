@@ -128,6 +128,30 @@ exit 99
 	rmSync(dir, { recursive: true, force: true });
 });
 
+test("candidate checks pin patched fast-uri without installing Pi host peers", () => {
+	const dir = tempDir("pi-candidate-peers-");
+	const tree = join(dir, "tree");
+	mkdirSync(tree);
+	writeFileSync(join(tree, "package.json"), '{"dependencies":{"test-package":"1.0.0"}}\n');
+	writeFileSync(join(tree, "package-lock.json"), "{}\n");
+	executable(join(dir, "npm"), `#!/bin/sh
+if [ "$1" = install ] || [ "$2" = fix ]; then
+  case " $* " in *" --legacy-peer-deps "*) ;; *) exit 99 ;; esac
+  case " $* " in *" --ignore-scripts "*) ;; *) exit 99 ;; esac
+  node -e 'if (require("./package.json").overrides["fast-uri"] !== "3.1.8") process.exit(99)'
+  exit $?
+fi
+printf '%s\\n' '{"metadata":{"vulnerabilities":{"total":0}},"vulnerabilities":{}}'
+`);
+	const result = run("./pi-package-security-check", ["--candidate", "test-package@2.0.0"], {
+		PATH: `${dir}:${process.env.PATH}`,
+		PI_NPM_DIR: tree,
+		PI_FAST_URI_VERSION: "",
+	});
+	assert.equal(result.status, 0, result.stderr);
+	rmSync(dir, { recursive: true, force: true });
+});
+
 test("yolo command atomically updates the native permission setting", async () => {
 	const agentDir = tempDir("pi-yolo-");
 	const configDir = join(agentDir, "extensions", "pi-permission-system");

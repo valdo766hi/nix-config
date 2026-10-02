@@ -22,8 +22,9 @@ upgrades, run:
 pi-package-security-check --repair
 ```
 
-This applies the repository's safe npm overrides, runs `npm audit fix` with
-install scripts and `--force` disabled, then audits the repaired tree.
+This applies the repository's `fast-uri@3.1.8` override, runs `npm audit fix`
+with install scripts and `--force` disabled, then audits the repaired tree.
+Peer installation stays disabled, matching Pi: Pi supplies its own host APIs.
 
 Exit codes distinguish the outcomes:
 
@@ -41,8 +42,8 @@ pi-package-security-check --candidate \
 ```
 
 Candidate versions must be exact semantic versions. The script copies the
-current manifest and lockfile to a temporary directory, applies the safe
-`fast-uri` override, simulates all supplied updates with install scripts
+current manifest and lockfile to a temporary directory, applies the
+`fast-uri@3.1.8` override, simulates all supplied updates with install scripts
 disabled, repairs semver-compatible transitive dependencies, and audits the
 resulting combined tree. It does not change the live installation.
 
