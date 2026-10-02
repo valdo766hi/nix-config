@@ -77,21 +77,20 @@ in {
     ".pi/agent/APPEND_SYSTEM.md".source = ../agent-instructions.md;
   };
 
-  xdg.configFile."mcp/mcp.json".text = builtins.toJSON {
-    settings = {
-      mcpFooterStatus = "compact";
-      scriptMode = true;
-    };
-
+  # Trial of Pi's built-in MCP; restore pi-mcp-adapter by re-enabling its
+  # package pin, -builtin:mcp, and ~/.config/mcp/mcp.json with these servers.
+  home.file.".pi/agent/mcp.json".text = builtins.toJSON {
     mcpServers = {
       context7 = {
         url = "https://mcp.context7.com/mcp";
         headers.Authorization = "Bearer \${CONTEXT7_API_KEY}";
+        description = "Current library and framework documentation";
       };
 
       exa = {
         url = "https://mcp.exa.ai/mcp";
         headers."x-api-key" = "\${EXA_API_KEY}";
+        description = "Web search and page content";
       };
     };
   };
@@ -111,7 +110,7 @@ in {
       defaultTools = ["+codemode"];
       packages = [
         "npm:pi-lens@4.3.0"
-        "npm:pi-mcp-adapter@5.0.0"
+        # npm:pi-mcp-adapter@5.0.0 (unquoted so pi-package-update skips it)
         "git:github.com/algal/pi-openai-server-compaction@8a3de2f3b0c178fdd6f73f2f94172dfc3943e466"
         "npm:@plannotator/pi-extension@0.27.25"
         "npm:pi-subagents@0.74.0"

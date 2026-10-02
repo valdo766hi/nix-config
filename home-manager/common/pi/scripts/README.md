@@ -120,6 +120,30 @@ Both scripts print stable `[INFO]`, `[PASS]`, `[SKIP]`, `[FAIL]`, `[AUDIT]`,
 and `[VULNERABLE]` messages plus meaningful exit codes so people and AI agents
 can use the same workflow.
 
+## MCP ownership
+
+Pi's built-in MCP is on trial in place of `pi-mcp-adapter`. Home Manager writes
+Context7 and Exa to `~/.pi/agent/mcp.json`; their keys come from the launcher's
+`CONTEXT7_API_KEY` and `EXA_API_KEY`. Tools are named
+`mcp__context7__*` and `mcp__exa__*` and are called from codemode scripts.
+
+```sh
+pi mcp list
+```
+
+The file is read-only, so make enable/exposure changes in
+[`default.nix`](../default.nix), not through `/mcp`. The permission policy's
+`mcp` rules apply only to the adapter's umbrella tool; built-in MCP tools fall
+under its top-level `"*": "allow"` rule.
+
+To return to the adapter, restore its quoted package pin, add
+`extensions = ["-builtin:mcp"]`, and move the servers back to
+`~/.config/mcp/mcp.json`. Never use both: each registers `/mcp`, and the
+adapter cannot disable the built-in through the read-only settings file.
+
+The `fast-uri`/`ajv` chain comes only from the adapter. After activation, recheck
+whether the `fast-uri` override is still needed.
+
 ## SSH identities
 
 Normal `ssh -i ~/.ssh/<key> <destination>` remains available with Bash approval.
