@@ -1,5 +1,7 @@
 # Pi YOLO mode
 
+[Documentation index](./README.md) · [Package maintenance](../home-manager/common/pi/scripts/README.md)
+
 This repository's `/yolo` command provides fast approval for permission checks
 without disabling the permission policy's explicit denials.
 
@@ -11,19 +13,27 @@ without disabling the permission policy's explicit denials.
 /yolo off   # disable
 ```
 
-After changing the mode, the extension reloads Pi so the permission system
-sees the updated setting immediately. Restart Pi after a Home Manager
-activation.
+After changing the mode, the extension saves session-local state and reloads
+Pi to reattach the approval overlay. It does not change the permission-system
+configuration. Restart Pi after a Home Manager activation to load updated
+packages and settings.
 
 ## What YOLO changes
 
-YOLO uses the native `@gotgenes/pi-permission-system` `yoloMode` behavior:
+The published `@valdo766hi/pi-yolo` package listens for the permission system's
+`permissions:ui_prompt` event and approves the matching permission dialog. The
+native policy evaluates first; final denials do not open an approval prompt.
+Keep native `yoloMode` disabled—this overlay is separate from that global mode.
 
 | Policy result | YOLO off | YOLO on |
 | --- | --- | --- |
 | `allow` | allowed | allowed |
-| `ask` | prompts or follows the configured authorizer | allowed |
+| `ask` | prompts or follows the configured authorizer | matching UI prompts auto-approved |
 | `deny` | blocked | blocked |
+
+The overlay is a best-effort UI integration, not a replacement for permission
+evaluation. Do not assume it approves noninteractive requests or custom
+authorizers that do not show a supported dialog.
 
 Outside-project reads, writes, and commands require approval with YOLO off
 and are auto-approved with YOLO on. Temporary entries, the Nix store, selected
@@ -49,7 +59,7 @@ The permission policy continues to deny, among other things:
 - forced Git pushes and hard resets.
 
 The source policy is
-`home-manager/common/pi/extensions/pi-permission-system/config.json`.
+[`config.json`](../home-manager/common/pi/extensions/pi-permission-system/config.json).
 
 ## SSH authentication
 
@@ -98,21 +108,20 @@ also approves the Bash fallback. Use trusted extensions, keep YOLO off for
 untrusted work, run Pi from a project directory (not home), and use process
 isolation for a hard credential or deletion boundary.
 
-## How it is wired
+## State and configuration
 
-- The published `@valdo766hi/pi-yolo` package registers the command and stores
-  `yolo-state` in the current Pi session.
-- `home-manager/common/pi/extensions/pi-permission-system/config.json` keeps
-  native `yoloMode` disabled by default.
-- `/yolo` updates the live permission-system config atomically at
-  `~/.pi/agent/extensions/pi-permission-system/config.json` and reloads Pi.
-- Home Manager installs the package through the Pi settings in
-  `home-manager/common/pi/default.nix`.
+Home Manager selects the published package in
+[`home-manager/common/pi/default.nix`](../home-manager/common/pi/default.nix).
+The repository's local `extensions/yolo/yolo.ts` is not the loaded implementation.
 
-Because Home Manager manages the live config path, a later activation can
-restore the declared default (`yoloMode: false`). That is intentional: the
-repository remains safe by default, and the session command can enable YOLO
-again when needed.
+The package stores the toggle at `~/.pi/agent/yolo-state/<session-id>.json`.
+The same session restores it after reload, restart, resume, or compaction;
+a new session, fork, or subagent starts off. Turning it on in one session does
+not enable it globally.
+
+The managed permission config stays at `yoloMode: false`. Neither `/yolo` nor
+its overlay writes that config or the permission map. Home Manager activation
+does not reset the separate session toggle.
 
 ## Troubleshooting
 
@@ -120,8 +129,11 @@ again when needed.
 2. Check the footer for `YOLO: ON`.
 3. If an external path still prompts, restart Pi after Home Manager activation
    and try again.
-4. Use `/permission-system show` to inspect the active native setting after the
-   next agent turn.
+4. Use `/permission-system show` to inspect the native policy. Its
+   `yoloMode: false` is expected even when the footer says `YOLO: ON`.
+5. If the footer says `YOLO: ERROR`, inspect the reported session state file
+   manually. Invalid state triggers best-effort blocking and aborts; do not
+   bypass the permission system to continue.
 
 If a protected path or command is still blocked in YOLO mode, that is expected
 when a `deny` rule matched it. Do not weaken the deny rule merely to make YOLO

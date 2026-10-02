@@ -1,16 +1,45 @@
 # PiG alongside Pi
 
-`pi` remains the existing upstream Pi. `pig` is PiG 0.2.0 (Pi 0.87.1 parity target), installed from SHA-256-pinned upstream archives by `pkgs/pig/default.nix` for `x86_64-linux` and `aarch64-darwin`. Home Manager supplies its filtered launcher and separate `~/.pig/agent` settings. Nothing links or copies `~/.pi` into `~/.pig`.
+[Documentation index](./README.md) · [Maintenance](MAINTENANCE.md)
 
-The shared `agent-instructions.md` and Catppuccin theme source are reused as PiG's `APPEND_SYSTEM.md` and theme. PiG has the same provider/model, thinking level, fullscreen and thinking visibility settings. It requires its **own** mutable OAuth login (`pig login openai-codex`); do not copy Pi's `auth.json`. Sessions, history, packages, caches and trust decisions remain independent. The launcher passes only the same selected variables as Pi, sets `PIG_HOME=$HOME/.pig` (regardless of `XDG_CONFIG_HOME`) and opts out of PiG install telemetry.
+**PiG is currently chat-only, not a replacement for Pi's coding workflow.**
 
-**Safety stop:** PiG 0.2.0 fails to register the pinned permission-system extension. Until its ask/deny behavior can be tested, `defaultTools = []` and no Pi extensions are selected. `pig` can chat after independent login but cannot safely replace Pi for coding yet. Manually passing `--tools` bypasses this safeguard; PiG is not a sandbox. Project/user skills may still be discovered through PiG's normal rules. Do not enable permission, YOLO, MCP or other extensions merely because they install or register.
+`pi` remains upstream Pi. `pig` is PiG 0.2.0 (Pi 0.87.1 parity target), installed
+from SHA-256-pinned archives by
+[`pkgs/pig/default.nix`](../pkgs/pig/default.nix) for `x86_64-linux` and
+`aarch64-darwin`. Its
+[Home Manager module](../home-manager/common/pig/default.nix) supplies a filtered
+launcher and separate `~/.pig/agent` settings. Nothing links or copies `~/.pi`
+into `~/.pig`.
 
-## Compatibility evidence
+## Isolation and safety
 
-These tests used PiG's official 0.2.0 darwin-arm64 binary, an isolated `PIG_HOME` under `/tmp`, and the repository's exact Pi package pins. `pig install --validate-only --json` tests registration, **not** behavior. No provider, interactive TUI, MCP or permission-policy integration test was run; untested behavior is not counted as compatible.
+The shared `agent-instructions.md` and Catppuccin source are reused for PiG's
+`APPEND_SYSTEM.md` and theme. Provider/model, thinking, fullscreen, and thinking
+visibility settings match Pi. PiG requires its **own** OAuth login
+(`pig login openai-codex`); do not copy Pi's `auth.json`.
 
-| Component | Pi | PiG | Status | Evidence / limitation |
+Sessions, history, packages, caches, and trust decisions remain independent.
+The [launcher](../pkgs/configured-apps/default.nix) filters its environment,
+sets `PIG_HOME=$HOME/.pig` regardless of `XDG_CONFIG_HOME`, and opts out of
+install telemetry.
+
+**Safety stop:** PiG 0.2.0 failed permission-system registration in the earlier tests below; current Pi pins have not been verified with PiG. Until its ask/deny behavior can be tested, `defaultTools = []` and no Pi extensions are selected. `pig` can chat after independent login but cannot safely replace Pi for coding yet. Manually passing `--tools` bypasses this safeguard; PiG is not a sandbox. Project/user skills may still be discovered through PiG's normal rules. Do not enable permission, YOLO, MCP or other extensions merely because they install or register.
+
+## Compatibility evidence (historical)
+
+The table records earlier tests with PiG's official 0.2.0 darwin-arm64 binary
+and an isolated `PIG_HOME` under `/tmp`. Listed versions are **tested versions,
+not the current Pi pins**. Later Pi/package updates have not been retested here;
+do not silently apply these results to them. Current pins live in
+[`home-manager/common/pi/default.nix`](../home-manager/common/pi/default.nix).
+
+`pig install --validate-only --json` tests registration, **not** behavior.
+No authenticated provider request, real-session interactive TUI, MCP, or
+permission-policy integration test was run; untested behavior is not counted
+as compatible.
+
+| Tested component | Pi (then) | PiG enabled | Status | Evidence / limitation |
 |---|---|---|---|---|
 | Core / TUI | yes | installed | PARTIALLY_COMPATIBLE | Binary reports `0.2.0+0.87.1`; RPC started with zero model tools; fullscreen started in a pseudo-terminal with a test model, not visually verified. |
 | OpenAI Codex OAuth | yes | supported | NOT_TESTED | `pig login openai-codex` is documented; independent login not performed. Never switched to API-billed OpenAI. |
@@ -37,6 +66,21 @@ The PiG Node bridge executes extensions in subprocesses rather than Pi's in-proc
 
 ## Try and remove
 
-Evaluate without activating: `nix flake check --all-systems --no-build`. Run the Nix-managed executable from this checkout with `nix run .#pig -- --version`. After **you** apply the reviewed configuration on your Mac using `sudo darwin-rebuild switch --flake .#Rivaldos-MacBook-Pro`, run `pig login openai-codex` and then `pig`. On Linux use your usual NixOS activation. Neither login nor activation is performed by this repository change.
+Check the packaged binary without activation:
+
+```sh
+nix run .#pig -- --version
+```
+
+After [manual activation](MAINTENANCE.md#apply-manually-on-the-target-host),
+log in separately and start a chat:
+
+```sh
+pig login openai-codex
+pig
+```
+
+Do not enable coding tools until the permission integration has passed behavior
+tests with the selected package versions.
 
 To remove PiG, delete the import of `./pig/default.nix` from `home-manager/common/default.nix` and activate your reviewed configuration again. Leave `~/.pig` intact unless you separately decide to remove its mutable state. Pi and its `~/.pi` tree are unaffected.

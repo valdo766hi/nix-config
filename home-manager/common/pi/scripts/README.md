@@ -1,5 +1,7 @@
 # Pi package maintenance
 
+[Documentation index](../../../../docs/README.md) · [Repository maintenance](../../../../docs/MAINTENANCE.md)
+
 These scripts make Pi package updates audit-first and keep the Home Manager
 module as the source of truth.
 
@@ -41,13 +43,14 @@ Exit codes distinguish the outcomes:
 ## Candidate security check
 
 ```sh
-pi-package-security-check --candidate pi-lens@3.8.71
+pi-package-security-check --candidate pi-lens@4.3.0
 pi-package-security-check --candidate \
-  pi-lens@3.8.71 \
-  @plannotator/pi-extension@0.24.2
+  pi-lens@4.3.0 \
+  @plannotator/pi-extension@0.27.25
 ```
 
-Candidate versions must be exact semantic versions. The script copies the
+The versions above are examples, not a promise that they remain advisory-free.
+Use the exact target versions you are reviewing. The script copies the
 current manifest and lockfile to a temporary directory, applies the
 `fast-uri@3.1.8` override, simulates all supplied updates with install scripts
 disabled, repairs semver-compatible transitive dependencies, and audits the

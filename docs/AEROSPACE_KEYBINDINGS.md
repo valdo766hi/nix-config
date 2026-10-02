@@ -1,6 +1,11 @@
-# AeroSpace Keybindings Reference
+# AeroSpace keybindings (inactive alternative)
 
-AeroSpace is a tiling window manager for macOS using `Alt` as the modifier key.
+[Documentation index](./README.md) · [Active OmniWM bindings](OMNIWM_KEYBINDINGS.md)
+
+The current Mac host imports OmniWM, **not** AeroSpace. This reference describes
+[`modules/darwin/aerospace/default.nix`](../modules/darwin/aerospace/default.nix)
+if you deliberately choose that alternative. Do not enable both window managers
+at once. `Alt` means the macOS Option key.
 
 ## Focus Movement
 
@@ -96,7 +101,7 @@ AeroSpace is a tiling window manager for macOS using `Alt` as the modifier key.
 
 | Keybind | Action |
 |---------|--------|
-| `Alt+Shift+Esc` | Lock screen |
+| `Alt+Shift+Esc` | Sleep displays (`pmset displaysleepnow`) |
 
 ## Floating Apps
 
@@ -113,4 +118,6 @@ These apps open as floating windows:
 
 ---
 
-**Note:** `start-at-login` is currently set to `false` in `modules/darwin/aerospace/default.nix`.
+The module sets `start-at-login = false`; nix-darwin's service owns startup
+when the module is enabled. Display sleep is not an explicit lock command;
+actual locking depends on macOS's password-after-sleep settings.

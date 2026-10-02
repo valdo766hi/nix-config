@@ -1,194 +1,129 @@
-# Unified NixOS + nix-darwin Config
+# Nix config
 
-This repository manages my Linux and macOS machines from one flake.
+One flake for my NixOS and macOS machines: thin hosts, explicit modules, and a
+shared Home Manager base. Inspired by
+[gvolpe/nix-config](https://github.com/gvolpe/nix-config).
 
-The design is simple:
-
-- keep host files thin
-- keep reusable logic in modules
-- keep Home Manager shared-first
-- keep secrets encrypted with `sops-nix`
+This is a personal configuration, not an installation template. Before
+adapting it, review usernames, home directories, hardware, and secret paths.
 
 ## Hosts
 
-- NixOS: `thinker`
-- Darwin: `Rivaldos-MacBook-Pro`
+| Host | System | Desktop |
+| --- | --- | --- |
+| `thinker` | `x86_64-linux` · NixOS | Niri + DankMaterialShell |
+| `Rivaldos-MacBook-Pro` | `aarch64-darwin` · nix-darwin | OmniWM |
 
-## Directory guide
+Both hosts share nvf Neovim, Nushell/Fish, Starship, Yazi, LazyGit, Pi, and RTK.
+Noctalia is an optional Linux shell; AeroSpace is an inactive macOS alternative.
 
-- `flake.nix` - inputs, supported systems, and public outputs
-- `outputs/` - construction of hosts, Home Manager profiles, packages, and checks
-- `caches.nix` - shared host cache URLs and trusted keys
-- `.github/workflows/check.yml` - deterministic flake validation in CI
-- `hosts/` - minimal host wrappers
-- `modules/` - reusable system modules
-  - `modules/nixos/` for NixOS-only system config
-  - `modules/darwin/` for macOS-only system config
-- `home-manager/` - user config
-  - `home-manager/home.nix` shared base
-  - `home-manager/common/` cross-platform HM modules
-  - `home-manager/nixos/` Linux entrypoint and Linux-only HM modules
-  - `home-manager/darwin/` macOS entrypoint and macOS-only HM modules
-- `secrets/` - encrypted secrets data
-- `pkgs/configured-apps/` - wrappers for configured application flake outputs
-- `docs/` - keybind, editor, and Pi behavior docs
-  - `docs/PI_YOLO.md` - Pi YOLO behavior and troubleshooting
-- `home-manager/common/pi/` - Pi package settings, permission policy, checks, and maintenance scripts
+## Try it
 
-## Configuration flow
+From this checkout, evaluate without building or activating a host:
+
+```sh
+nix flake check --all-systems --no-build
+```
+
+Run the configured editor or an exported tool without a system switch:
+
+```sh
+nix run .#neovim
+nix run .#yazi
+nix run .#lazygit
+nix run .#rtk -- --version
+```
+
+These packages also work with a remote flake reference, for example
+`nix run github:valdo766hi/nix-config#neovim`.
+
+`nix run .#pi` and `nix run .#pig` launch the Nix-managed binaries with filtered
+environments; they still use mutable settings and authentication in `~/.pi` and
+`~/.pig`. Running them does **not** install the Home Manager settings.
+[PiG is currently chat-only](docs/PIG.md), with coding tools disabled.
+
+Yazi's package embeds its configuration, but cannot change the calling shell's
+directory. Use the Home Manager `y` wrapper for that. LazyGit embeds its managed
+configuration; Neovim includes its Nix-managed plugins and language tools.
+
+## Configuration layout
 
 ```text
 flake.nix
 ├── outputs/hosts.nix    → hosts/ → modules/
 ├── outputs/home.nix     → home-manager/{nixos,darwin}/
 │                          └── home.nix → common/
-├── outputs/packages.nix → configured apps from the same Home Manager profiles
-└── outputs/checks.nix   → evaluation and package checks
+├── outputs/packages.nix → application packages from those profiles
+└── outputs/checks.nix   → evaluation and application checks
 ```
 
-Both integrated and standalone Home Manager use the same platform entrypoints.
-Each entrypoint imports the shared base; external Home Manager modules live
-beside the configuration that uses them. Imports stay explicit—no directory
-scanning, custom module framework, or extra flake dependency.
+Integrated and standalone Home Manager use the same platform entrypoints.
+External Home Manager modules are imported beside their configuration. There
+is no automatic directory scanning or custom module framework.
 
-This separation is inspired by [gvolpe/nix-config](https://github.com/gvolpe/nix-config).
+| Path | Responsibility |
+| --- | --- |
+| [`flake.nix`](flake.nix), [`flake.lock`](flake.lock) | Inputs and their revisions |
+| [`outputs/`](outputs/) | Host, profile, package, and check construction |
+| [`hosts/`](hosts/) | Thin host wrappers and hardware configuration |
+| [`modules/nixos/`](modules/nixos/) | Linux system integration |
+| [`modules/darwin/`](modules/darwin/) | macOS system integration and Homebrew |
+| [`home-manager/home.nix`](home-manager/home.nix) | Shared user base |
+| [`home-manager/common/`](home-manager/common/) | Shared packages and tool settings |
+| [`home-manager/nixos/`](home-manager/nixos/) | Linux user settings |
+| [`home-manager/darwin/`](home-manager/darwin/) | macOS user settings |
+| [`pkgs/`](pkgs/) | RTK, PiG, and configured application wrappers |
+| [`caches.nix`](caches.nix) | Host cache URLs and trusted public keys |
 
-Home Manager owns Nushell and LazyGit through their native `programs.*` options.
-Simple aliases are shared with `home.shellAliases`; shell-specific commands stay
-in their shell modules. XDG paths are enabled on both platforms, so LazyGit uses
-the managed `~/.config/lazygit/config.yml` on macOS too.
+### One owner per tool
 
-Linux-only packages and modules stay in `home-manager/nixos/` without repeating
-platform guards. Nushell retains its existing vendor-autoload initialization;
-native Nushell integrations are disabled to avoid loading those tools twice.
-The `nushell-config` check parses both profiles and tests PATH handling.
+- User-scoped CLI tools and settings belong in Home Manager.
+- OS services and native system integration belong in system modules.
+- macOS GUI apps belong in Homebrew casks; avoid duplicate Nix/Brew ownership.
+- `uv` is intentionally system-owned on NixOS and Homebrew-owned on macOS.
+- Niri's system module owns installation and its login session; Home Manager
+  owns `config.kdl`.
 
-## Daily commands
+Homebrew taps are pinned in `flake.lock`; activation upgrades from those taps
+without auto-updating them and uninstalls undeclared Brew packages. Updating a
+pin alone does not update an installed app.
 
-Run these from the repo root.
+## Guides
 
-```bash
-# Evaluate every supported system without building
-nix flake check --all-systems --no-build
+Start with the [documentation index](docs/README.md), or jump to:
 
-# Apply NixOS
-sudo nixos-rebuild switch --flake .#thinker
-
-# Apply Darwin (run on the target Mac)
-sudo darwin-rebuild switch --flake .#Rivaldos-MacBook-Pro
-```
-
-## Package ownership policy
-
-Use one owner per tool to avoid path conflicts:
-
-- CLI tools -> Nix (system modules or Home Manager)
-- Tools with native OS integration -> prefer system modules
-- macOS GUI apps -> Homebrew casks
-- Homebrew formulas -> avoid for CLI tools unless strictly necessary
-
-`uv` is an intentional exception: NixOS owns it system-wide alongside `nix-ld`, while Darwin owns it through the Homebrew formula.
-
-If a tool is already managed in Nix, do not also manage it in Brew.
-
-The repository-owned `rtk` package is exported for both hosts and can be run without installation:
-
-```bash
-nix run github:valdo766hi/nix-config#rtk
-```
-
-Configured applications are also exported for both supported systems:
-
-```bash
-nix run github:valdo766hi/nix-config#neovim
-nix run github:valdo766hi/nix-config#yazi
-nix run github:valdo766hi/nix-config#lazygit
-nix run github:valdo766hi/nix-config#pi
-nix run github:valdo766hi/nix-config#pig
-```
-
-If `home-manager` is not yet on `PATH`, bootstrap the current profile with:
-
-```bash
-nix run .#home-manager -- switch --flake .#rivaldo@Rivaldos-MacBook-Pro
-```
-
-These outputs reuse the Home Manager configuration. Pi loads the `fast`,
-`footer`, and `yolo` extensions from the published `@valdo766hi` npm packages;
-RTK and the Catppuccin theme remain Nix-managed. Yazi uses an immutable
-configuration directory, so its `y` shell wrapper cannot change the parent
-shell's directory when launched through `nix run`. LazyGit uses the managed
-Catppuccin configuration and Nix-provided Delta. Pi uses the Nix package while
-its extensions, settings, authentication, and mutable state remain under
-`~/.pi`. PiG is separately installed from a pinned upstream release; its
-independent configuration and compatibility limits are in [docs/PIG.md](docs/PIG.md).
-
-Other installed tools come from nixpkgs and can be run directly with `nix run nixpkgs#<package>` when they provide an executable.
-
-Niri is intentionally split by responsibility: its NixOS module owns installation, system integration, and the display-manager session; Home Manager owns the user configuration file.
-
-Flatpak apps are intentionally installed outside Home Manager activation so a network or Flathub outage cannot break a profile switch:
-
-```bash
-flatpak --user remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
-flatpak --user install -y flathub org.telegram.desktop io.kinvolk.Headlamp
-```
+| Task | Guide |
+| --- | --- |
+| Change, validate, update, apply, or roll back | [Maintenance](docs/MAINTENANCE.md) |
+| Navigate and edit code | [Neovim workflow](docs/NVF_KEYBINDINGS.md) |
+| Use the Linux desktop | [Niri keybindings](docs/NIRI_KEYBINDINGS.md) |
+| Use or restart the macOS window manager | [OmniWM keys](docs/OMNIWM_KEYBINDINGS.md) · [Updates](docs/OMNIWM_UPDATES.md) |
+| Understand agent permissions | [Pi YOLO](docs/PI_YOLO.md) |
+| Audit or update Pi packages | [Pi maintenance scripts](home-manager/common/pi/scripts/README.md) |
+| Use RTK with OpenCode | [RTK integration](docs/RTK_OPENCODE.md) |
+| Try the independent PiG setup | [PiG compatibility](docs/PIG.md) |
 
 ## Secrets
 
-Secrets are managed with `sops-nix`.
+[sops-nix](https://github.com/Mic92/sops-nix) renders secrets from the encrypted
+[`secrets/secrets.yaml`](secrets/secrets.yaml), including private SSH host
+configuration. Never put credentials in Nix source or documentation.
 
-- Encrypted file: `secrets/secrets.yaml`
-- Private SSH host configuration is rendered from the encrypted `ssh_config` value.
-- Linux key: `/home/rivaldo/.config/sops/age/keys.txt`
-- macOS key: `/Users/rivaldo/.config/sops/age/keys.txt`
+Edit locally with SOPS:
 
-Edit secrets:
-
-```bash
+```sh
 nix shell nixpkgs#sops -c sops secrets/secrets.yaml
 ```
 
-## How to modify this repo safely
+Age keys stay on each host at `~/.config/sops/age/keys.txt`; they are not in Git.
 
-1. Run `nix flake check --all-systems --no-build` before changing anything.
-2. Make the change in the right layer:
-   - system-level -> `modules/*`
-   - user-level -> `home-manager/*`
-   - shared user-scoped CLI tools -> `home-manager/common/packages.nix`
-3. Import new module from the nearest `default.nix` aggregator.
-4. Stage only added or renamed paths explicitly (flakes only see tracked files), for example `git add home-manager/common/new-module.nix`.
-5. Run `nix flake check --all-systems --no-build` again.
-6. Apply on target host.
+## Validation
 
-## Automated checks
+[CI](.github/workflows/check.yml) evaluates both systems and builds selected
+Linux application, Pi, Nushell, and headless Neovim checks. The complete Linux
+Home Manager build is manual-only. Evaluation does not build or execute tests;
+see [maintenance](docs/MAINTENANCE.md#validation) for local smoke-test commands.
 
-GitHub Actions evaluates all systems without building, then builds the Linux
-application, Pi extension, Nushell, and headless Neovim configuration checks. Actions are
-commit-pinned. The full Linux Home Manager profile build runs only when the
-workflow is triggered manually.
-
-Local validation is `nix flake check --all-systems --no-build`; no host rebuild
-or activation is needed.
-
-## Troubleshooting notes
-
-- If Home Manager reports file collisions, backups are saved as `*.hm-bak`.
-- If HM fails with permission errors in `~/.config/*`, fix ownership:
-
-```bash
-sudo chown -R rivaldo:staff ~/.config/nushell ~/.config/fish
-```
-
-- If flake says a path does not exist in `/nix/store/...-source`, stage the missing path explicitly with `git add path/to/file`.
-- Host cache settings come from `caches.nix`. Keep the literal `flake.nix` `nixConfig` values synchronized because flake-level settings cannot import them.
-
-## Rollback
-
-```bash
-# NixOS
-sudo nixos-rebuild switch --rollback --flake .#thinker
-
-# Darwin (on the target Mac)
-darwin-rebuild switch --rollback --flake .#Rivaldos-MacBook-Pro
-```
+Host activation is a separate, manual step on the target machine.
+[AGENTS.md](AGENTS.md) prohibits coding agents from running host rebuilds,
+dry-builds, activation, or rollback commands.

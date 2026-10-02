@@ -2,6 +2,11 @@
 
 <!-- markdownlint-disable MD013 -->
 
+[Documentation index](./README.md) · [Updates and restart](OMNIWM_UPDATES.md)
+
+Managed settings:
+[`home-manager/darwin/omniwm/settings.toml`](../home-manager/darwin/omniwm/settings.toml).
+
 This reference records the upstream OmniWM **0.7.4** hotkeys plus the managed
 navigation overrides. Home Manager replaces the arrow-based focus and move
 bindings with Vim-style keys so macOS can keep `Option + Arrow` for text editing.

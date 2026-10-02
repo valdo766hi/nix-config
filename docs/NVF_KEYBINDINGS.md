@@ -1,6 +1,9 @@
 # Neovim workflow (nvf)
 
-Leader is **Space**. Configuration: `home-manager/common/nvf/settings.nix`.
+[Documentation index](./README.md) · [Maintenance](MAINTENANCE.md)
+
+Leader is **Space**. Configuration:
+[`home-manager/common/nvf/settings.nix`](../home-manager/common/nvf/settings.nix).
 
 A keyboard-first workflow inspired by ThePrimeagen and TJ DeVries—not a copy of
 anyone's dotfiles. Catppuccin Mocha, Oil, FFF, Telescope, and your existing window
@@ -64,8 +67,9 @@ Ghostty and Kitty (`:checkhealth snacks` for troubleshooting).
 | `Space u` | Browse persistent, branching undo history |
 | `Space h` | Clear search highlighting |
 
-Treesitter highlights the configured languages. `zc` / `zo` close / open a fold;
-`zM` / `zR` close / open all folds. Files start unfolded. A small context header
+Treesitter highlights the configured languages. Folding starts disabled;
+use `zi` to enable it, then `zc` / `zo` to close / open a fold and `zM` / `zR`
+to close / open all folds. A small context header
 keeps enclosing code visible in windows tall enough to benefit from it.
 
 ## Code, diagnostics, and Git

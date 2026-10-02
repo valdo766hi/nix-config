@@ -1,4 +1,16 @@
-# Niri Keybindings Reference
+# Niri keybindings
+
+[Documentation index](./README.md) · [Maintenance](MAINTENANCE.md)
+
+Bindings come from
+[`home-manager/nixos/niri/niri-config.kdl`](../home-manager/nixos/niri/niri-config.kdl),
+installed at `~/.config/niri/config.kdl`. **Mod** is Super (Windows key) on TTY,
+or Alt when Niri runs nested in a window. `Mod+Shift+/` opens the hotkey overlay.
+
+DankMaterialShell (DMS) starts by default. Noctalia is installed but not
+started automatically; its optional bindings need its user service running.
+See the [DMS](../home-manager/nixos/dank-material-shell.nix) and
+[Noctalia](../home-manager/nixos/noctalia-shell.nix) modules.
 
 This doc is split into:
 
@@ -207,10 +219,6 @@ This doc is split into:
 - `Mod+Ctrl+WheelScrollRight/Left` - Move column right/left
 - `Mod+Shift+WheelScrollDown/Up` - Focus column right/left
 - `Mod+Ctrl+Shift+WheelScrollDown/Up` - Move column right/left
-
----
-
-**Note:** "Mod" key is Super (Windows key) when running on TTY, or Alt when running in a window.
 
 ## DMS: Shell Keybindings
 
