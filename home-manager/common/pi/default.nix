@@ -103,6 +103,7 @@ in {
     settings = {
       theme = "catppuccin-mocha";
       tuiMode = "fullscreen";
+      fullscreenExitOutput = "resume-hint";
       defaultProvider = "openai-codex";
       defaultModel = "gpt-6-luna";
       hideThinkingBlock = true;
