@@ -194,10 +194,8 @@ in {
           bigfile.enabled = true;
           terminal = {
             shell = lib.getExe pkgs.fish;
-            win = {
-              position = "bottom";
-              height = 0.3;
-            };
+            # Let Snacks choose a split for the shell and a float for commands.
+            win.height = 0.3;
           };
           lazygit.win = {
             width = 0.9;

@@ -88,6 +88,7 @@ local ok, err = xpcall(function()
 
   local snacks = require("snacks")
   local terminal = snacks.terminal(nil, { interactive = false })
+  assert(vim.api.nvim_win_get_config(terminal.win).relative == "", "Fish terminal must remain a split")
   local terminal_buf = terminal.buf
   assert(rawget(_G, "ResizeFishTerminal"), "missing terminal resize helper")(-100)
   assert(vim.api.nvim_win_get_height(terminal.win) == 5, "terminal resize minimum failed")
@@ -96,6 +97,11 @@ local ok, err = xpcall(function()
   assert(snacks.terminal(nil, { interactive = false }).buf == terminal_buf, "terminal was not reused")
   terminal:close()
   assert(vim.wait(1000, function() return not vim.api.nvim_buf_is_valid(terminal_buf) end))
+
+  -- Exercise LazyGit's window without opening a repository or writing its config.
+  local lazygit = snacks.lazygit({ configure = false, interactive = false, args = { "--version" } })
+  assert(vim.api.nvim_win_get_config(lazygit.win).relative == "editor", "LazyGit must open in a float")
+  lazygit:close()
 
   vim.api.nvim_set_current_buf(buf)
   vim.bo[buf].modified = false
