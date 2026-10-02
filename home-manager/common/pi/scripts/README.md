@@ -93,8 +93,12 @@ pi-package-security-check
 The repair is limited to safe npm fixes and the pinned `fast-uri` override;
 it never uses `npm audit fix --force`.
 
-Pi is launched with an allowlisted environment: only the Context7, Exa, and
-OpenCode credentials used by its configured servers/providers are forwarded.
+Pi is launched with an allowlisted environment: only the Context7, Exa,
+OpenCode, and TypeSafe credentials used by its configured servers/providers are
+forwarded. Codemode is enabled by default. To use Jev, add
+`export TYPESAFE_API_KEY="..."` to the `shell_secrets` entry in the
+SOPS-encrypted `secrets/secrets.yaml`; after sops-nix renders the update, start
+a new shell and Pi process. Never put the key in Nix source.
 `SSH_AUTH_SOCK` is preserved for normal SSH authentication.
 `TMPDIR=/tmp` keeps new temporary work in the approved cleanup location.
 Outside-project file access is denied except for approved tool/temp paths;
