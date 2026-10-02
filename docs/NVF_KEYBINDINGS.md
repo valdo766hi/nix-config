@@ -1,148 +1,133 @@
-# Neovim Keybindings Reference
+# Neovim workflow (nvf)
 
-Leader key: `Space`
+Leader is **Space**. Configuration: `home-manager/common/nvf/settings.nix`.
 
-## File Navigation (Telescope)
+A keyboard-first workflow inspired by ThePrimeagen and TJ DeVries—not a copy of
+anyone's dotfiles. Catppuccin Mocha, Oil, FFF, Telescope, and your existing window
+keys stay. Plugins, parsers, language servers, and formatters are pinned by Nix;
+there is no Mason or runtime plugin installation step.
 
-| Keybind | Action | Description |
-|---------|--------|-------------|
-| `<leader>ff` | Find Files | Search for files in current directory |
-| `<leader>fg` | Live Grep | Search text in all files |
-| `<leader>fb` | Find Buffers | List and switch between open buffers |
-| `<leader>fh` | Help Tags | Search help documentation |
-| `<leader>fo` | Old Files | Recently opened files |
+## Start here
 
-## File Explorer
+1. `Space ff` finds a file; `Space fg` searches project text.
+2. Mark your working files with `Space a`, then jump with `Space 1`–`4`.
+3. Use `gd` / `gr` for definitions / references; `Ctrl+o` jumps back.
+4. `Space gp` previews a Git hunk; `Space gs` stages it.
+5. `Space cf` formats on demand. **Format-on-save remains off.**
 
-| Keybind | Action | Description |
-|---------|--------|-------------|
-| `<leader>e` | Toggle File Explorer | Open/close Oil floating file explorer |
-| `-` | Open Parent Directory | Open Oil in the current window |
+Try without activating a host configuration:
 
-**Navigation inside Oil:**
-- Press `Enter` to open a file or enter a directory
-- Press `-` to go to the parent directory
-- Press `g.` to toggle hidden files
-- Press `Ctrl+c` to close the floating explorer
+```bash
+nix run .#neovim
+```
 
-**Note:** Oil becomes Neovim's default directory explorer, so `nvim .` opens the current directory in Oil.
+## Find and navigate
 
-## Window Navigation
+| Key | Action |
+|-----|--------|
+| `Space ff` / `Space fg` | FFF file search / live grep |
+| `Space fF` / `Space fG` | Telescope file search / live grep |
+| `Space fc` | Search the word under the cursor, or the visual selection |
+| `Space f/` | Fuzzy search the current buffer |
+| `Space fb` / `Space fo` | Open buffers / recent files |
+| `Space fs` / `Space fw` | Document / workspace symbols via Telescope |
+| `Space fd` | Search diagnostics |
+| `Space fr` / `Space fh` | Resume Telescope / search help |
+| `Space e` / `-` | Oil floating explorer / parent directory |
+| `Space a` | Add file to this directory's Harpoon list |
+| `Ctrl+e` (normal mode) | Edit the Harpoon bookmark list |
+| `Space 1`–`Space 4` | Jump to bookmarked files |
 
-| Keybind | Action | Description |
-|---------|--------|-------------|
-| `Ctrl+h` | Move Left | Switch to left window |
-| `Ctrl+j` | Move Down | Switch to bottom window |
-| `Ctrl+k` | Move Up | Switch to top window |
-| `Ctrl+l` | Move Right | Switch to right window |
+Oil: `Enter` opens, `-` goes up, `g.` toggles hidden files, `Ctrl+c` closes.
+Telescope keeps standard text previews and uses Chafa for image previews.
+Snacks also provides inline/document images on supported terminals such as
+Ghostty and Kitty (`:checkhealth snacks` for troubleshooting).
 
-## Buffer Navigation
+## Editing and movement
 
-| Keybind | Action | Description |
-|---------|--------|-------------|
-| `Shift+h` | Previous Buffer | Go to previous buffer |
-| `Shift+l` | Next Buffer | Go to next buffer |
+| Key / example | Action |
+|---------------|--------|
+| `Ctrl+h/j/k/l` | Move between splits |
+| `Shift+h/l` | Previous / next buffer |
+| `Space bd` | Delete a buffer while preserving splits; unsaved changes prompt |
+| `Space tn/tp/tc` | Bufferline next / previous / choose a buffer to close (not tabs) |
+| `Ctrl+d/u` | Half-page scroll, then center the cursor |
+| `n` / `N` | Next / previous match, centered and unfolded |
+| `J` / `K` in visual mode | Move selected lines down / up and reindent |
+| `<` / `>` in visual mode | Indent and keep the selection |
+| `Space p` in visual mode | Paste without replacing the yank register |
+| `gcc` / visual `gc` | Toggle comments |
+| `ysiw"` | Surround a word with double quotes |
+| `cs"'` / `ds"` | Change double quotes to single / delete surrounding quotes |
+| `S` in visual mode | Surround a selection |
+| `cia` / `cif` | Change an argument / function-call contents (mini.ai) |
+| `Space u` | Browse persistent, branching undo history |
+| `Space h` | Clear search highlighting |
 
-## Tab Navigation
+Treesitter highlights the configured languages. `zc` / `zo` close / open a fold;
+`zM` / `zR` close / open all folds. Files start unfolded. A small context header
+keeps enclosing code visible in windows tall enough to benefit from it.
 
-| Keybind | Action | Description |
-|---------|--------|-------------|
-| `<leader>tn` | Next Tab | Go to next tab |
-| `<leader>tp` | Previous Tab | Go to previous tab |
-| `<leader>tc` | Close Tab | Close current tab |
+## Code, diagnostics, and Git
 
-## LSP (Language Server Protocol)
+| Key | Action |
+|-----|--------|
+| `gd` / `gD` / `gI` / `gy` | Definition / declaration / implementation / type |
+| `gr` / `K` | References / hover documentation |
+| `Space rn` / `Space ca` | Rename / code action |
+| `Space cs` / `Space cf` | Signature help / manual Conform formatting |
+| `[d` / `]d` | Previous / next diagnostic, with a popup |
+| `Space cd` / `Space cq` | Line diagnostics / diagnostics in quickfix |
+| `[q` / `]q` | Previous / next quickfix result |
+| `[c` / `]c` | Previous / next Git hunk |
+| `Space gp` / `Space gb` | Preview hunk / blame line |
+| `Space gs` / `Space gu` | Stage hunk / undo staging |
+| `Space gr` / `Space gR` | **Discard** hunk / buffer changes |
+| `Space gS` | Stage the entire buffer |
+| `Space gd` / `Space gD` | Diff the file / compare against the previous revision |
+| `Space gg` | LazyGit floating terminal, integrated with this Neovim instance |
 
-| Keybind | Action | Description |
-|---------|--------|-------------|
-| `gd` | Go to Definition | Jump to symbol definition |
-| `gr` | Show References | List all references |
-| `K` | Hover Documentation | Show documentation popup |
-| `<leader>rn` | Rename | Rename symbol under cursor |
-| `<leader>ca` | Code Action | Show available code actions |
+Git actions now use `Space g…`, not the old `Space h…` prefix, so clearing search
+with `Space h` is unambiguous. Reset actions discard edits: preview first.
 
-## Git Integration
+## Completion and snippets
 
-| Keybind | Action | Description |
-|---------|--------|-------------|
-| `<leader>gg` | LazyGit | Open LazyGit in new tab |
+| Key (insert mode) | Action |
+|-------------------|--------|
+| `Ctrl+Space` | Request completion |
+| `Down` / `Up`, `Ctrl+n/p` | Select a completion |
+| `Enter` | Accept an explicitly selected completion; otherwise a normal newline |
+| `Tab` | Next completion, or expand/jump forward in a snippet |
+| `Shift+Tab` | Previous completion, or jump backward in a snippet |
+| `Ctrl+e` | Close the completion menu |
 
-GitSigns is also enabled for inline git status in the sign column.
+## Terminal
 
-**How it works:**
-- Opens in a new tab (won't mess with your current layout)
-- Press `q` to quit lazygit - tab closes automatically
-- Or use `<leader>tc` to manually close the tab
-- **Themed with Catppuccin Mocha** to match your Neovim!
+| Key | Action |
+|-----|--------|
+| `Space tt` | Toggle a reusable Fish terminal in a bottom split |
+| `Space t+` / `Space t-` | Resize it |
+| `Space tx` / `Space tk` | Hide (keep running) / close (stop) it |
+| Double `Esc` in terminal mode | Return to normal mode |
 
-## Code Editing
+## Language support and validation
 
-| Keybind | Action | Description |
-|---------|--------|-------------|
-| `gcc` | Toggle Comment Line | Comment/uncomment current line (Normal mode) |
-| `gc` | Toggle Comment Block | Comment/uncomment selection (Visual mode) |
+Nix, Rust, Lua, Bash, TypeScript/JavaScript (including TSX/JSX), Python, Go,
+JSON/JSONC, YAML, and Markdown have syntax support. Native nvf presets provide
+language tools: nixd, rust-analyzer, lua-language-server, typescript-language-server,
+basedpyright, gopls, vscode-json-language-server, and yaml-language-server.
+Markdown uses Rumdl for formatting/linting rather than an LSP. Go uses gopls;
+project-specific Go linters are intentionally not installed globally.
 
-### Visual Mode Indenting
+Helpful commands: `:ConformInfo`, `:checkhealth`, `:checkhealth snacks`.
 
-| Keybind | Action | Description |
-|---------|--------|-------------|
-| `<` | Indent Left | Decrease indentation (keeps selection) |
-| `>` | Indent Right | Increase indentation (keeps selection) |
+```bash
+nix flake check --all-systems --no-build
+# Build and run the isolated headless test for your platform
+nix build .#checks.aarch64-darwin.neovim-config --no-link # macOS
+nix build .#checks.x86_64-linux.neovim-config --no-link   # Linux
+```
 
-## Search
-
-| Keybind | Action | Description |
-|---------|--------|-------------|
-| `<leader>h` | Clear Highlight | Remove search highlighting |
-
-## Auto-completion (nvim-cmp)
-
-When the completion menu appears:
-
-| Keybind | Action | Description |
-|---------|--------|-------------|
-| `↓` or `Ctrl+n` | Next Item | Navigate to next suggestion |
-| `↑` or `Ctrl+p` | Previous Item | Navigate to previous suggestion |
-| `Tab` | Next | Next item in menu |
-| `Shift+Tab` | Previous | Previous item in menu |
-| `Enter` | Confirm | Accept selected suggestion |
-| `Ctrl+e` | Close | Close completion menu |
-
-**Arrow keys now work!** Use ↑/↓ to navigate completions.
-
-## Additional Features
-
-### Indent Guides & Scope Highlighting
-**indent-blankline** plugin is enabled to show:
-- Vertical indent guides (│) for better code structure visibility
-- Highlighted scope - shows which block/function you're currently in
-- Helps track brackets, braces, and code blocks easily
-
-### Auto-pairs
-Automatically closes brackets, quotes, and parentheses.
-
-### Which-Key
-Press `Space` (leader) and wait briefly to see all available keybindings starting with Space.
-
-### Treesitter
-Advanced syntax highlighting and code folding enabled.
-
-## Language Support
-
-Configured languages with LSP, formatting, and diagnostics:
-- **Nix** (nixd LSP)
-- **Rust** (rust-analyzer)
-- **Lua** (lua-language-server)
-- **Bash** (shellcheck, shfmt)
-- **TypeScript/JavaScript** (tsserver)
-- **Python** (pyright)
-- **Markdown**
-- **YAML/Kubernetes** (yaml-language-server, actionlint)
-
-## Tips
-
-1. **Format on save is DISABLED** (auto-fix indentation disabled as requested)
-2. **Inlay hints** are enabled for supported languages
-3. **Diagnostic virtual text** shows errors/warnings inline
-4. **Persistent undo** with `undofile` - your changes persist across sessions
-5. **Smart case search** - case-insensitive unless you type uppercase
+The smoke test checks startup, mappings, plugin and parser availability,
+completion safety, text/image previews, terminal reuse, and split-preserving
+buffer deletion. It uses a temporary HOME/XDG environment, not your editor state.

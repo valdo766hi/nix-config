@@ -53,7 +53,8 @@ jobs:
             .#checks.x86_64-linux.pi \
             .#checks.x86_64-linux.pi-fast-extension \
             .#checks.x86_64-linux.pi-tools \
-            .#checks.x86_64-linux.nushell-config
+            .#checks.x86_64-linux.nushell-config \
+            .#checks.x86_64-linux.neovim-config
 
   full-home-profile:
     name: Build full Linux home profile (manual)

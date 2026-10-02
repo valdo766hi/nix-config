@@ -27,7 +27,22 @@
         profile.config.home.file."${profile.config.xdg.configHome}/nushell/config.nu".text})
     '')
   self.homeConfigurations;
+  mkNeovimCheck = system:
+    inputs.nixpkgs.legacyPackages.${system}.runCommand "check-neovim-config" {} ''
+      export HOME="$TMPDIR/home"
+      export XDG_CONFIG_HOME="$HOME/.config"
+      export XDG_DATA_HOME="$HOME/.local/share"
+      export XDG_STATE_HOME="$HOME/.local/state"
+      export XDG_CACHE_HOME="$HOME/.cache"
+      mkdir -p "$HOME"
+      cd "$HOME"
+      ${self.packages.${system}.neovim}/bin/nvim --headless \
+        -c "luafile ${../home-manager/common/nvf/smoke-test.lua}"
+      touch $out
+    '';
 in {
+  aarch64-darwin.neovim-config = mkNeovimCheck "aarch64-darwin";
+
   x86_64-linux = {
     configurations = assert self.nixosConfigurations.thinker.config.system.build.toplevel.drvPath != "";
     assert self.darwinConfigurations."Rivaldos-MacBook-Pro".system.drvPath != "";
@@ -50,6 +65,8 @@ in {
       done
       touch $out
     '';
+
+    neovim-config = mkNeovimCheck "x86_64-linux";
 
     home-profile = home.activationPackage;
 

@@ -164,7 +164,7 @@ nix shell nixpkgs#sops -c sops secrets/secrets.yaml
 ## Automated checks
 
 GitHub Actions evaluates all systems without building, then builds the Linux
-application, Pi extension, and Nushell configuration checks. Actions are
+application, Pi extension, Nushell, and headless Neovim configuration checks. Actions are
 commit-pinned. The full Linux Home Manager profile build runs only when the
 workflow is triggered manually.
 
