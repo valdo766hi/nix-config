@@ -1,4 +1,5 @@
 {
+  config,
   pkgs,
   lib,
   ...
@@ -8,6 +9,16 @@
   programs.nushell.enable = true;
   programs.nushell.shellAliases = lib.optionalAttrs pkgs.stdenv.hostPlatform.isLinux {
     bjg = ''echo "I use NixOS, BTW"'';
+  };
+
+  # macOS uses these paths when the launching shell has no XDG variables.
+  home.file = lib.optionalAttrs pkgs.stdenv.hostPlatform.isDarwin {
+    "Library/Application Support/nushell/config.nu".source =
+      config.home.file."${config.programs.nushell.configDir}/config.nu".source;
+    "Library/Application Support/nushell/env.nu".source =
+      config.home.file."${config.programs.nushell.configDir}/env.nu".source;
+    "Library/Application Support/nushell/vendor/autoload".source =
+      config.lib.file.mkOutOfStoreSymlink "${config.xdg.dataHome}/nushell/vendor/autoload";
   };
 
   home.activation.nushellInit = lib.hm.dag.entryAfter ["writeBoundary"] ''

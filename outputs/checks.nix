@@ -3,30 +3,84 @@
   pkgs = inputs.nixpkgs.legacyPackages.x86_64-linux;
   home = self.homeConfigurations."rivaldo@thinker";
   files = home.config.home.file;
-  nushellTests = pkgs.lib.mapAttrsToList (name: profile:
-    pkgs.writeText "nushell-${name}.nu" ''
+  nushellTests = testPkgs:
+    testPkgs.lib.mapAttrsToList (name: profile:
+      testPkgs.writeText "nushell-${name}.nu" ''
+        use std/assert
+        source ${testPkgs.writeText "nushell-env-${name}.nu" profile.config.programs.nushell.envFile.text}
+
+        let npmBin = ($env.HOME | path join ".npm-global" "bin")
+        $env.PATH = ["/usr/bin"]
+        _path_prepend $npmBin
+        _path_prepend $npmBin
+        assert equal $env.PATH [$npmBin "/usr/bin"]
+
+        $env.PATH = "/usr/bin"
+        _path_prepend $npmBin
+        assert equal $env.PATH [$npmBin "/usr/bin"]
+
+        $env.PATH = ""
+        _path_prepend $npmBin
+        _path_prepend ($env.HOME | path join "missing")
+        assert equal $env.PATH [$npmBin]
+
+        assert (nu-check --debug ${testPkgs.writeText "nushell-config-${name}.nu"
+          profile.config.home.file."${profile.config.programs.nushell.configDir}/config.nu".text})
+      '')
+    self.homeConfigurations;
+  mkNushellCheck = system: let
+    testPkgs = inputs.nixpkgs.legacyPackages.${system};
+    profile =
+      self.homeConfigurations."rivaldo@${
+        if testPkgs.stdenv.hostPlatform.isDarwin
+        then "Rivaldos-MacBook-Pro"
+        else "thinker"
+      }";
+    cfg = profile.config;
+    configFiles = cfg.home.file;
+    startupTest = testPkgs.writeText "nushell-startup.nu" ''
       use std/assert
-      source ${pkgs.writeText "nushell-env-${name}.nu" profile.config.programs.nushell.envFile.text}
+      assert equal $env.STARSHIP_SHELL "nu" "Starship was not initialized"
+      assert equal ($env.PROMPT_COMMAND | describe) "closure" "Missing Starship prompt"
+      assert equal $env.NPM_CONFIG_PREFIX ($env.HOME | path join ".npm-global") "env.nu was not loaded"
+      assert equal (which z | get 0.type) "alias" "Zoxide was not initialized"
+      assert ((do $env.PROMPT_COMMAND | ansi strip | str trim) != "")
+      print "nushell startup test passed"
+    '';
+  in
+    testPkgs.runCommand "check-nushell-config" {
+      nativeBuildInputs = [testPkgs.nushell cfg.programs.atuin.package cfg.programs.zoxide.package];
+    } ''
+      export HOME="$TMPDIR/home"
+      export XDG_CONFIG_HOME="$HOME/.config"
+      export XDG_DATA_HOME="$HOME/.local/share"
+      export STARSHIP_CONFIG="$HOME/starship.toml"
+      export TERM=xterm-256color
+      mkdir -p "$HOME/.npm-global/bin" "$XDG_CONFIG_HOME/nushell"
+      printf 'format = "$character"\n' > "$STARSHIP_CONFIG"
+      cp ${configFiles."${cfg.programs.nushell.configDir}/config.nu".source} "$XDG_CONFIG_HOME/nushell/config.nu"
+      cp ${configFiles."${cfg.programs.nushell.configDir}/env.nu".source} "$XDG_CONFIG_HOME/nushell/env.nu"
+      ${cfg.home.activation.nushellInit.data}
 
-      let npmBin = ($env.HOME | path join ".npm-global" "bin")
-      $env.PATH = ["/usr/bin"]
-      _path_prepend $npmBin
-      _path_prepend $npmBin
-      assert equal $env.PATH [$npmBin "/usr/bin"]
+      ${testPkgs.lib.optionalString testPkgs.stdenv.hostPlatform.isDarwin ''
+        fallback="$HOME/Library/Application Support/nushell"
+        mkdir -p "$fallback/vendor"
+        cp ${configFiles."Library/Application Support/nushell/config.nu".source} "$fallback/config.nu"
+        cp ${configFiles."Library/Application Support/nushell/env.nu".source} "$fallback/env.nu"
+        test "$(readlink ${configFiles."Library/Application Support/nushell/vendor/autoload".source})" = "${cfg.xdg.dataHome}/nushell/vendor/autoload"
+        ln -s "$XDG_DATA_HOME/nushell/vendor/autoload" "$fallback/vendor/autoload"
+        # Test startup without trying to read the host's sops-managed secrets.
+        substituteInPlace "$XDG_CONFIG_HOME/nushell/config.nu" "$fallback/config.nu" \
+          --replace-fail '"/run/secrets/rendered/shell-secrets"' '"~/.config/shell-secrets.env"'
+      ''}
 
-      $env.PATH = "/usr/bin"
-      _path_prepend $npmBin
-      assert equal $env.PATH [$npmBin "/usr/bin"]
-
-      $env.PATH = ""
-      _path_prepend $npmBin
-      _path_prepend ($env.HOME | path join "missing")
-      assert equal $env.PATH [$npmBin]
-
-      assert (nu-check --debug ${pkgs.writeText "nushell-config-${name}.nu"
-        profile.config.home.file."${profile.config.xdg.configHome}/nushell/config.nu".text})
-    '')
-  self.homeConfigurations;
+      for script in ${toString (nushellTests testPkgs)}; do
+        nu --no-config-file "$script"
+      done
+      nu --no-history --execute 'try { source ${startupTest}; exit 0 } catch {|err| print --stderr $err.msg; exit 1 }'
+      env -u XDG_CONFIG_HOME -u XDG_DATA_HOME nu --no-history --execute 'try { source ${startupTest}; exit 0 } catch {|err| print --stderr $err.msg; exit 1 }'
+      touch $out
+    '';
   mkNeovimCheck = system:
     inputs.nixpkgs.legacyPackages.${system}.runCommand "check-neovim-config" {} ''
       export HOME="$TMPDIR/home"
@@ -41,7 +95,10 @@
       touch $out
     '';
 in {
-  aarch64-darwin.neovim-config = mkNeovimCheck "aarch64-darwin";
+  aarch64-darwin = {
+    neovim-config = mkNeovimCheck "aarch64-darwin";
+    nushell-config = mkNushellCheck "aarch64-darwin";
+  };
 
   x86_64-linux = {
     configurations = assert self.nixosConfigurations.thinker.config.system.build.toplevel.drvPath != "";
@@ -57,14 +114,7 @@ in {
       touch $out
     '';
 
-    nushell-config = pkgs.runCommand "check-nushell-config" {nativeBuildInputs = [pkgs.nushell];} ''
-      export HOME="$TMPDIR/home"
-      mkdir -p "$HOME/.npm-global/bin"
-      for script in ${toString nushellTests}; do
-        nu --no-config-file "$script"
-      done
-      touch $out
-    '';
+    nushell-config = mkNushellCheck "x86_64-linux";
 
     neovim-config = mkNeovimCheck "x86_64-linux";
 
