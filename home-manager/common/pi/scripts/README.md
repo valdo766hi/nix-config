@@ -26,6 +26,12 @@ This applies the repository's `fast-uri@3.1.8` override, runs `npm audit fix`
 with install scripts and `--force` disabled, then audits the repaired tree.
 Peer installation stays disabled, matching Pi: Pi supplies its own host APIs.
 
+The `fast-uri@3.1.8` override is a temporary workaround for the `fast-uri`/`ajv`
+advisories. New upstream releases may resolve them. Recheck future updates in an
+isolated tree without the override; remove it only when that tree audits clean
+and compatibility checks pass. A fully locked Nix extension build is deferred
+unless the workaround remains necessary.
+
 Exit codes distinguish the outcomes:
 
 - `0`: no known vulnerabilities
