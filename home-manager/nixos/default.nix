@@ -15,7 +15,12 @@
   ];
 
   home.homeDirectory = lib.mkDefault "/home/rivaldo";
-  home.packages = [pkgs.podman-compose];
+  home.packages = with pkgs; [
+    ghostty
+    keepassxc
+    obs-studio
+    podman-compose
+  ];
   programs.zen-browser.enable = true;
   systemd.user.startServices = "sd-switch";
 }

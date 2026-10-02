@@ -1,7 +1,6 @@
 {
   inputs,
   pkgs,
-  lib,
   ...
 }: let
   rtk = pkgs.callPackage ../../pkgs/rtk {};
@@ -39,9 +38,6 @@ in {
     hunk
     tree
     fastfetch
-  ] ++ [antigravityCli] ++ lib.optionals pkgs.stdenv.hostPlatform.isLinux [
-    ghostty
-    keepassxc
-    obs-studio
+    antigravityCli
   ];
 }
