@@ -1,7 +1,4 @@
-# Starship
-{ config, pkgs, ... }:
-
-{
+{...}: {
   programs.starship = {
     enable = true;
     enableFishIntegration = false;

@@ -22,7 +22,6 @@
     ./starship.nix
     ./tmux.nix
     ./yazi/default.nix
-    #./zed.nix
     ./zoxide.nix
   ];
 

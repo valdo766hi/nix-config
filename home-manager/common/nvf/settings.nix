@@ -139,10 +139,8 @@ in {
           cmp-buffer
           cmp-path
           cmp-nvim-lua
-          # copilot-cmp
         ];
         sources = {
-          # copilot = "[Copilot]";
           nvim_lsp = "[LSP]";
           buffer = "[Buffer]";
           path = "[Path]";
@@ -222,108 +220,6 @@ in {
           })
         '';
       };
-
-      # FIXME: Disabled temporarily - re-enable when needed
-      # copilot-chat = {
-      #   package = pkgs.vimPlugins.CopilotChat-nvim;
-      #   setup = ''
-      #     require('CopilotChat').setup({
-      #       model = 'claude-sonnet-4.5',
-      #       allow_think = true,
-      #       prompts = {
-      #         Explain = {
-      #           prompt = '/COPILOT_EXPLAIN Write an explanation for the selected code as paragraphs of text.',
-      #         },
-      #         Review = {
-      #           prompt = '/COPILOT_REVIEW Review the selected code.',
-      #         },
-      #         Fix = {
-      #           prompt = '/COPILOT_FIX There is a problem in this code. Rewrite the code to show it with the bug fixed.',
-      #         },
-      #         Optimize = {
-      #           prompt = '/COPILOT_REFACTOR Optimize the selected code to improve performance and readability.',
-      #         },
-      #         Docs = {
-      #           prompt = '/COPILOT_GENERATE Please add documentation comment for the selection.',
-      #         },
-      #         Tests = {
-      #           prompt = '/COPILOT_GENERATE Please generate tests for my code.',
-      #         },
-      #       },
-      #     })
-      #   '';
-      # };
-
-      # FIXME: Disabled - requires copilot to be set up first (load order issue)
-      # avante-nvim = {
-      #   package = pkgs.vimPlugins.avante-nvim;
-      #   setup = ''
-      #     require('avante').setup({
-      #       provider = "copilot",
-      #       providers = {
-      #         copilot = {
-      #           endpoint = "https://api.githubcopilot.com",
-      #           model = "claude-sonnet-4.5",
-      #           timeout = 30000,
-      #           temperature = 0,
-      #           extra_request_body = {
-      #             max_tokens = 4096,
-      #           },
-      #         },
-      #       },
-      #       behaviour = {
-      #         auto_suggestions = false,
-      #         auto_set_highlight_group = true,
-      #         auto_set_keymaps = true,
-      #         auto_apply_diff_after_generation = false,
-      #         support_paste_from_clipboard = false,
-      #       },
-      #       dual_boost = {
-      #         enabled = true,
-      #         first_provider = "copilot",
-      #         second_provider = "copilot",
-      #         prompt = "Based on the two reference outputs below, generate a response that incorporates the best aspects of both.",
-      #         timeout = 60000,
-      #       },
-      #       mappings = {
-      #         ask = "<leader>aa",
-      #         edit = "<leader>ae",
-      #         refresh = "<leader>ar",
-      #         diff = {
-      #           ours = "co",
-      #           theirs = "ct",
-      #           both = "cb",
-      #           next = "]x",
-      #           prev = "[x",
-      #         },
-      #         jump = {
-      #           next = "]]",
-      #           prev = "[[",
-      #         },
-      #         submit = {
-      #           normal = "<CR>",
-      #           insert = "<C-s>",
-      #         },
-      #         toggle_debug = "<leader>ad",
-      #       },
-      #       hints = { enabled = true },
-      #       windows = {
-      #         wrap = true,
-      #         width = 30,
-      #         sidebar_header = {
-      #           align = "center",
-      #           rounded = true,
-      #         },
-      #       },
-      #       highlights = {
-      #         diff = {
-      #           current = "DiffText",
-      #           incoming = "DiffAdd",
-      #         },
-      #       },
-      #     })
-      #   '';
-      # };
     };
 
     lazy.plugins."lazydev-nvim" = {
@@ -524,35 +420,6 @@ in {
           action = "<cmd>lua vim.lsp.buf.code_action()<CR>";
           desc = "Code action";
         };
-
-        # "<leader>cc" = {
-        #   action = "<cmd>CopilotChatToggle<CR>";
-        #   desc = "Copilot Chat";
-        # };
-        # "<leader>ce" = {
-        #   action = "<cmd>CopilotChatExplain<CR>";
-        #   desc = "Copilot Explain";
-        # };
-        # "<leader>cr" = {
-        #   action = "<cmd>CopilotChatReview<CR>";
-        #   desc = "Copilot Review";
-        # };
-        # "<leader>cf" = {
-        #   action = "<cmd>CopilotChatFix<CR>";
-        #   desc = "Copilot Fix";
-        # };
-        # "<leader>co" = {
-        #   action = "<cmd>CopilotChatOptimize<CR>";
-        #   desc = "Copilot Optimize";
-        # };
-        # "<leader>cd" = {
-        #   action = "<cmd>CopilotChatDocs<CR>";
-        #   desc = "Copilot Docs";
-        # };
-        # "<leader>ct" = {
-        #   action = "<cmd>CopilotChatTests<CR>";
-        #   desc = "Copilot Tests";
-        # };
       })
       ++ (mkKeymaps "v" {
         "<" = {
