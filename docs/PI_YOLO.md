@@ -25,10 +25,11 @@ YOLO uses the native `@gotgenes/pi-permission-system` `yoloMode` behavior:
 | `ask` | prompts or follows the configured authorizer | allowed |
 | `deny` | blocked | blocked |
 
-Outside-project access is denied by default, including with YOLO on. The
-allowlist covers temporary entries, the Nix store, selected Pi package/skill
-directories, and SSH authentication paths. Separate credential denials still
-apply; SSH has the narrower protection described below.
+Outside-project reads, writes, and commands require approval with YOLO off
+and are auto-approved with YOLO on. Temporary entries, the Nix store, selected
+Pi package/skill directories, and SSH authentication paths remain allowlisted.
+Explicit path, tool, and Bash denials still apply in either mode; SSH has the
+narrower protection described below.
 
 YOLO is not a general unrestricted mode. In particular, it does not turn a
 `deny` rule into an `allow` rule. It does auto-approve rules configured as

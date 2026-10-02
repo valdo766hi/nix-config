@@ -187,7 +187,7 @@ test("permission policy retains hard credential and deletion denials", () => {
 	}
 	const patterns = Object.keys(permission.path);
 	assert.ok(patterns.indexOf("*/auth.json*") > patterns.indexOf("~/.pi/agent/skills/*"));
-	assert.equal(permission.external_directory["*"], "deny");
+	assert.equal(permission.external_directory["*"], "ask");
 	assert.equal(permission.external_directory["~/.ssh/*"], "allow");
 	for (const tool of ["read", "write", "edit", "grep", "find", "ls"]) {
 		assert.equal(permission[tool]["~/.ssh*"], "deny", tool);

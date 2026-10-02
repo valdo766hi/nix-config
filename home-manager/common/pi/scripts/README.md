@@ -101,8 +101,8 @@ SOPS-encrypted `secrets/secrets.yaml`; after sops-nix renders the update, start
 a new shell and Pi process. Never put the key in Nix source.
 `SSH_AUTH_SOCK` is preserved for normal SSH authentication.
 `TMPDIR=/tmp` keeps new temporary work in the approved cleanup location.
-Outside-project file access is denied except for approved tool/temp paths;
-credential and Pi-state denials still apply with `/yolo` on. The permission
+Outside-project file access requires approval, or is auto-approved with
+`/yolo` on; credential and Pi-state denials still apply in either mode. The permission
 rules are not a process sandbox: arbitrary programs and extensions retain
 your account's privileges.
 
@@ -133,7 +133,8 @@ package/skill directories, and Pi-created `pi-clipboard-*` temporary files.
 Broad Pi-state scans and credential paths are denied before infrastructure
 auto-allow applies. Skills under `~/.agents/skills` and `~/.pi/agent/skills`
 may be written and edited; other Pi state remains protected. Outside-project
-access otherwise requires an allowlisted path.
+access otherwise requires approval with YOLO off and is auto-approved with
+YOLO on.
 
 Scan one skill or a directory containing multiple skills:
 

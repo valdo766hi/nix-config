@@ -130,7 +130,7 @@
       "doas *": "deny"
     },
     "external_directory": {
-      "*": "deny",
+      "*": "ask",
       "/tmp/*": "allow",
       "/private/tmp/*": "allow",
       "/nix/store/*": "allow",
