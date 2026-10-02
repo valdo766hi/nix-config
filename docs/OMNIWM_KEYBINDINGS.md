@@ -2,7 +2,7 @@
 
 <!-- markdownlint-disable MD013 -->
 
-This reference records the upstream OmniWM **0.7.3** hotkeys plus the managed
+This reference records the upstream OmniWM **0.7.4** hotkeys plus the managed
 navigation overrides. Home Manager replaces the arrow-based focus and move
 bindings with Vim-style keys so macOS can keep `Option + Arrow` for text editing.
 
@@ -50,6 +50,9 @@ button to that chord; leave it set to `None` if it is not needed.
 | Move Column to Workspace Up | `Control + Option + Shift + Page Up` | `Niri` |
 | Move Column to Workspace Down | `Control + Option + Shift + Page Down` | `Niri` |
 
+Workspaces above nine can also have Switch, Move Window, and Move Column
+shortcuts assigned; these start unassigned.
+
 ## Focus
 
 | Action | Default shortcut | Layout |
@@ -68,6 +71,8 @@ button to that chord; leave it set to `None` if it is not needed.
 | Toggle Hidden Icons Bar | `Unassigned` | `Shared` |
 | Toggle Quake Terminal | `` Option + ` `` | `Shared` |
 | Toggle Overview | `Option + Shift + O` | `Shared` |
+| Set Mark on Focused Window | `Unassigned` | `Shared` |
+| Remove Mark from Focused Window | `Unassigned` | `Shared` |
 
 ## Move Window
 
@@ -151,11 +156,11 @@ Structural Dwindle moves are unavailable while Overview is open.
 
 ## Sources and Version Drift
 
-- [OmniWM 0.7.3 release](https://github.com/OmniNull/OmniWM/releases/tag/v0.7.3)
+- [OmniWM 0.7.4 release](https://github.com/OmniNull/OmniWM/releases/tag/v0.7.4)
 - [Upstream Keyboard Shortcuts tables](https://github.com/OmniNull/OmniWM#keyboard-shortcuts)
 - [Official Homebrew cask](https://github.com/Homebrew/homebrew-cask/blob/main/Casks/o/omniwm.rb)
 
-This document is pinned to the defaults published for OmniWM 0.7.3. Upstream
+This document is pinned to the defaults published for OmniWM 0.7.4. Upstream
 may add actions or change defaults in later releases. Before updating OmniWM,
 follow [OMNIWM_UPDATES.md](./OMNIWM_UPDATES.md), review the release notes and
 relevant issues, and compare the upstream tables with this document.

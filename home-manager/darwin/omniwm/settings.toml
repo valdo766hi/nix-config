@@ -1,5 +1,4 @@
-# OmniWM 0.7.3 schema 3; new 0.7.x settings are optional.
-schemaVersion = 3
+schemaVersion = 4
 monitorBarOverrides = []
 monitorDwindleOverrides = []
 monitorGapOverrides = []
@@ -998,6 +997,14 @@ id = "moveToWorkspaceSlot.9"
 [[hotkeys]]
 binding = "Unassigned"
 id = "closeFocusedWindow"
+
+[[hotkeys]]
+binding = "Unassigned"
+id = "setWindowMark"
+
+[[hotkeys]]
+binding = "Unassigned"
+id = "removeWindowMark"
 
 [[workspaces]]
 id = "AD36F001-C57E-41A5-AC1D-DF5249D007F0"

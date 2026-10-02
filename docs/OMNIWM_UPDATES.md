@@ -8,6 +8,46 @@ Do not update OmniWM by running an unreviewed `brew upgrade`. Use the workflow
 below so the tap revision, configuration evaluation, and documentation remain
 reviewable.
 
+## 0.7.4 Compatibility
+
+The pinned cask moves from 0.7.3 to [0.7.4](https://github.com/OmniNull/OmniWM/releases/tag/v0.7.4);
+Apple Silicon and macOS 26 Tahoe requirements are unchanged.
+
+- Settings now use schema 4. The managed file includes the new `setWindowMark`
+  and `removeWindowMark` hotkeys, both unassigned; existing bindings are unchanged.
+  Older schema-3 files migrate automatically with a `settings.toml.pre-v4`
+  backup. Restore that backup before downgrading to 0.7.3.
+- Niri grow/shrink defaults to 5% instead of 10%. Set
+  `resizeStepPercent = 10` under `[niri]` to retain the old increment.
+- New optional controls: `niri.edgeGaps`, `overview.enabled`, and
+  `workspaceBar.hoverPreviewsEnabled` default to true. Interface language follows
+  macOS unless `general.language` is set. No extra settings are required.
+- Direct IPC clients need protocol 17; use the bundled `omniwmctl`.
+  IPC remains disabled in this configuration.
+- An open [0.7.4 fullscreen report](https://github.com/OmniNull/OmniWM/issues/779)
+  describes adjacent Niri windows staying obscured while the middle window is
+  fullscreen on macOS 27. Test `Option + Return` and left/right navigation.
+
+## Restart Without Updating
+
+Updating `flake.lock` alone does not install or restart the app. After installing
+the pinned version through your normal nix-darwin activation, choose **Quit
+OmniWM** from its menu, then run (also works in Nushell):
+
+```sh
+/usr/bin/open -a OmniWM
+```
+
+The login agent only runs `open -a OmniWM`; kicking it while OmniWM is running
+does not restart the existing process. No logout or reboot is needed for an
+ordinary app restart. Runtime window marks are lost when OmniWM quits.
+
+Check the installed app bundle version:
+
+```sh
+/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' /Applications/OmniWM.app/Contents/Info.plist
+```
+
 ## 1. Review Upstream Before Every Update
 
 Before changing `flake.lock`, always review:
