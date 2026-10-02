@@ -13,7 +13,8 @@ This repo manages one NixOS host (`thinker`) and one macOS host (`Rivaldos-MacBo
 
 ## Repo Map
 
-- `flake.nix`: main entrypoint, inputs, host outputs, shared Home Manager module lists, checks, and standalone Home Manager outputs
+- `flake.nix`: inputs, supported systems, and public outputs
+- `outputs/`: construction of hosts, standalone Home Manager profiles, packages, and checks
 - `caches.nix`: shared host cache URLs and trusted public keys
 - `.github/workflows/check.yml`: deterministic CI validation with commit-pinned actions
 - `hosts/nixos/thinker/configuration.nix`: thin NixOS host wrapper importing shared NixOS modules plus hardware config
@@ -51,8 +52,12 @@ This repo manages one NixOS host (`thinker`) and one macOS host (`Rivaldos-MacBo
 
 ## Repo-Specific Facts
 
-- Home Manager has one shared base: `home-manager/home.nix`.
-- NixOS imports `home-manager/nixos/default.nix`; Darwin imports `home-manager/darwin/default.nix`.
+- Home Manager has one shared base: `home-manager/home.nix`, with XDG paths enabled on both platforms.
+- Nushell and LazyGit are owned by their native Home Manager modules. Nushell retains vendor-autoload initialization; keep native Nushell integrations disabled to avoid double initialization.
+- Shared aliases use `home.shellAliases`; shell-specific aliases remain in their shell modules.
+- Linux-only packages belong in `home-manager/nixos/default.nix`; modules under `home-manager/nixos/` do not need repeated platform guards.
+- Integrated and standalone Home Manager both use `home-manager/nixos/default.nix` or `home-manager/darwin/default.nix`; each imports `home-manager/home.nix`.
+- External Home Manager modules are imported beside their configuration, not listed in `flake.nix`.
 - `backupFileExtension = "hm-bak"` is enabled.
 - Flake mode only sees tracked files. If a new file is added and Nix reports a missing path, stage that path explicitly with `git add path/to/file`.
 - Darwin Home Manager uses `/Users/rivaldo`; NixOS uses `/home/rivaldo`.

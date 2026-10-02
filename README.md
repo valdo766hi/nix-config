@@ -16,7 +16,8 @@ The design is simple:
 
 ## Directory guide
 
-- `flake.nix` - inputs, host outputs, shared Home Manager module lists, and evaluation checks
+- `flake.nix` - inputs, supported systems, and public outputs
+- `outputs/` - construction of hosts, Home Manager profiles, packages, and checks
 - `caches.nix` - shared host cache URLs and trusted keys
 - `.github/workflows/check.yml` - deterministic flake validation in CI
 - `hosts/` - minimal host wrappers
@@ -26,13 +27,41 @@ The design is simple:
 - `home-manager/` - user config
   - `home-manager/home.nix` shared base
   - `home-manager/common/` cross-platform HM modules
-  - `home-manager/nixos/` Linux-only HM modules
-  - `home-manager/darwin/` macOS-only HM modules
+  - `home-manager/nixos/` Linux entrypoint and Linux-only HM modules
+  - `home-manager/darwin/` macOS entrypoint and macOS-only HM modules
 - `secrets/` - encrypted secrets data
 - `pkgs/configured-apps/` - wrappers for configured application flake outputs
 - `docs/` - keybind, editor, and Pi behavior docs
   - `docs/PI_YOLO.md` - Pi YOLO behavior and troubleshooting
 - `home-manager/common/pi/` - Pi package settings, permission policy, checks, and maintenance scripts
+
+## Configuration flow
+
+```text
+flake.nix
+├── outputs/hosts.nix    → hosts/ → modules/
+├── outputs/home.nix     → home-manager/{nixos,darwin}/
+│                          └── home.nix → common/
+├── outputs/packages.nix → configured apps from the same Home Manager profiles
+└── outputs/checks.nix   → evaluation and package checks
+```
+
+Both integrated and standalone Home Manager use the same platform entrypoints.
+Each entrypoint imports the shared base; external Home Manager modules live
+beside the configuration that uses them. Imports stay explicit—no directory
+scanning, custom module framework, or extra flake dependency.
+
+This separation is inspired by [gvolpe/nix-config](https://github.com/gvolpe/nix-config).
+
+Home Manager owns Nushell and LazyGit through their native `programs.*` options.
+Simple aliases are shared with `home.shellAliases`; shell-specific commands stay
+in their shell modules. XDG paths are enabled on both platforms, so LazyGit uses
+the managed `~/.config/lazygit/config.yml` on macOS too.
+
+Linux-only packages and modules stay in `home-manager/nixos/` without repeating
+platform guards. Nushell retains its existing vendor-autoload initialization;
+native Nushell integrations are disabled to avoid loading those tools twice.
+The `nushell-config` check parses both profiles and tests PATH handling.
 
 ## Daily commands
 
@@ -134,20 +163,13 @@ nix shell nixpkgs#sops -c sops secrets/secrets.yaml
 
 ## Automated checks
 
-GitHub Actions runs `nix flake check --all-systems` for every push and pull request. The workflow uses commit-pinned actions, evaluates both host configurations, and builds the Linux Home Manager profile, `rtk`, Neovim, Yazi, LazyGit, Pi, and Pi extension checks.
+GitHub Actions evaluates all systems without building, then builds the Linux
+application, Pi extension, and Nushell configuration checks. Actions are
+commit-pinned. The full Linux Home Manager profile build runs only when the
+workflow is triggered manually.
 
-## Validation shortcuts
-
-```bash
-# NixOS dry run
-sudo nixos-rebuild dry-build --flake .#thinker
-
-# Home Manager eval on Linux
-home-manager build --flake .#rivaldo@thinker
-
-# Darwin build (on the target Mac)
-darwin-rebuild build --flake .#Rivaldos-MacBook-Pro
-```
+Local validation is `nix flake check --all-systems --no-build`; no host rebuild
+or activation is needed.
 
 ## Troubleshooting notes
 
