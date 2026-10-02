@@ -1,4 +1,3 @@
-# Zed
 {
   config,
   pkgs,

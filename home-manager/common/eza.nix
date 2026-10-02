@@ -1,4 +1,3 @@
-# Eza
 { config, pkgs, ... }:
 
 {

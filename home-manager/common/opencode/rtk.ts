@@ -1,11 +1,4 @@
-// RTK OpenCode plugin — rewrites shell tool commands to use rtk for token savings.
-// Requires: rtk >= 0.23.0 in PATH.
-//
-// Targets the OpenCode 2 plugin API (V1 cannot load this file).
-//
-// This is a thin delegating plugin: all rewrite logic lives in `rtk rewrite`,
-// which is the single source of truth (src/discover/registry.rs).
-// To add or change rewrite rules, edit the Rust registry — not this file.
+// OpenCode 2 API only; rewrite rules belong to `rtk rewrite` (RTK >= 0.23.0).
 
 import { execFile } from "node:child_process"
 

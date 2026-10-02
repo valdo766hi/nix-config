@@ -1,6 +1,3 @@
-// Drives fast.ts through a minimal stand-in for pi's extension API.
-// Run with: node --test fast.test.ts
-
 // @ts-expect-error Node provides this built-in in the Nix test environment.
 import assert from "node:assert/strict";
 // @ts-expect-error Node provides this built-in in the Nix test environment.
@@ -49,7 +46,6 @@ function setup() {
 
 	return {
 		notifications,
-		/** Reported state, read back from the status pi renders. */
 		state: () => (statuses.get("fast") === "\u{f0e7} FAST: ON" ? "on" : "off"),
 		status: () => statuses.get("fast"),
 		fast: (args = "") => commands.get("fast")!.handler(args, ctx),
@@ -89,8 +85,6 @@ test("a new session starts off", () => {
 	assert.equal(setup().state(), "off");
 });
 
-// The bolt is a private-use codepoint, so pin it: tooling has silently
-// replaced it with a plain space before.
 test("the status carries the nerd-font bolt", async () => {
 	const pi = setup();
 	assert.equal(pi.status(), "\u{f0e7} FAST: OFF");
@@ -162,12 +156,9 @@ test("fast on leaves unsupported providers and apis alone", async () => {
 	const untouched = [
 		{ provider: "anthropic", api: "anthropic-messages" },
 		{ provider: "google", api: "google-generative-ai" },
-		// OpenAI-compatible third parties: right api, wrong provider.
 		{ provider: "groq", api: "openai-completions" },
 		{ provider: "openrouter", api: "openai-responses" },
-		// Azure serializes its own tiers.
 		{ provider: "azure-openai-responses", api: "azure-openai-responses" },
-		// Right provider, api without a service_tier field.
 		{ provider: "openai", api: "openai-completions" },
 	];
 

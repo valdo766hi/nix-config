@@ -1,6 +1,5 @@
 {pkgs, ...}: {
-  # Niri config file - compositor is enabled at NixOS system level
-  # The niri.homeModules.config is auto-imported when using HM as NixOS module
+  # Niri installation is owned by the NixOS module.
   home.packages = with pkgs; [
     brightnessctl
     cliphist

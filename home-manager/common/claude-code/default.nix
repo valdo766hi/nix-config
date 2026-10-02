@@ -149,20 +149,4 @@ in {
       fi
     fi
   '';
-
-  # Optional MCPs (disabled; register explicitly if needed):
-  # mcpServers = {
-  #   context7 = {
-  #     type = "http";
-  #     url = "https://mcp.context7.com/mcp";
-  #     headers.Authorization = "Bearer \${CONTEXT7_API_KEY:-}";
-  #   };
-  #   exa = { type = "http"; url = "https://mcp.exa.ai/mcp"; };
-  #   github = {
-  #     type = "stdio";
-  #     command = "${pkgs.github-mcp-server}/bin/github-mcp-server";
-  #     args = ["stdio"];
-  #     env.GITHUB_PERSONAL_ACCESS_TOKEN = "\${GH_TOKEN:-}";
-  #   };
-  # };
 }

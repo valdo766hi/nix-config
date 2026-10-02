@@ -45,7 +45,6 @@ function setNativeYoloMode(enabled: boolean): void {
 			try {
 				unlinkSync(tempPath);
 			} catch {
-				// Ignore cleanup failures.
 			}
 		}
 		throw error;

@@ -1,14 +1,7 @@
-// This config is in the KDL format: https://kdl.dev
-// "/-" comments out the following node.
-// Check the wiki for a full description of the configuration:
-// https://yalter.github.io/niri/Configuration:-Introduction
-
 input {
     keyboard {
         xkb {
-            // If this section is empty, niri will fetch xkb settings
-            // from org.freedesktop.locale1. You can control these using
-            // localectl set-x11-keymap.
+            // Use the system keyboard layout from locale1.
         }
         numlock
     }
@@ -18,19 +11,7 @@ input {
         natural-scroll
     }
 
-    mouse {
-        // natural-scroll
-        // accel-speed 0.2
-    }
-
-    // focus-follows-mouse max-scroll-amount="0%"
-}
-
-/-output "eDP-1" {
-    mode "1920x1080@120.030"
-    scale 2
-    transform "normal"
-    position x=1280 y=0
+    mouse {}
 }
 
 layout {
@@ -70,21 +51,14 @@ layout {
 spawn-at-startup "xwayland-satellite"
 spawn-at-startup "bash" "-c" "wl-paste --watch cliphist store"
 
-hotkey-overlay {
-    // skip-at-startup
-}
+hotkey-overlay {}
 
 screenshot-path "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
 
-animations {
-    // off
-}
+animations {}
 
-// Noctalia recommended compositor settings
 window-rule {
-    // Rounded corners. Set to 0 to disable.
     geometry-corner-radius 0
-    // Only useful when geometry-corner-radius > 0.
     clip-to-geometry false
 }
 
@@ -216,7 +190,6 @@ binds {
     Mod+Comma hotkey-overlay-title="DMS Settings" { spawn "dms" "ipc" "call" "settings" "toggle"; }
     Mod+Period { expel-window-from-column; }
 
-    // Noctalia (optional). These do not conflict with the DMS defaults.
     Mod+Ctrl+Space hotkey-overlay-title="Noctalia Launcher" { spawn "noctalia" "ipc" "launcher" "toggle"; }
     Mod+Ctrl+S hotkey-overlay-title="Noctalia Control Center" { spawn "noctalia" "ipc" "controlCenter" "toggle"; }
     Mod+Ctrl+Comma hotkey-overlay-title="Noctalia Settings" { spawn "noctalia" "ipc" "settings" "toggle"; }

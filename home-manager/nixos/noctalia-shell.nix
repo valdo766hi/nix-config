@@ -7,7 +7,6 @@
 
   programs.noctalia = {
     enable = true;
-    # DMS remains the default shell; Noctalia can still be started with systemd.
     systemd.enable = true;
 
     settings.theme = {
@@ -17,7 +16,7 @@
     };
   };
 
-  # Keep the unit startable manually instead of enabling it by default.
+  # DMS is the default; keep Noctalia startable manually.
   systemd.user.services.noctalia = {
     Install.WantedBy = lib.mkForce [];
   };

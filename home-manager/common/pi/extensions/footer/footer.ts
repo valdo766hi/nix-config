@@ -1,13 +1,4 @@
 // @ts-nocheck -- Pi provides its extension types and Node globals at runtime.
-// Custom footer — replaces the built-in two-line footer with a context usage bar.
-//
-// Line 1: cwd · git branch · session name          provider/model · thinking level
-// Line 2: [context bar] percent tokens/window      ↑in ↓out Rcache Wcache CHhit% $cost
-// Line 3: extension statuses (only when any extension called ctx.ui.setStatus)
-//
-// The bar and the percentage share one zone colour (green → yellow → red) driven
-// by current usage, and the bar marks the point where auto-compaction triggers,
-// so the remaining headroom is readable at a glance.
 
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import { truncateToWidth, visibleWidth } from "@earendil-works/pi-tui";
@@ -67,19 +58,15 @@ function thinkingColor(level: string): string {
 	}
 }
 
-/**
- * Render the context bar. `ratio` is null when context size is unknown
- * (right after compaction, before the next assistant response).
- */
+/** Usage is unknown after compaction until the next assistant response. */
 function renderBar(theme: any, ratio: number | null, cells: number, markRatio: number): string {
 	const filledEighths = ratio === null ? 0 : Math.round(clamp01(ratio) * cells * 8);
 	const markIndex =
 		markRatio > 0 && markRatio < 1 ? Math.min(cells - 1, Math.floor(markRatio * cells)) : -1;
 
-	// The whole filled run shares the percentage's colour, so bar and number agree.
 	const fillColor = ratio === null ? "dim" : zoneColor(ratio);
 
-	// Accumulate runs of same-coloured cells so one escape sequence covers each run.
+	// Batch same-coloured cells to avoid per-cell ANSI escapes.
 	const parts: string[] = [];
 	let runColor: string | null = null;
 	let runText = "";
@@ -140,15 +127,10 @@ function formatCwd(theme: any, cwd: string): string {
 	}
 	const cut = path.lastIndexOf("/");
 	if (cut <= 0) return theme.fg("text", path);
-	// Dim the parents, keep the current directory legible.
 	return theme.fg("dim", `${path.slice(0, cut + 1)}`) + theme.fg("text", path.slice(cut + 1));
 }
 
-/**
- * Cumulative token/cost stats across the whole session, matching pi's built-in footer.
- * Returns a full and a compact variant; narrow terminals use the compact one so the
- * context bar keeps its space.
- */
+/** Session totals include compaction and branch summaries, matching pi's footer. */
 function collectStats(ctx: any, theme: any): { full: string; compact: string } {
 	let input = 0;
 	let output = 0;
@@ -222,7 +204,6 @@ export default function (pi: ExtensionAPI) {
 				render(width: number): string[] {
 					if (width < 8) return [];
 
-					// ---- line 1: location -------------------------------------------------
 					const locationParts = [formatCwd(theme, ctx.sessionManager.getCwd())];
 					const branch = footerData.getGitBranch();
 					if (branch) locationParts.push(theme.fg("success", branch));
@@ -241,7 +222,6 @@ export default function (pi: ExtensionAPI) {
 						modelStr += theme.fg("dim", SEPARATOR) + theme.fg(thinkingColor(level), label);
 					}
 
-					// ---- line 2: context bar + usage stats --------------------------------
 					const usage = ctx.getContextUsage();
 					const contextWindow = usage?.contextWindow ?? model?.contextWindow ?? 0;
 					const ratio = usage && usage.percent !== null ? usage.percent / 100 : null;
@@ -254,8 +234,7 @@ export default function (pi: ExtensionAPI) {
 						`${usage?.tokens != null ? formatTokens(usage.tokens) : "?"}/${formatTokens(contextWindow)}`,
 					);
 
-					// Give the bar whatever horizontal room is left, dropping the cache stats
-					// before the bar itself when the terminal is narrow.
+					// Drop cache stats before shrinking the bar on narrow terminals.
 					const stats = collectStats(ctx, theme);
 					const reserved = visibleWidth(percentStr) + visibleWidth(tokensStr) + 8;
 					const cellsFor = (right: string) =>
@@ -283,7 +262,6 @@ export default function (pi: ExtensionAPI) {
 						joinLeftRight(contextLeft, statsStr, width, theme),
 					];
 
-					// ---- line 3: extension statuses ---------------------------------------
 					const statuses = footerData.getExtensionStatuses();
 					if (statuses.size > 0) {
 						const line = Array.from(statuses.entries())

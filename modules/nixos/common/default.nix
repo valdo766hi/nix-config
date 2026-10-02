@@ -46,11 +46,7 @@ in {
     ];
   };
 
-  networking.hosts = {
-    # Example for adding on /etc/hosts
-    # "127.0.0.1" = ["app.test" "api.app.test"];
-    # "192.168.1.10" = ["server.test"];
-  };
+  networking.hosts = {};
 
   time.timeZone = "Asia/Jakarta";
   i18n.defaultLocale = "en_US.UTF-8";

@@ -1,7 +1,3 @@
-// Fast mode — opt into OpenAI's `priority` service tier for the current session.
-//
-// State lives in memory only: every new pi session starts with fast mode off.
-
 // @ts-expect-error Pi provides this package when it loads the installed extension.
 import type * as Pi from "@earendil-works/pi-coding-agent";
 
@@ -11,10 +7,7 @@ const FAST_PROVIDERS = new Set(["openai", "openai-codex"]);
 /** Request APIs that serialize a `service_tier` field. */
 const FAST_APIS = new Set(["openai-responses", "openai-codex-responses"]);
 
-/**
- * Nerd-font bolt (nf-fa-bolt). Written as an escape because the literal glyph
- * lives in a private-use area and does not survive every editor and pipeline.
- */
+/** Escape the private-use glyph; editors have replaced the literal with spaces. */
 const ICON = "\u{f0e7}";
 
 export default function (pi: Pi.ExtensionAPI) {
@@ -25,7 +18,6 @@ export default function (pi: Pi.ExtensionAPI) {
 		ctx.ui.setStatus("fast", `${ICON} FAST: ${enabled ? "ON" : "OFF"}`);
 	};
 
-	// Fast mode is never persisted; a new or resumed session always starts off.
 	pi.on(
 		"session_start",
 		(_event: Pi.SessionStartEvent, ctx: Pi.ExtensionContext) => {

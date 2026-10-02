@@ -5,8 +5,6 @@
 
     settings = {
       add_newline = true;
-      # Keep time on the top line, aligned to the right.
-      # (Avoids putting the timestamp on the command-entry line.)
       format = "$directory${"$"}{custom.dir_endcap}$git_branch$git_status${"$"}{fill}$time\n\n$character";
 
       character = {

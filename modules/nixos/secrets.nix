@@ -44,13 +44,7 @@
 
       "winapps.conf" = {
         content = ''
-          ##################################
-          #   WINAPPS CONFIGURATION FILE   #
-          ##################################
-
-          # Read credentials at runtime instead of interpolating raw values into
-          # shell syntax. This keeps quotes, dollar signs, and newlines in the
-          # decrypted values from changing the generated configuration.
+          # Read at runtime so secret values cannot alter shell syntax.
           RDP_USER="$(cat /run/secrets/winapps_rdp_user)"
           RDP_PASS="$(cat /run/secrets/winapps_rdp_pass)"
           RDP_DOMAIN=""

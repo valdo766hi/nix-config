@@ -1,6 +1,4 @@
 // @ts-nocheck -- Pi provides its extension types and Node globals at runtime.
-// RTK Pi extension — rewrites bash commands to use rtk for token savings.
-// Requires: rtk >= 0.23.0 in PATH.
 
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import { isToolCallEventType } from "@earendil-works/pi-coding-agent";

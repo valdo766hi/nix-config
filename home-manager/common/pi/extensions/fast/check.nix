@@ -1,5 +1,3 @@
-# Runs the fast-mode extension's tests under Node's built-in test runner.
-# Exposed as the `pi-fast-extension` flake check.
 {
   runCommand,
   nodejs_24,

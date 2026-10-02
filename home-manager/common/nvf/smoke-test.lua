@@ -72,7 +72,6 @@ local ok, err = xpcall(function()
   end), "Telescope text preview failed")
   vim.api.nvim_win_close(preview_win, true)
 
-  -- Use a tiny generated image; test the actual async Chafa preview hook.
   local image_file = vim.fn.tempname() .. ".PNG"
   local result = vim.system({ "magick", "-size", "2x2", "xc:red", image_file }):wait()
   assert(result.code == 0, result.stderr)

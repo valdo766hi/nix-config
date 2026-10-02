@@ -7,7 +7,6 @@
   antigravityCli = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.antigravity-cli;
 in {
   home.packages = with pkgs; [
-    # CLI
     btop
     pwgen
     nodejs
