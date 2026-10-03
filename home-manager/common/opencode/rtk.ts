@@ -1,4 +1,6 @@
+// @ts-nocheck -- OpenCode provides Node and plugin types at runtime.
 // OpenCode 2 API only; rewrite rules belong to `rtk rewrite` (RTK >= 0.23.0).
+// A missing or older rtk prints nothing, so commands pass through unchanged.
 
 import { execFile } from "node:child_process"
 
@@ -12,11 +14,6 @@ const run = (args: string[]) =>
 export default {
   id: "rtk",
   async setup(ctx) {
-    if (!(await run(["--version"]))) {
-      console.warn("[rtk] rtk binary not found in PATH — plugin disabled")
-      return
-    }
-
     await ctx.tool.hook("execute.before", async (event) => {
       const tool = String(event.tool ?? "").toLowerCase()
       if (tool !== "bash" && tool !== "shell") return

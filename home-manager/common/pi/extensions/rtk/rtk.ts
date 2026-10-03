@@ -4,17 +4,6 @@ import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import { isToolCallEventType } from "@earendil-works/pi-coding-agent";
 
 const REWRITE_TIMEOUT_MS = 2_000;
-const MIN_SUPPORTED_RTK_MINOR = 23;
-
-function parseSemver(raw: string): [number, number, number] | null {
-	const match = raw.trim().match(/(\d+)\.(\d+)\.(\d+)/);
-	if (!match) return null;
-	return [
-		Number.parseInt(match[1], 10),
-		Number.parseInt(match[2], 10),
-		Number.parseInt(match[3], 10),
-	];
-}
 
 async function rewriteCommand(
 	pi: ExtensionAPI,
@@ -25,30 +14,12 @@ async function rewriteCommand(
 		timeout: REWRITE_TIMEOUT_MS,
 		signal,
 	});
+	// A missing or pre-0.23 rtk fails here, so the command passes through unchanged.
 	if (result.killed || (result.code !== 0 && result.code !== 3)) return null;
 	return result.stdout.trim() || null;
 }
 
-export default async function (pi: ExtensionAPI) {
-	const version = await pi.exec("rtk", ["--version"], {
-		timeout: REWRITE_TIMEOUT_MS,
-	});
-	if (version.code !== 0) {
-		console.warn("[rtk] rtk binary not found in PATH — extension disabled");
-		return;
-	}
-
-	const parsed = parseSemver(version.stdout.replace(/^rtk\s+/, ""));
-	if (parsed) {
-		const [major, minor] = parsed;
-		if (major === 0 && minor < MIN_SUPPORTED_RTK_MINOR) {
-			console.warn(
-				`[rtk] ${version.stdout.trim()} is too old (need >= 0.23.0) — extension disabled`,
-			);
-			return;
-		}
-	}
-
+export default function (pi: ExtensionAPI) {
 	pi.on("tool_call", async (event, ctx) => {
 		try {
 			if (!isToolCallEventType("bash", event)) return;
@@ -67,7 +38,7 @@ export default async function (pi: ExtensionAPI) {
 			const rewritten = await rewriteCommand(pi, command, ctx.signal);
 			if (rewritten && rewritten !== command) event.input.command = rewritten;
 		} catch (error) {
-			console.warn(
+			console.error(
 				"[rtk] unexpected error in tool_call handler; passing through command",
 				error,
 			);
