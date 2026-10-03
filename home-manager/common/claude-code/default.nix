@@ -120,15 +120,8 @@ in {
       echo "warning: skipping invalid Claude Code settings: $config" >&2
     else
       merge() {
-        ${pkgs.jq}/bin/jq --slurpfile managed ${settings} '
-        .model = $managed[0].model |
-        .attribution = ((.attribution // {}) + $managed[0].attribution) |
-        .enabledPlugins = ((.enabledPlugins // {}) + $managed[0].enabledPlugins) |
-        .extraKnownMarketplaces = ((.extraKnownMarketplaces // {}) + $managed[0].extraKnownMarketplaces) |
-        .hooks.PreToolUse = ((.hooks.PreToolUse // []) |
-          if any(.[]; any(.hooks[]?; .command == $managed[0].hooks.PreToolUse[0].hooks[0].command))
-          then . else . + $managed[0].hooks.PreToolUse end)
-        ' > "$temp_file"
+        ${pkgs.jq}/bin/jq --slurpfile managed ${settings} \
+          --from-file ${./merge-settings.jq} > "$temp_file"
       }
       if [ -f "$config" ]; then
         merge < "$config"
