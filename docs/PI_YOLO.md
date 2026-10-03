@@ -13,10 +13,10 @@ without disabling the permission policy's explicit denials.
 /yolo off   # disable
 ```
 
-After changing the mode, the extension saves session-local state and reloads
-Pi to reattach the approval overlay. It does not change the permission-system
-configuration. Restart Pi after a Home Manager activation to load updated
-packages and settings.
+Changing the mode saves session-local state without reloading Pi or resetting
+other extensions' modes, including fast and footer modes. It does not change
+the permission-system configuration. Restart Pi after a Home Manager activation
+to load updated packages and settings.
 
 ## What YOLO changes
 
@@ -32,8 +32,13 @@ Keep native `yoloMode` disabled—this overlay is separate from that global mode
 | `deny` | blocked | blocked |
 
 The overlay is a best-effort UI integration, not a replacement for permission
-evaluation. Do not assume it approves noninteractive requests or custom
-authorizers that do not show a supported dialog.
+evaluation. Approval is scoped to request IDs and the synchronous UI call after
+an event; malformed events and overlapping request IDs cannot arm it, and an
+unused arm expires at the next microtask. Unrelated selectors are left untouched.
+Custom inline dialogs expose no request identity: another extension opening one
+synchronously from that same event remains an integration limit. Do not assume
+YOLO approves noninteractive requests or custom authorizers without a supported
+dialog.
 
 Outside-project reads, writes, and commands require approval with YOLO off
 and are auto-approved with YOLO on. Temporary entries, the Nix store, selected
@@ -113,6 +118,11 @@ isolation for a hard credential or deletion boundary.
 Home Manager selects the published package in
 [`home-manager/common/pi/default.nix`](../home-manager/common/pi/default.nix).
 The repository's local `extensions/yolo/yolo.ts` is not the loaded implementation.
+
+The 0.1.7 release is validated with Pi 1.0.0 and permission-system 39.0.2;
+this is why the permission-system pin was upgraded from 37.0.0. Versions 33–38
+are not claimed compatible with this overlay. Review its published peer
+constraints when updating either dependency.
 
 The package stores the toggle at `~/.pi/agent/yolo-state/<session-id>.json`.
 The same session restores it after reload, restart, resume, or compaction;

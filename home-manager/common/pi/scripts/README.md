@@ -56,6 +56,11 @@ current manifest and lockfile to a temporary directory, applies the
 disabled, repairs semver-compatible transitive dependencies, and audits the
 resulting combined tree. It does not change the live installation.
 
+Audit success does not establish runtime compatibility. Peer installation and
+enforcement are disabled with `--legacy-peer-deps`; review host and extension
+peer constraints and upstream migration notes before accepting pins. Update
+coupled extensions together; see [YOLO compatibility](../../../../docs/PI_YOLO.md#state-and-configuration).
+
 ## Find secure updates
 
 ```sh
@@ -132,9 +137,11 @@ pi mcp list
 ```
 
 The file is read-only, so make enable/exposure changes in
-[`default.nix`](../default.nix), not through `/mcp`. The permission policy's
-`mcp` rules apply only to the adapter's umbrella tool; built-in MCP tools fall
-under its top-level `"*": "allow"` rule.
+[`default.nix`](../default.nix), not through `/mcp`. Since permission-system
+38, the permission policy's `mcp` rules gate both Pi's built-in MCP tools and
+the adapter's umbrella tool. The configured Context7 and Exa targets are
+allowed; unmatched MCP targets use `ask`. The top-level `"*": "allow"` does
+not override that surface policy.
 
 To return to the adapter, restore its quoted package pin, add
 `extensions = ["-builtin:mcp"]`, and move the servers back to
