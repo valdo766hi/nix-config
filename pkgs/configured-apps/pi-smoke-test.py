@@ -19,12 +19,27 @@ try:
         assert settings["theme"] == "catppuccin-mocha"
         assert settings["defaultTools"] == ["+codemode"]
         assert settings["compaction"]["enabled"]
-        assert len(settings["subagents"]["agentOverrides"]) == 8
+        roles = settings["subagents"]["agentOverrides"]
+        assert set(roles) == {
+            "scout", "delegate", "researcher", "evidence-auditor", "context-builder",
+            "planner", "worker", "reviewer", "oracle",
+        }
+        for name, role in roles.items():
+            assert not {"mcp", "intercom"} & set(role["tools"])
+            assert "contact_supervisor" in role["tools"]
+            model = "gpt-6-luna" if name in {"scout", "delegate"} else "gpt-6.1-sol"
+            assert role["model"] == f"openai-codex/{model}"
+        for name in ["scout", "researcher", "context-builder"]:
+            assert {"codemode", "mcp:context7", "mcp:exa"} <= set(roles[name]["tools"])
+        assert {"codemode", "mcp:exa"} <= set(roles["evidence-auditor"]["tools"])
+        assert "watchdog_diff" in roles["reviewer"]["tools"]
+        assert "bash" not in roles["reviewer"]["tools"]
         assert any("pi-subagents@" in package for package in settings["packages"])
         assert all((agent / name).is_symlink() for name in [
             "settings.json", "mcp.json", "APPEND_SYSTEM.md", "extensions/rtk.ts",
             "extensions/pi-permission-system/config.json", "themes/catppuccin-mocha.json",
             "openai-server-compaction.json", "plannotator.json", "pi-fff.json", "lazy-skill.json",
+            "agents/planner.md", "agents/context-builder.md",
         ])
         mcp = json.loads((agent / "mcp.json").read_text())
         assert set(mcp["mcpServers"]) == {"context7", "exa"}

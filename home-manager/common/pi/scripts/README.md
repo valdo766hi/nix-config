@@ -170,8 +170,34 @@ self-update checks.
 The standalone-only `asyncByDefault = false` override is removed. Subagents use
 the package's default background behavior and resolve the SDK from the Node Pi
 installation; explicit `async: false` still selects foreground execution.
-Agent model, context, and tool overrides remain in [`../subagent/default.nix`](../subagent/default.nix).
-Restart Pi after normal activation to load the new runtime.
+Agent models, contexts, tools, and the custom `planner`/`context-builder` definitions
+are managed in [`../subagent/default.nix`](../subagent/default.nix) and included in
+the portable app. Scout and delegate use Luna 6; the other native roles use Sol 6.1.
+Restart Pi after normal activation to load changes.
+
+Tool arrays are still supported, but use current names:
+
+```nix
+tools = [ "read" "codemode" "mcp:context7" "mcp:exa" "contact_supervisor" ];
+```
+
+- `mcp:context7` or `mcp:exa` grants that server's tools; `mcp:server/tool`
+  grants one tool. Pi resolves these selectors to `mcp__<server>__<tool>` names
+  and exposes them directly in the child, even when the parent uses codemode.
+- `codemode` is optional for batching, discovery, and filtering. It does not
+  replace the MCP selectors or grant access to unselected MCP tools.
+- `contact_supervisor` is the native child-to-parent channel. `intercom` needs
+  a separate provider, which this configuration does not install. The old
+  adapter's generic `mcp` tool is not part of built-in MCP.
+- Reviewer uses the package's read-only `watchdog_diff`, not Bash. Researcher
+  and evidence-auditor prompts use the configured MCP providers instead of
+  requiring uninstalled `web_search`/`source_check` tools.
+
+Selected MCP servers must be connected and non-hidden in the parent. Check
+`/mcp` before launching; missing tools fail preflight. File-configured servers
+work in foreground and background children. Extension-only registered servers
+require background execution. For other extension tools, naming a tool is not
+sufficient: load its provider with `extensions` or `subagentOnlyExtensions`.
 
 ## OpenAI compaction
 
