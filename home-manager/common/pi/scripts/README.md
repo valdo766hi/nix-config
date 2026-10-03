@@ -125,6 +125,20 @@ Both scripts print stable `[INFO]`, `[PASS]`, `[SKIP]`, `[FAIL]`, `[AUDIT]`,
 and `[VULNERABLE]` messages plus meaningful exit codes so people and AI agents
 can use the same workflow.
 
+## Pi runtime and subagents
+
+Pi comes from the official release-tagged `pi` flake input and runs on Node.js;
+`llm-agents` still supplies OpenCode and Antigravity CLI. Update Pi's release tag
+in `flake.nix`, then run `nix flake update pi` and validate before activation.
+The launcher retains its credential allowlist and disables telemetry and
+self-update checks.
+
+The standalone-only `asyncByDefault = false` override is removed. Subagents use
+the package's default background behavior and resolve the SDK from the Node Pi
+installation; explicit `async: false` still selects foreground execution.
+Agent model, context, and tool overrides remain in [`../subagent/default.nix`](../subagent/default.nix).
+Restart Pi after normal activation to load the new runtime.
+
 ## OpenAI compaction
 
 Auto-compaction is enabled explicitly. For both `openai/*` and

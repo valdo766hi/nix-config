@@ -68,7 +68,8 @@ affected application's config and documented bindings after an update.
 | Dependency | Source of truth / procedure |
 | --- | --- |
 | Nixpkgs, nvf, Home Manager, desktop shells | Inputs in `flake.nix` and revisions in `flake.lock` |
-| Pi/OpenCode binaries | `llm-agents` input; update with `nix flake update llm-agents` |
+| Pi | Official `pi` input; change the release tag in `flake.nix`, then `nix flake update pi` |
+| OpenCode / Antigravity CLI | `llm-agents` input; update with `nix flake update llm-agents` |
 | macOS apps and formulas | `homebrew-cask` / `homebrew-core` inputs |
 | OmniWM | [Release review and migration procedure](OMNIWM_UPDATES.md) |
 | Pi npm extensions | [Audit-first updater](../home-manager/common/pi/scripts/README.md) |

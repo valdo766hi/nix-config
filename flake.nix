@@ -80,6 +80,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    pi = {
+      url = "github:earendil-works/pi/v1.0.1";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     vicinae = {
       url = "github:vicinaehq/vicinae";
       inputs.nixpkgs.follows = "nixpkgs";

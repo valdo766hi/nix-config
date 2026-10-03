@@ -1,5 +1,5 @@
 {inputs, pkgs, ...}: let
-  piPackage = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.pi;
+  piPackage = inputs.pi.packages.${pkgs.stdenv.hostPlatform.system}.pi;
 
   # Pi is launched from shells that contain provider and Git credentials. Keep
   # only the credentials required by the configured MCP servers and providers.
@@ -25,6 +25,8 @@
         EXA_API_KEY="''${EXA_API_KEY:-}" \
         TYPESAFE_API_KEY="''${TYPESAFE_API_KEY:-}" \
         OPENCODE_API_KEY="''${OPENCODE_GO_API_KEY:-}" \
+        PI_TELEMETRY=0 \
+        PI_SKIP_VERSION_CHECK=1 \
         ${piPackage}/bin/pi "$@"
     '';
   };
@@ -51,10 +53,6 @@ in {
   home.packages = [skillSecCheck piTmpRm];
 
   home.file = {
-    # The flake-provided Pi is a standalone binary, so keep subagents in-process.
-    ".pi/agent/extensions/subagent/config.json".text = builtins.toJSON {
-      asyncByDefault = false;
-    };
     ".pi/agent/extensions/rtk.ts".source = ./extensions/rtk/rtk.ts;
     ".pi/agent/extensions/pi-permission-system/config.json" = {
       source = ./extensions/pi-permission-system/config.json;
