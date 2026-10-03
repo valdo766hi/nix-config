@@ -81,6 +81,12 @@
       env -u XDG_CONFIG_HOME -u XDG_DATA_HOME nu --no-history --execute 'try { source ${startupTest}; exit 0 } catch {|err| print --stderr $err.msg; exit 1 }'
       touch $out
     '';
+  mkPiCheck = system: let
+    testPkgs = inputs.nixpkgs.legacyPackages.${system};
+  in testPkgs.runCommand "check-pi-config" {nativeBuildInputs = [testPkgs.python3];} ''
+    python ${../pkgs/configured-apps/pi-smoke-test.py} ${self.packages.${system}.pi}/bin/pi
+    touch $out
+  '';
   mkNeovimCheck = system:
     inputs.nixpkgs.legacyPackages.${system}.runCommand "check-neovim-config" {} ''
       export HOME="$TMPDIR/home"
@@ -96,6 +102,7 @@
     '';
 in {
   aarch64-darwin = {
+    pi-config = mkPiCheck "aarch64-darwin";
     neovim-config = mkNeovimCheck "aarch64-darwin";
     nushell-config = mkNushellCheck "aarch64-darwin";
   };
@@ -122,5 +129,6 @@ in {
 
     pi-fast-extension = pkgs.callPackage ../home-manager/common/pi/extensions/fast/check.nix {};
     pi-tools = pkgs.callPackage ../home-manager/common/pi/check.nix {};
+    pi-config = mkPiCheck "x86_64-linux";
   };
 }

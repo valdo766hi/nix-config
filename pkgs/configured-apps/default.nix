@@ -58,7 +58,38 @@ in {
       meta = (package.meta or {}) // {mainProgram = "lazygit";};
     };
 
-  mkPi = {package}: withMainProgram package "pi";
+  mkPi = {
+    package,
+    agentFiles,
+    settings,
+    compactionRatio,
+    runtimeInputs,
+  }: let
+    tools = [pkgs.coreutils pkgs.bash pkgs.fd pkgs.ripgrep pkgs.gitMinimal pkgs.nodejs_22] ++ runtimeInputs;
+    files = agentFiles // {
+      "settings.json" = pkgs.writeText "pi-portable-settings.json" (builtins.toJSON (settings // {
+        shellPath = lib.getExe pkgs.bash;
+        shellCommandPrefix = ''export PATH=${lib.makeBinPath tools}:"$PATH"; ${settings.shellCommandPrefix or ""}'';
+      }));
+    };
+    configDir = mkConfigDir {
+      name = "pi-configured";
+      inherit files;
+    };
+  in pkgs.writeShellApplication {
+    name = "pi";
+    runtimeInputs = tools;
+    text = ''
+      umask 077
+      export PI_CODING_AGENT_DIR="$HOME/.pi/nix-config/agent"
+      ${lib.concatStringsSep "\n" (lib.mapAttrsToList (name: _: ''
+        mkdir -p "$(dirname "$PI_CODING_AGENT_DIR/${name}")"
+        ln -sfn "${configDir}/${name}" "$PI_CODING_AGENT_DIR/${name}"
+      '') files)}
+      export PI_OPENAI_SERVER_COMPACTION_RATIO=${toString compactionRatio}
+      exec ${package}/bin/pi "$@"
+    '';
+  };
 
   mkPiG = {package}: pkgs.writeShellApplication {
     name = "pig";

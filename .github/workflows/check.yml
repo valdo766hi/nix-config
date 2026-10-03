@@ -51,6 +51,7 @@ jobs:
             .#checks.x86_64-linux.yazi \
             .#checks.x86_64-linux.lazygit \
             .#checks.x86_64-linux.pi \
+            .#checks.x86_64-linux.pi-config \
             .#checks.x86_64-linux.pi-fast-extension \
             .#checks.x86_64-linux.pi-tools \
             .#checks.x86_64-linux.nushell-config \

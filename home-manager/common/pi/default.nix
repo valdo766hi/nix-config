@@ -9,6 +9,8 @@
     text = ''
       exec env -i \
         HOME="$HOME" \
+        PI_CODING_AGENT_DIR="''${PI_CODING_AGENT_DIR:-$HOME/.pi/agent}" \
+        PI_OPENAI_SERVER_COMPACTION_RATIO="''${PI_OPENAI_SERVER_COMPACTION_RATIO:-}" \
         TMPDIR=/tmp \
         SSH_AUTH_SOCK="''${SSH_AUTH_SOCK:-}" \
         PATH="$PATH" \
