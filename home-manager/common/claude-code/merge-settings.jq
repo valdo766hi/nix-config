@@ -1,5 +1,6 @@
 .model = $managed[0].model |
 .attribution = ((.attribution // {}) + $managed[0].attribution) |
+.statusLine = $managed[0].statusLine |
 .enabledPlugins = ((.enabledPlugins // {}) + $managed[0].enabledPlugins) |
 .extraKnownMarketplaces = ((.extraKnownMarketplaces // {}) + $managed[0].extraKnownMarketplaces) |
 .hooks.PreToolUse = (

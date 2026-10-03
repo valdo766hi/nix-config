@@ -25,6 +25,18 @@
       chmod +x "$out/bin/plannotator"
     '';
   };
+  statusline = pkgs.writeShellApplication {
+    name = "claude-statusline";
+    runtimeInputs = [pkgs.git pkgs.jq];
+    text = ''
+      input=$(cat)
+      dir=$(jq -r '.workspace.current_dir // .cwd // empty' <<<"$input")
+      branch=$(git -C "''${dir:-.}" --no-optional-locks branch --show-current 2>/dev/null || true)
+      # Leave room for Claude Code's own status line spacing.
+      jq -r --arg branch "$branch" --arg home "$HOME" --argjson width "$((''${COLUMNS:-80} - 4))" \
+        --from-file ${./statusline.jq} <<<"$input"
+    '';
+  };
   readTools = ["Read" "Grep" "Glob"];
   agents = {
     scout = {
@@ -79,6 +91,10 @@
   settings = pkgs.writeText "claude-code-settings.json" (builtins.toJSON {
     model = "claude-opus-5-5";
     attribution = {commit = ""; pr = ""; sessionUrl = false;};
+    statusLine = {
+      type = "command";
+      command = lib.getExe statusline;
+    };
     enabledPlugins."plannotator@plannotator" = true;
     extraKnownMarketplaces.plannotator.source = {
       source = "github";
