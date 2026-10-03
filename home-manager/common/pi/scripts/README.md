@@ -125,6 +125,19 @@ Both scripts print stable `[INFO]`, `[PASS]`, `[SKIP]`, `[FAIL]`, `[AUDIT]`,
 and `[VULNERABLE]` messages plus meaningful exit codes so people and AI agents
 can use the same workflow.
 
+## OpenAI compaction
+
+Auto-compaction is enabled explicitly. For both `openai/*` and
+`openai-codex/*`, Pi triggers compaction with its default 16,384-token reserve;
+`pi-openai-server-compaction` then requests remote compaction and a portable
+text summary. If remote compaction fails, the extension falls back to text.
+
+Home Manager sets `thresholdRatio = 1.0` in
+`~/.pi/agent/openai-server-compaction.json`, moving direct OpenAI's independent
+inline threshold from 70% to 100%. Pi's threshold should therefore run first;
+inline compaction remains a fallback, not disabled. Project-local extension
+configuration can override this setting.
+
 ## MCP ownership
 
 Pi's built-in MCP is on trial in place of `pi-mcp-adapter`. Home Manager writes

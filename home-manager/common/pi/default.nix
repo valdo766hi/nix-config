@@ -60,6 +60,9 @@ in {
       source = ./extensions/pi-permission-system/config.json;
       force = true;
     };
+    ".pi/agent/openai-server-compaction.json".text = builtins.toJSON {
+      thresholdRatio = 1.0;
+    };
     ".pi/agent/plannotator.json".source = ./extensions/plannotator/config.json;
     ".pi/agent/pi-fff.json".text = builtins.toJSON {mode = "override";};
     ".pi/agent/lazy-skill.json".text = builtins.toJSON {
@@ -108,6 +111,7 @@ in {
       hideThinkingBlock = true;
       defaultThinkingLevel = "max";
       defaultTools = ["+codemode"];
+      compaction.enabled = true;
       packages = [
         "npm:pi-lens@4.3.0"
         # npm:pi-mcp-adapter@5.0.0 (unquoted so pi-package-update skips it)
