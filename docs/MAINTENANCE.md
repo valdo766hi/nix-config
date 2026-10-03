@@ -35,14 +35,15 @@ git diff --cached --check
 nix flake check --all-systems --no-build
 ```
 
-To build and execute isolated editor/shell smoke tests on your own platform:
+To build and execute isolated application smoke tests on your own platform:
 
 ```sh
-nix build --no-link .#checks.aarch64-darwin.neovim-config .#checks.aarch64-darwin.nushell-config
+nix build --no-link .#checks.aarch64-darwin.neovim-config .#checks.aarch64-darwin.nushell-config .#checks.aarch64-darwin.pi-config
 ```
 
-On Linux, use `checks.x86_64-linux.neovim-config` and
-`checks.x86_64-linux.nushell-config`. These checks use temporary HOME/XDG paths,
+On Linux, use `checks.x86_64-linux.neovim-config`,
+`checks.x86_64-linux.nushell-config`, and `checks.x86_64-linux.pi-config`.
+These checks use temporary HOME/XDG paths,
 not your live shell or editor state. They are application checks, not host
 rebuilds.
 

@@ -125,6 +125,40 @@ Both scripts print stable `[INFO]`, `[PASS]`, `[SKIP]`, `[FAIL]`, `[AUDIT]`,
 and `[VULNERABLE]` messages plus meaningful exit codes so people and AI agents
 can use the same workflow.
 
+## Portable Pi
+
+```sh
+nix run github:valdo766hi/nix-config#pi
+```
+
+The exported app links the same Home Manager settings, MCP definitions,
+Catppuccin theme, RTK extension, instructions, permission policy, and extension
+configuration into `~/.pi/nix-config/agent`. It includes Node/npm, Git, RTK,
+Plannotator, `pi-tmp-rm`, and the skill security checker on Pi's PATH. A Nix Bash
+and `shellCommandPrefix` keep those tools available even when shell startup
+resets PATH. Normal `~/.pi/agent` settings and state are untouched; no activation
+is required.
+
+The first launch needs network access to install the pinned npm/git packages.
+Their mutable dependency trees and sessions are cached in the portable profile,
+not built into the Nix closure. Subsequent launches reuse those installations.
+The configuration links are read-only and refreshed on every launch; change
+managed settings in this repository rather than with `/settings` or `pi config`.
+Trusted project configuration and CLI overrides still apply.
+
+Use `/login` in this profile: authentication is not copied from your normal Pi
+installation and is never included in the Nix store. Set `CONTEXT7_API_KEY` and
+`EXA_API_KEY` in the calling environment to authenticate the bundled MCP servers.
+The existing credential-filtering launcher is retained. The permission policy
+is relocated to protect the portable profile, and the compaction ratio is
+forwarded explicitly because that extension's global config lookup is fixed to
+`~/.pi/agent`.
+
+The offline `checks.<system>.pi-config` smoke test uses a temporary HOME, checks
+configuration and tool availability, and verifies that normal Pi settings are
+preserved. It does not download extensions, connect MCP servers, or make model
+requests.
+
 ## Pi runtime and subagents
 
 Pi comes from the official release-tagged `pi` flake input and runs on Node.js;

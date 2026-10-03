@@ -25,7 +25,7 @@
 | Guide | Scope |
 | --- | --- |
 | [Pi YOLO](PI_YOLO.md) | Session-local approval overlay and permission limitations |
-| [Pi maintenance scripts](../home-manager/common/pi/scripts/README.md) | Package audits, updates, temporary override, and skill scans |
+| [Pi configuration and maintenance](../home-manager/common/pi/scripts/README.md) | Portable `nix run` setup, package audits, updates, and skill scans |
 | [PiG](PIG.md) | Separate chat-only setup and historical compatibility evidence |
 | [RTK + OpenCode](RTK_OPENCODE.md) | OpenCode 2 plugin, package pinning, and troubleshooting |
 

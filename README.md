@@ -1,8 +1,7 @@
 # Nix config
 
 One flake for my NixOS and macOS machines: thin hosts, explicit modules, and a
-shared Home Manager base. Inspired by
-[gvolpe/nix-config](https://github.com/gvolpe/nix-config).
+shared Home Manager base.
 
 This is a personal configuration, not an installation template. Before
 adapting it, review usernames, home directories, hardware, and secret paths.
@@ -31,16 +30,25 @@ Run the configured editor or an exported tool without a system switch:
 nix run .#neovim
 nix run .#yazi
 nix run .#lazygit
+nix run .#pi
 nix run .#rtk -- --version
 ```
 
 These packages also work with a remote flake reference, for example
 `nix run github:valdo766hi/nix-config#neovim`.
 
-`nix run .#pi` and `nix run .#pig` launch the Nix-managed binaries with filtered
-environments; they still use mutable settings and authentication in `~/.pi` and
-`~/.pig`. Running them does **not** install the Home Manager settings.
-[PiG is currently chat-only](docs/PIG.md), with coding tools disabled.
+`nix run github:valdo766hi/nix-config#pi` includes the repository's Pi settings,
+MCP definitions, theme, local extension, and pinned extension declarations,
+plus RTK and supporting tools. No Home Manager activation is needed. Pi installs
+npm/git packages on first launch, requiring network access, then caches them in
+`~/.pi/nix-config/agent`. That profile keeps authentication and session state
+separate from your normal `~/.pi/agent`; use `/login` to authenticate and provide
+`CONTEXT7_API_KEY` / `EXA_API_KEY` in your environment for MCP.
+See [portable Pi](home-manager/common/pi/scripts/README.md#portable-pi).
+
+`nix run .#pig` still uses mutable settings and authentication in `~/.pig`; it
+does not install Home Manager settings. [PiG is currently chat-only](docs/PIG.md),
+with coding tools disabled.
 
 Yazi's package embeds its configuration, but cannot change the calling shell's
 directory. Use the Home Manager `y` wrapper for that. LazyGit embeds its managed
