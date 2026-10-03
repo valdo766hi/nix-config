@@ -1,7 +1,7 @@
 {...}: {
   programs.pi-coding-agent.settings.subagents.agentOverrides = {
     scout = {
-      model = "openai-codex/gpt-5.6-luna";
+      model = "openai-codex/gpt-6-luna";
       thinking = "low";
       defaultContext = "fresh";
       acceptanceRole = "read-only";
@@ -9,7 +9,7 @@
     };
 
     delegate = {
-      model = "openai-codex/gpt-5.6-luna";
+      model = "openai-codex/gpt-6-luna";
       thinking = "low";
       defaultContext = "fresh";
       acceptanceRole = "read-only";
@@ -17,7 +17,7 @@
     };
 
     researcher = {
-      model = "openai-codex/gpt-5.6-terra";
+      model = "openai-codex/gpt-6.1-sol";
       thinking = "medium";
       defaultContext = "fresh";
       acceptanceRole = "read-only";
@@ -25,7 +25,7 @@
     };
 
     "context-builder" = {
-      model = "openai-codex/gpt-5.6-terra";
+      model = "openai-codex/gpt-6.1-sol";
       thinking = "medium";
       defaultContext = "fresh";
       acceptanceRole = "read-only";
@@ -33,7 +33,7 @@
     };
 
     planner = {
-      model = "openai-codex/gpt-5.6-terra";
+      model = "openai-codex/gpt-6.1-sol";
       thinking = "high";
       defaultContext = "fork";
       acceptanceRole = "read-only";
@@ -41,7 +41,7 @@
     };
 
     worker = {
-      model = "openai-codex/gpt-5.6-terra";
+      model = "openai-codex/gpt-6.1-sol";
       thinking = "high";
       defaultContext = "fork";
       acceptanceRole = "writer";
@@ -49,7 +49,7 @@
     };
 
     reviewer = {
-      model = "openai-codex/gpt-5.6-sol";
+      model = "openai-codex/gpt-6.1-sol";
       thinking = "high";
       defaultContext = "fresh";
       acceptanceRole = "read-only";
@@ -57,7 +57,7 @@
     };
 
     oracle = {
-      model = "openai-codex/gpt-5.6-sol";
+      model = "openai-codex/gpt-6.1-sol";
       thinking = "max";
       defaultContext = "fork";
       acceptanceRole = "read-only";
