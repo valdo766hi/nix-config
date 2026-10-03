@@ -120,7 +120,7 @@ in {
         "npm:pi-subagents@0.74.0"
         "npm:@gotgenes/pi-permission-system@39.0.2"
         "npm:@valdo766hi/pi-fast@0.1.3"
-        "npm:@valdo766hi/pi-footer@0.2.1"
+        "npm:@valdo766hi/pi-footer@0.3.0"
         "npm:@valdo766hi/pi-yolo@0.1.7"
         "npm:@valdo766hi/pi-lazy-skill-tool@0.3.1"
         "npm:@mtrojnar/pi-usage@0.2.0"
