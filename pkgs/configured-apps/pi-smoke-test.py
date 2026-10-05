@@ -39,7 +39,7 @@ try:
             "settings.json", "mcp.json", "APPEND_SYSTEM.md", "extensions/rtk.ts",
             "extensions/pi-permission-system/config.json", "themes/catppuccin-mocha.json",
             "openai-server-compaction.json", "plannotator.json", "pi-fff.json", "lazy-skill.json",
-            "agents/planner.md", "agents/context-builder.md",
+            "agents/planner.md", "agents/context-builder.md", "extensions/token-speed.ts",
         ])
         mcp = json.loads((agent / "mcp.json").read_text())
         assert set(mcp["mcpServers"]) == {"context7", "exa"}

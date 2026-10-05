@@ -17,6 +17,7 @@ import { join } from "node:path";
 import { test } from "node:test";
 import rtkExtension from "./rtk.ts";
 import yoloExtension from "./yolo.ts";
+import tokenSpeedExtension from "./token-speed.ts";
 
 function tempDir(prefix: string): string {
 	return mkdtempSync(join(tmpdir(), prefix));
@@ -261,6 +262,60 @@ test("temp cleanup rejects escapes and never follows directory symlinks", () => 
 	} finally {
 		rmSync(dir, { recursive: true, force: true });
 	}
+});
+
+test("token speed persists one UI-only rate per response without tool execution time", (t) => {
+	let now = 0;
+	t.mock.method(performance, "now", () => now);
+	const handlers = new Map<string, any>();
+	const entries: any[] = [];
+	let renderEntry: any;
+	const ctx = { mode: "tui" };
+	tokenSpeedExtension({
+		on: (name: string, handler: any) => handlers.set(name, handler),
+		registerEntryRenderer: (_type: string, renderer: any) => { renderEntry = renderer; },
+		appendEntry: (customType: string, data: any) => entries.push({ customType, data }),
+	} as any);
+	const emit = (name: string, message?: any, context = ctx) => handlers.get(name)({ message }, context);
+	const assistant = { role: "assistant", usage: { output: 100 } };
+	emit("session_start");
+	emit("turn_start");
+	now = 2000;
+	emit("message_end", assistant);
+	assert.equal(entries.length, 0);
+	now = 9000;
+	emit("message_end", { role: "toolResult" });
+	emit("turn_end");
+	assert.deepEqual(entries, [{ customType: "token-speed", data: { output: 100, elapsedMs: 2000 } }]);
+	emit("turn_end");
+	assert.equal(entries.length, 1);
+	const component = renderEntry(entries[0], {}, { fg: (_color: string, text: string) => text });
+	assert.equal(component.render(40)[0], "50.0 tok/s".padStart(40));
+	assert.ok(component.render(4)[0].length <= 4);
+	for (const data of [undefined, { output: 0, elapsedMs: 1 }, { output: 1, elapsedMs: 0 },
+		{ output: NaN, elapsedMs: 1 }, { output: 1, elapsedMs: Infinity }]) {
+		assert.equal(renderEntry({ data }, {}, {}), undefined);
+	}
+	for (const output of [0, NaN]) {
+		emit("turn_start");
+		now += 1000;
+		emit("message_end", { ...assistant, usage: { output } });
+		emit("turn_end");
+	}
+	assert.equal(entries.length, 1);
+	emit("turn_start");
+	now += 1000;
+	emit("message_end", assistant);
+	emit("session_start");
+	emit("turn_end");
+	assert.equal(entries.length, 1);
+	for (const mode of ["rpc", "print", "json"]) {
+		emit("turn_start", undefined, { mode });
+		now += 1000;
+		emit("message_end", assistant, { mode });
+		emit("turn_end", undefined, { mode });
+	}
+	assert.equal(entries.length, 1);
 });
 
 test("rtk passes a command through when rewriting fails", async () => {

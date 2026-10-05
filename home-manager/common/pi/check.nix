@@ -17,7 +17,17 @@ export function isToolCallEventType(tool, event) {
 EOF
 
   cp ${./extensions/yolo/yolo.ts} yolo.ts
+  mkdir -p node_modules/@earendil-works/pi-tui
+  cat > node_modules/@earendil-works/pi-tui/package.json <<'EOF'
+{"type":"module"}
+EOF
+  cat > node_modules/@earendil-works/pi-tui/index.js <<'EOF'
+export const visibleWidth = text => text.length;
+export const truncateToWidth = (text, width) => text.slice(0, width);
+EOF
+
   cp ${./extensions/rtk/rtk.ts} rtk.ts
+  cp ${./extensions/token-speed.ts} token-speed.ts
   cp ${./scripts/pi-package-update} pi-package-update
   cp ${./scripts/pi-package-security-check} pi-package-security-check
   cp ${./scripts/pi-tmp-rm.py} pi-tmp-rm.py

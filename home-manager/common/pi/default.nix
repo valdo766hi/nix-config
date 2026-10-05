@@ -56,6 +56,7 @@ in {
 
   home.file = {
     ".pi/agent/extensions/rtk.ts".source = ./extensions/rtk/rtk.ts;
+    ".pi/agent/extensions/token-speed.ts".source = ./extensions/token-speed.ts;
     ".pi/agent/extensions/pi-permission-system/config.json" = {
       source = ./extensions/pi-permission-system/config.json;
       force = true;

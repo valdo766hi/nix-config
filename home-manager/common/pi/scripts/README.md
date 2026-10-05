@@ -199,6 +199,19 @@ work in foreground and background children. Extension-only registered servers
 require background execution. For other extension tools, naming a tool is not
 sufficient: load its provider with `extensions` or `subagentOnlyExtensions`.
 
+## Per-response token speed
+
+A bundled local extension shows a dim, right-aligned `tok/s` line after each
+assistant turn, alongside the existing footer. No additional npm package is
+needed. It uses the provider-reported output tokens divided by the assistant
+message's elapsed time, including request latency and reasoning but excluding
+tool execution. It is an end-to-end rate, not a pure model decoding benchmark.
+
+Measurements are stored as custom session entries, excluded from model context,
+so they survive resume without consuming prompt tokens. Old responses cannot be
+measured retroactively; responses with no reported output tokens show no rate.
+The extension runs only in the TUI and is included in the portable Pi app.
+
 ## OpenAI compaction
 
 Auto-compaction is enabled explicitly. For both `openai/*` and
