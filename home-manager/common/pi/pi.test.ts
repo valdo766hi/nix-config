@@ -325,6 +325,32 @@ test("token speed persists one UI-only rate per response without tool execution 
 	assert.equal(entries.length, 1);
 });
 
+test("rtk leaves SSH commands unchanged for identity permission checks", async () => {
+	let toolHandler: any;
+	let rewriteCalls = 0;
+	rtkExtension({
+		on: (_event: string, handler: any) => { toolHandler = handler; },
+		exec: async (_command: string, args: string[]) => {
+			rewriteCalls += 1;
+			return { code: 3, stdout: `rtk ${args[1]}`, killed: false };
+		},
+	} as any);
+	for (const command of [
+		"ssh -i ~/.ssh/id_ed25519 user@host 'ls -lah'",
+		"/usr/bin/ssh -i ~/.ssh/id_ed25519 user@host 'ls -lah'",
+		"cd /tmp && ssh -i ~/.ssh/id_ed25519 user@host 'ls -lah'",
+	]) {
+		const event = { toolName: "bash", input: { command } };
+		await toolHandler(event, { signal: undefined });
+		assert.equal(event.input.command, command);
+	}
+	assert.equal(rewriteCalls, 0);
+	const event = { toolName: "bash", input: { command: "git status" } };
+	await toolHandler(event, { signal: undefined });
+	assert.equal(event.input.command, "rtk git status");
+	assert.equal(rewriteCalls, 1);
+});
+
 test("rtk passes a command through when rewriting fails", async () => {
 	let toolHandler: ((event: any, ctx: any) => Promise<void>) | undefined;
 	let rewriteCalls = 0;

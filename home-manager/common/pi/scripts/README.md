@@ -256,7 +256,8 @@ whether the `fast-uri` override is still needed.
 `ssh -i ~/.ssh/<key> <destination>` requires Bash approval, auto-approved
 in YOLO; `/usr/bin/ssh` works too. Put `-i` first and use the unquoted `~/.ssh/`
 spelling. Other SSH invocations, built-in file-tool access to `.ssh`, and other
-Bash commands mentioning `.ssh` are denied. No SSH wrapper is installed.
+Bash commands mentioning `.ssh` are denied. No SSH wrapper is installed;
+the RTK extension skips SSH rewriting to preserve the identity permission check.
 These simple rules do not prevent arbitrary shell code or extension tools from
 reading keys; see [the policy limitations](../../../../docs/PI_YOLO.md).
 
