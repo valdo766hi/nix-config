@@ -224,7 +224,14 @@ test("permission policy retains hard credential and deletion denials", () => {
 			Object.keys(permission[tool]).indexOf("~/.pi/*"));
 	}
 	assert.equal(permission.bash["*.ssh*"], "deny");
-	assert.equal(permission.bash["ssh *"], "ask");
+	const bashPatterns = Object.keys(permission.bash);
+	for (const ssh of ["ssh", "/usr/bin/ssh"]) {
+		assert.equal(permission.bash[`${ssh} *`], "deny");
+		const identity = `${ssh} -i ~/.ssh/?*`;
+		assert.equal(permission.bash[identity], "ask");
+		assert.ok(bashPatterns.indexOf(identity) > bashPatterns.indexOf(`${ssh} *`));
+		assert.ok(bashPatterns.indexOf(identity) > bashPatterns.indexOf("*.ssh*"));
+	}
 	assert.equal(permission.bash["rm *"].action, "deny");
 	assert.equal(permission.bash["*/rm *"], "deny");
 	assert.equal(permission.bash["git clean *"], "deny");
