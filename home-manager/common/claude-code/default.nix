@@ -27,14 +27,30 @@
   };
   statusline = pkgs.writeShellApplication {
     name = "claude-statusline";
-    runtimeInputs = [pkgs.git pkgs.jq];
+    runtimeInputs = [pkgs.coreutils pkgs.git pkgs.jq];
     text = ''
+      umask 077
       input=$(cat)
       dir=$(jq -r '.workspace.current_dir // .cwd // empty' <<<"$input")
       branch=$(git -C "''${dir:-.}" --no-optional-locks branch --show-current 2>/dev/null || true)
+      session=$(jq -r '.session_id // empty' <<<"$input")
+      state_dir="''${XDG_CACHE_HOME:-$HOME/.cache}/claude-statusline"
+      state_file=""
+      previous=null
+      if [[ "$session" =~ ^[a-zA-Z0-9_-]+$ ]] && mkdir -p "$state_dir"; then
+        state_file="$state_dir/$session.json"
+        previous=$(jq -ce 'select(type == "object" and (.api_ms | type) == "number" and
+          (.speed == null or (.speed | type) == "number"))' "$state_file" 2>/dev/null || printf null)
+      fi
       # Leave room for Claude Code's own status line spacing.
-      jq -r --arg branch "$branch" --arg home "$HOME" --argjson width "$((''${COLUMNS:-80} - 4))" \
-        --from-file ${./statusline.jq} <<<"$input"
+      rendered=$(jq -c --arg branch "$branch" --arg home "$HOME" --argjson previous "$previous" \
+        --argjson width "$((''${COLUMNS:-80} - 4))" --from-file ${./statusline.jq} <<<"$input")
+      if [[ -n "$state_file" ]] && state_tmp=$(mktemp "$state_file.XXXXXX"); then
+        trap 'rm -f "$state_tmp"' EXIT
+        jq -c '.stats' <<<"$rendered" > "$state_tmp"
+        mv -f "$state_tmp" "$state_file"
+      fi
+      jq -r '.lines[]' <<<"$rendered"
     '';
   };
   readTools = ["Read" "Grep" "Glob"];

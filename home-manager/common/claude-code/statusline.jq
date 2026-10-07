@@ -1,6 +1,6 @@
 # Two-line Claude Code status line modeled on the pi-footer extension: project,
-# branch, and model, then the context bar, cache hit rate, and cost. Narrow
-# terminals drop cost, then cache, then the bar instead of wrapping.
+# branch, and model, then the context bar, cache hit rate, cost, and token speed.
+# Narrow terminals drop cost, cache, speed, then the bar instead of wrapping.
 
 def seg($t; $c): {t: $t, c: $c};
 def plain: map(.t) | add // "";
@@ -32,7 +32,18 @@ def fit($left; $right; $width):
     elif $rw == 0 or $width - $lw - 2 < $rw then $left
     else $left + [seg([range($width - $lw - $rw)] | map(" ") | join(""); "")] + $right end;
 
-if $width < 8 then empty else
+# API time is cumulative, but output tokens belong only to the latest response.
+def token_stats($previous):
+  (.cost.total_api_duration_ms // 0) as $ms
+  | (.context_window.current_usage.output_tokens // 0) as $output
+  | {api_ms: $ms, speed:
+      (if $output <= 0 or $ms <= 0 or $previous.api_ms == null then null
+       elif $ms == $previous.api_ms then $previous.speed
+       elif $ms > $previous.api_ms then $output * 1000 / ($ms - $previous.api_ms)
+       else null end)};
+
+token_stats($previous) as $stats
+| {stats: $stats, lines: [if $width < 8 then empty else
   (.workspace.current_dir // .cwd // "") as $dir
   | ([seg(if $dir == $home then "~" else $dir | split("/") | map(select(. != "")) | last // $dir end; "1")]
     + (if $branch != "" then [seg(" · "; "2"), seg("⎇ \($branch)"; "32")] else [] end)) as $location
@@ -47,14 +58,15 @@ if $width < 8 then empty else
   | (gap + [$percent] + gap + [seg("\($used)/\($cw.context_window_size // 0 | tokens)"; "2")]) as $tail
   | (if .prompt_cache.hit_ratio != null then [seg("◎ \(.prompt_cache.hit_ratio * 100 | round)%"; "2")] else [] end) as $cache
   | (if (.cost.total_cost_usd // 0) > 0 then [seg(.cost.total_cost_usd | money; "90")] else [] end) as $cost
+  | (if $stats.speed != null then [seg("~\($stats.speed * 10 | round / 10) tok/s"; "2")] else [] end) as $speed
 
   | fit($location; $model; $width),
     (first(
-      ([$cache, $cost] | joined), $cache, []
+      ([$cache, $cost, $speed] | joined), ([$cache, $speed] | joined), $speed, []
       | . as $right
       | ([24, $width - ($tail | cols) - ($right | cols) - 2] | min) as $cells
       | select($cells >= 8)
       | fit(bar($pct; $cells) + $tail; $right; $width)
     ) // [$percent])
   | ansi
-end
+end]}
