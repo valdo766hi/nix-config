@@ -7,8 +7,8 @@
 Managed settings:
 [`home-manager/darwin/omniwm/settings.toml`](../home-manager/darwin/omniwm/settings.toml).
 
-This reference records the upstream OmniWM **0.7.4** hotkeys plus the managed
-navigation overrides. Home Manager replaces the arrow-based focus and move
+This reference records the upstream OmniWM **0.7.5** hotkeys plus the managed
+shortcut overrides. Home Manager replaces the arrow-based focus and move
 bindings with Vim-style keys so macOS can keep `Option + Arrow` for text editing.
 
 ## First Run
@@ -30,7 +30,9 @@ only in the GUI last until the next Home Manager activation; persistent changes
 belong in `home-manager/darwin/omniwm/settings.toml`. `Hyper` defaults to the
 literal `Control + Option + Shift + Command` chord, and its modifier set is
 configurable. A System Hyper Trigger can map a single key or supported mouse
-button to that chord; leave it set to `None` if it is not needed.
+button to that chord; leave it set to `None` if it is not needed. Extra mouse
+buttons can also be assigned directly to actions, replacing that action's
+keyboard binding.
 
 ## Layout Legend
 
@@ -63,8 +65,8 @@ shortcuts assigned; these start unassigned.
 | Action | Default shortcut | Layout |
 | --- | --- | --- |
 | Focus Left / Down / Up / Right | `Option + H / J / K / L` | `Shared` |
-| Focus Down or Top / Up or Bottom | `Unassigned` | `Shared` |
-| Focus Previous Window | `Option + Tab` | `Niri` |
+| Focus Window or Workspace Down / Up | `Unassigned` | `Niri` |
+| Focus Previously Focused Window | `Option + Tab` | `Shared` |
 | Traverse Backward | `Unassigned` | `Niri` |
 | Traverse Forward | `Unassigned` | `Niri` |
 | Focus First Column | `Option + Home` | `Niri` |
@@ -72,7 +74,7 @@ shortcuts assigned; these start unassigned.
 | Focus Column 1-9 | `Control + Option + 1-9` | `Niri` |
 | Toggle Command Palette | `Control + Option + Space` | `Shared` |
 | Open Menu Anywhere | `Control + Option + M` | `Shared` |
-| Toggle Workspace Bar | `Unassigned` | `Shared` |
+| Toggle Workspace Bar | `Control + Option + B` | `Shared` |
 | Toggle Hidden Icons Bar | `Unassigned` | `Shared` |
 | Toggle Quake Terminal | `` Option + ` `` | `Shared` |
 | Toggle Overview | `Option + Shift + O` | `Shared` |
@@ -161,11 +163,11 @@ Structural Dwindle moves are unavailable while Overview is open.
 
 ## Sources and Version Drift
 
-- [OmniWM 0.7.4 release](https://github.com/OmniNull/OmniWM/releases/tag/v0.7.4)
-- [Upstream Keyboard Shortcuts tables](https://github.com/OmniNull/OmniWM#keyboard-shortcuts)
+- [OmniWM 0.7.5 release](https://github.com/OmniNull/OmniWM/releases/tag/v0.7.5)
+- [Upstream Keyboard Shortcuts tables](https://github.com/OmniNull/OmniWM/blob/v0.7.5/README.md#keyboard-shortcuts)
 - [Official Homebrew cask](https://github.com/Homebrew/homebrew-cask/blob/main/Casks/o/omniwm.rb)
 
-This document is pinned to the defaults published for OmniWM 0.7.4. Upstream
+This document is pinned to the defaults published for OmniWM 0.7.5. Upstream
 may add actions or change defaults in later releases. Before updating OmniWM,
 follow [OMNIWM_UPDATES.md](./OMNIWM_UPDATES.md), review the release notes and
 relevant issues, and compare the upstream tables with this document.

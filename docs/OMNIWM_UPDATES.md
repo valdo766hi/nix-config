@@ -10,25 +10,30 @@ Do not update OmniWM by running an unreviewed `brew upgrade`. Use the workflow
 below so the tap revision, configuration evaluation, and documentation remain
 reviewable.
 
-## 0.7.4 Compatibility
+## 0.7.5 Compatibility
 
-The pinned cask moves from 0.7.3 to [0.7.4](https://github.com/OmniNull/OmniWM/releases/tag/v0.7.4);
+The pinned cask moves from 0.7.4 to [0.7.5](https://github.com/OmniNull/OmniWM/releases/tag/v0.7.5);
 Apple Silicon and macOS 26 Tahoe requirements are unchanged.
 
-- Settings now use schema 4. The managed file includes the new `setWindowMark`
-  and `removeWindowMark` hotkeys, both unassigned; existing bindings are unchanged.
-  Older schema-3 files migrate automatically with a `settings.toml.pre-v4`
-  backup. Restore that backup before downgrading to 0.7.3.
-- Niri grow/shrink defaults to 5% instead of 10%. Set
-  `resizeStepPercent = 10` under `[niri]` to retain the old increment.
-- New optional controls: `niri.edgeGaps`, `overview.enabled`, and
-  `workspaceBar.hoverPreviewsEnabled` default to true. Interface language follows
-  macOS unless `general.language` is set. No extra settings are required.
-- Direct IPC clients need protocol 17; use the bundled `omniwmctl`.
-  IPC remains disabled in this configuration.
-- An open [0.7.4 fullscreen report](https://github.com/OmniNull/OmniWM/issues/779)
-  describes adjacent Niri windows staying obscured while the middle window is
-  fullscreen on macOS 27. Test `Option + Return` and left/right navigation.
+- Settings remain schema 4; no managed TOML or hotkey migration is required.
+  New animation-speed and notification-badge settings have compatible defaults.
+- IPC uses protocol 18 instead of 17. The socket moved to
+  `~/Library/Application Support/com.barut.OmniWM/ipc.sock`, with its secret at
+  `ipc.sock.secret` alongside it. Use the bundled `omniwmctl`; IPC remains disabled
+  in this configuration.
+- Quake now honors Ghostty tab/pane remaps and unbinds. The managed Ghostty config
+  has no remaps. In legacy encoding mode, `Control + Option + Shift + Backspace`
+  now sends `ESC BS` (`0x1b 0x08`) instead of `DEL` (`0x7f`).
+- Niri fills underused space when fewer containers are open than the visible count.
+  The [fullscreen column-peeking issue](https://github.com/OmniNull/OmniWM/issues/779)
+  is fixed in 0.7.5.
+- Recognized browser picture-in-picture windows are now unmanaged; app rules
+  cannot bring them under workspace ownership.
+- Hidden Bar concealment requires macOS 27 or later. No apps are selected for
+  concealment in the managed configuration.
+- The [Ghostty native-tab issue](https://github.com/OmniNull/OmniWM/issues/643)
+  was reopened after a 0.7.5 window-misplacement report. Test `Command + T` and tab
+  switching; consider delaying the update if native Ghostty tabs are essential.
 
 ## Restart Without Updating
 
@@ -144,9 +149,9 @@ new regression appears.
 ## Rollback
 
 Preserve local work and live settings before recovery. Review the known-good
-`homebrew-cask` pin **and its matching managed `settings.toml`** in Git. For a
-0.7.4 → 0.7.3 downgrade, both the source settings and the live settings must be
-schema-compatible: restoring only `settings.toml.pre-v4` is insufficient if
+`homebrew-cask` pin **and its matching managed `settings.toml`** in Git.
+Both 0.7.5 and 0.7.4 use schema 4. Downgrading to 0.7.3 requires schema-3 source
+and live settings: restoring only `settings.toml.pre-v4` is insufficient if
 Home Manager later copies schema 4 over it again.
 
 Evaluate the reviewed source before applying it manually. For system generation
