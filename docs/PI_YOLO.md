@@ -76,13 +76,12 @@ ssh -i ~/.ssh/id_ed25519 user@host
 
 SSH paths are allowed at the external-directory boundary, while built-in
 `read`, `grep`, `find`, `ls`, `write`, and `edit` tools deny `~/.ssh` access.
-Bash asks for approval for `ssh -i ~/.ssh/<key> ...` and
-`/usr/bin/ssh -i ~/.ssh/<key> ...`; YOLO auto-approves these requests. Put `-i` first and use the unquoted
-`~/.ssh/` spelling; other SSH invocations and other Bash commands mentioning
-`.ssh` are denied. Direct file-tool access remains denied in either mode.
+Bash asks for approval for `ssh ...` and `/usr/bin/ssh ...`; YOLO auto-approves
+these requests, including `-o` options and `-i` identities. Other Bash commands
+mentioning `.ssh` are denied. Direct file-tool access remains denied in either mode.
 The launcher preserves `SSH_AUTH_SOCK` for existing agent-backed authentication.
 The RTK extension leaves SSH commands unchanged so these rules can match;
-`rtk ssh ...` does not match the identity exception.
+`rtk ssh ...` does not match the SSH exception.
 
 This is a convenience policy, not a hard key-disclosure boundary: arbitrary
 code, extension tools, aliases, and SSH options can bypass these simple

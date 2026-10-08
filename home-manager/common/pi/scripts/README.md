@@ -251,13 +251,12 @@ adapter cannot disable the built-in through the read-only settings file.
 The `fast-uri`/`ajv` chain comes only from the adapter. After activation, recheck
 whether the `fast-uri` override is still needed.
 
-## SSH identities
+## SSH authentication
 
-`ssh -i ~/.ssh/<key> <destination>` requires Bash approval, auto-approved
-in YOLO; `/usr/bin/ssh` works too. Put `-i` first and use the unquoted `~/.ssh/`
-spelling. Other SSH invocations, built-in file-tool access to `.ssh`, and other
-Bash commands mentioning `.ssh` are denied. No SSH wrapper is installed;
-the RTK extension skips SSH rewriting to preserve the identity permission check.
+`ssh ...` and `/usr/bin/ssh ...` require Bash approval, auto-approved in YOLO,
+including `-o` options and `-i` identities. Built-in file-tool access to `.ssh`
+and other Bash commands mentioning `.ssh` remain denied. No SSH wrapper is
+installed; the RTK extension skips SSH rewriting to preserve permission checks.
 These simple rules do not prevent arbitrary shell code or extension tools from
 reading keys; see [the policy limitations](../../../../docs/PI_YOLO.md).
 

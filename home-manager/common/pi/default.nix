@@ -117,9 +117,9 @@ in {
         "npm:pi-lens@4.3.0"
         # npm:pi-mcp-adapter@5.0.0 (unquoted so pi-package-update skips it)
         "git:github.com/algal/pi-openai-server-compaction@8a3de2f3b0c178fdd6f73f2f94172dfc3943e466"
-        "npm:@plannotator/pi-extension@0.27.25"
-        "npm:pi-subagents@0.74.0"
-        "npm:@gotgenes/pi-permission-system@39.0.2"
+        "npm:@plannotator/pi-extension@0.28.6"
+        "npm:pi-subagents@0.76.1"
+        "npm:@gotgenes/pi-permission-system@39.1.2"
         "npm:@valdo766hi/pi-fast@0.1.3"
         "npm:@valdo766hi/pi-footer@0.3.0"
         "npm:@valdo766hi/pi-yolo@0.1.7"

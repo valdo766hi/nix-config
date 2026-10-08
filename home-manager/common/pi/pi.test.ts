@@ -226,11 +226,8 @@ test("permission policy retains hard credential and deletion denials", () => {
 	assert.equal(permission.bash["*.ssh*"], "deny");
 	const bashPatterns = Object.keys(permission.bash);
 	for (const ssh of ["ssh", "/usr/bin/ssh"]) {
-		assert.equal(permission.bash[`${ssh} *`], "deny");
-		const identity = `${ssh} -i ~/.ssh/?*`;
-		assert.equal(permission.bash[identity], "ask");
-		assert.ok(bashPatterns.indexOf(identity) > bashPatterns.indexOf(`${ssh} *`));
-		assert.ok(bashPatterns.indexOf(identity) > bashPatterns.indexOf("*.ssh*"));
+		assert.equal(permission.bash[`${ssh} *`], "ask");
+		assert.ok(bashPatterns.indexOf(`${ssh} *`) > bashPatterns.indexOf("*.ssh*"));
 	}
 	assert.equal(permission.bash["rm *"].action, "deny");
 	assert.equal(permission.bash["*/rm *"], "deny");
@@ -336,6 +333,7 @@ test("rtk leaves SSH commands unchanged for identity permission checks", async (
 		},
 	} as any);
 	for (const command of [
+		"ssh -o BatchMode=yes -o StrictHostKeyChecking=yes user@host 'hostname'",
 		"ssh -i ~/.ssh/id_ed25519 user@host 'ls -lah'",
 		"/usr/bin/ssh -i ~/.ssh/id_ed25519 user@host 'ls -lah'",
 		"cd /tmp && ssh -i ~/.ssh/id_ed25519 user@host 'ls -lah'",

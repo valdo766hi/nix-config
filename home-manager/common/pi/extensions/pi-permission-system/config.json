@@ -93,10 +93,8 @@
     "bash": {
       "*": "ask",
       "*.ssh*": "deny",
-      "ssh *": "deny",
-      "/usr/bin/ssh *": "deny",
-      "ssh -i ~/.ssh/?*": "ask",
-      "/usr/bin/ssh -i ~/.ssh/?*": "ask",
+      "ssh *": "ask",
+      "/usr/bin/ssh *": "ask",
       "pi-tmp-rm *": "allow",
       "rm *": {
         "action": "deny",
