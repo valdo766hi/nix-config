@@ -114,11 +114,11 @@ in {
       defaultTools = ["+codemode"];
       compaction.enabled = true;
       packages = [
-        "npm:pi-lens@4.3.0"
+        "npm:pi-lens@4.4.3"
         # npm:pi-mcp-adapter@5.0.0 (unquoted so pi-package-update skips it)
         "git:github.com/algal/pi-openai-server-compaction@8a3de2f3b0c178fdd6f73f2f94172dfc3943e466"
-        "npm:@plannotator/pi-extension@0.28.6"
-        "npm:pi-subagents@0.76.1"
+        "npm:@plannotator/pi-extension@0.28.14"
+        "npm:pi-subagents@0.77.0"
         "npm:@gotgenes/pi-permission-system@39.1.2"
         "npm:@valdo766hi/pi-fast@0.1.3"
         "npm:@valdo766hi/pi-footer@0.3.0"
