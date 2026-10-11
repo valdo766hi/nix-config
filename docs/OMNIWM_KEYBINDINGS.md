@@ -7,7 +7,7 @@
 Managed settings:
 [`home-manager/darwin/omniwm/settings.toml`](../home-manager/darwin/omniwm/settings.toml).
 
-This reference records the upstream OmniWM **0.7.5** hotkeys plus the managed
+This reference records the upstream OmniWM **0.7.6** hotkeys plus the managed
 shortcut overrides. Home Manager replaces the arrow-based focus and move
 bindings with Vim-style keys so macOS can keep `Option + Arrow` for text editing.
 
@@ -121,6 +121,8 @@ controls whether focus follows it.
 | Preselect Left / Right / Up / Down | `Unassigned` | `Dwindle` |
 | Clear Preselection | `Unassigned` | `Dwindle` |
 | Raise All Floating Windows | `Option + Shift + R` | `Shared` |
+| Toggle Floating/Tiled Focus | `Unassigned` | `Shared` |
+| Rescue Off-Screen Floating Windows | `Unassigned` | `Shared` |
 | Toggle Focused Window Floating | `Unassigned` | `Shared` |
 | Assign Focused Window to Scratchpad 1 | `Unassigned` | `Shared` |
 | Toggle Scratchpad 1 | `Unassigned` | `Shared` |
@@ -163,11 +165,11 @@ Structural Dwindle moves are unavailable while Overview is open.
 
 ## Sources and Version Drift
 
-- [OmniWM 0.7.5 release](https://github.com/OmniNull/OmniWM/releases/tag/v0.7.5)
-- [Upstream Keyboard Shortcuts tables](https://github.com/OmniNull/OmniWM/blob/v0.7.5/README.md#keyboard-shortcuts)
+- [OmniWM 0.7.6 release](https://github.com/OmniNull/OmniWM/releases/tag/v0.7.6)
+- [Upstream Keyboard Shortcuts tables](https://github.com/OmniNull/OmniWM/blob/v0.7.6/README.md#keyboard-shortcuts)
 - [Official Homebrew cask](https://github.com/Homebrew/homebrew-cask/blob/main/Casks/o/omniwm.rb)
 
-This document is pinned to the defaults published for OmniWM 0.7.5. Upstream
+This document is pinned to the defaults published for OmniWM 0.7.6. Upstream
 may add actions or change defaults in later releases. Before updating OmniWM,
 follow [OMNIWM_UPDATES.md](./OMNIWM_UPDATES.md), review the release notes and
 relevant issues, and compare the upstream tables with this document.

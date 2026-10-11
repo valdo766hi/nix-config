@@ -10,30 +10,24 @@ Do not update OmniWM by running an unreviewed `brew upgrade`. Use the workflow
 below so the tap revision, configuration evaluation, and documentation remain
 reviewable.
 
-## 0.7.5 Compatibility
+## 0.7.6 Compatibility
 
-The pinned cask moves from 0.7.4 to [0.7.5](https://github.com/OmniNull/OmniWM/releases/tag/v0.7.5);
+The pinned cask moves from 0.7.5 to [0.7.6](https://github.com/OmniNull/OmniWM/releases/tag/v0.7.6);
 Apple Silicon and macOS 26 Tahoe requirements are unchanged.
 
 - Settings remain schema 4; no managed TOML or hotkey migration is required.
-  New animation-speed and notification-badge settings have compatible defaults.
-- IPC uses protocol 18 instead of 17. The socket moved to
-  `~/Library/Application Support/com.barut.OmniWM/ipc.sock`, with its secret at
-  `ipc.sock.secret` alongside it. Use the bundled `omniwmctl`; IPC remains disabled
-  in this configuration.
-- Quake now honors Ghostty tab/pane remaps and unbinds. The managed Ghostty config
-  has no remaps. In legacy encoding mode, `Control + Option + Shift + Backspace`
-  now sends `ESC BS` (`0x1b 0x08`) instead of `DEL` (`0x7f`).
-- Niri fills underused space when fewer containers are open than the visible count.
-  The [fullscreen column-peeking issue](https://github.com/OmniNull/OmniWM/issues/779)
-  is fixed in 0.7.5.
-- Recognized browser picture-in-picture windows are now unmanaged; app rules
-  cannot bring them under workspace ownership.
-- Hidden Bar concealment requires macOS 27 or later. No apps are selected for
-  concealment in the managed configuration.
+  New Workspace Bar auto-hide and menu bar icon settings default to the 0.7.5
+  behavior.
+- `[gestures] fingerCount = 2` now rejects the whole settings file. The managed
+  value is `3`; two-finger scrolling goes back to apps.
+- Hotkeys missing from `settings.toml` are unassigned instead of rejected. The new
+  Toggle Floating/Tiled Focus action is unassigned.
+- IPC uses protocol 19 instead of 18. Use the bundled `omniwmctl`; IPC remains
+  disabled in this configuration.
+- Hidden Bar concealment now also requires Full Disk Access. No apps are selected
+  for concealment in the managed configuration.
 - The [Ghostty native-tab issue](https://github.com/OmniNull/OmniWM/issues/643)
-  was reopened after a 0.7.5 window-misplacement report. Test `Command + T` and tab
-  switching; consider delaying the update if native Ghostty tabs are essential.
+  remains open. Test `Command + T` and tab switching after updating.
 
 ## Restart Without Updating
 
@@ -150,7 +144,7 @@ new regression appears.
 
 Preserve local work and live settings before recovery. Review the known-good
 `homebrew-cask` pin **and its matching managed `settings.toml`** in Git.
-Both 0.7.5 and 0.7.4 use schema 4. Downgrading to 0.7.3 requires schema-3 source
+OmniWM 0.7.4 through 0.7.6 use schema 4. Downgrading to 0.7.3 requires schema-3 source
 and live settings: restoring only `settings.toml.pre-v4` is insufficient if
 Home Manager later copies schema 4 over it again.
 
