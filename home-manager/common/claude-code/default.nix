@@ -56,13 +56,13 @@
   readTools = ["Read" "Grep" "Glob"];
   agents = {
     scout = {
-      model = "haiku";
+      model = "claude-haiku-5-5";
       tools = readTools;
       description = "Locate relevant code and summarize the paths when asked to scout.";
       prompt = "Find the relevant files and entry points. Report evidence and uncertainty; do not edit.";
     };
     delegate = {
-      model = "haiku";
+      model = "claude-haiku-5-5";
       tools = readTools;
       description = "Handle a bounded read-only lookup delegated by the user.";
       prompt = "Answer the assigned lookup with sources and no edits.";
