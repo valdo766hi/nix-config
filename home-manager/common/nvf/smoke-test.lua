@@ -28,6 +28,8 @@ local ok, err = xpcall(function()
   assert(not accepted, "Enter must not accept an unselected completion")
   assert(require("blink.cmp.fuzzy.rust"), "blink.cmp Rust fuzzy matcher is missing")
 
+  require("lz.n").trigger_load("nvim-web-devicons")
+  assert(require("nvim-web-devicons").get_icon("init.lua", "lua"), "file icons are missing")
   for _, name in ipairs({ "mini.ai", "nvim-surround", "lazydev", "oil", "conform" }) do
     assert(type(require(name)) == "table", "plugin did not load: " .. name)
   end

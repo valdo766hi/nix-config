@@ -336,6 +336,7 @@ in {
 
     statusline.lualine.enable = true;
     visuals.fidget-nvim.enable = true;
+    visuals.nvim-web-devicons.enable = true;
 
     binds.whichKey = {
       enable = true;
