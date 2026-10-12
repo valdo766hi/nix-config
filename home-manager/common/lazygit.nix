@@ -18,10 +18,10 @@
         unstagedChangesColor = ["#f38ba8"];
         defaultFgColor = ["#cdd6f4"];
       };
-      git.pagers = [
+      git.diffRenderers = [
         {
           colorArg = "always";
-          pager = "${pkgs.delta}/bin/delta --dark --paging=never";
+          command = "${pkgs.delta}/bin/delta --dark --paging=never";
         }
       ];
     };
