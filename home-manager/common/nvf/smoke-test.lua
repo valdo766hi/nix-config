@@ -10,16 +10,23 @@ local ok, err = xpcall(function()
     assert(vim.fn.maparg(key, "n") ~= "", "missing mapping: " .. key)
   end
 
-  local cmp = require("cmp")
-  assert(cmp.get_config().preselect == cmp.PreselectMode.None)
-  local original_confirm, select = cmp.confirm, nil
-  cmp.confirm = function(opts)
-    select = opts.select
-    return true
-  end
-  cmp.get_config().mapping["<CR>"].i(function() end)
-  cmp.confirm = original_confirm
-  assert(select == false, "Enter must not accept an unselected completion")
+  assert(vim.fn.maparg("gr", "n") == "", "gr would delay Neovim's native gr* mappings")
+  assert(vim.fn.maparg("grr", "n"):find("lsp_references", 1, true), "references mapping was overridden")
+  assert(vim.fn.maparg("gcc", "n") ~= "", "native comment mappings are missing")
+
+  require("lz.n").trigger_load("blink-cmp")
+  local blink_config = require("blink.cmp.config")
+  local preselect = blink_config.completion.list.selection.preselect
+  assert(preselect == false or (type(preselect) == "function" and preselect({}) == false), "completion must not preselect")
+  assert(vim.deep_equal(blink_config.keymap["<CR>"], { "accept", "fallback" }))
+  local completion_list = require("blink.cmp.completion.list")
+  local original_visible, original_selected = require("blink.cmp").is_visible, completion_list.get_selected_item
+  require("blink.cmp").is_visible = function() return true end
+  completion_list.get_selected_item = function() return nil end
+  local accepted = require("blink.cmp").accept()
+  require("blink.cmp").is_visible, completion_list.get_selected_item = original_visible, original_selected
+  assert(not accepted, "Enter must not accept an unselected completion")
+  assert(require("blink.cmp.fuzzy.rust"), "blink.cmp Rust fuzzy matcher is missing")
 
   for _, name in ipairs({ "mini.ai", "nvim-surround", "lazydev", "oil", "conform" }) do
     assert(type(require(name)) == "table", "plugin did not load: " .. name)

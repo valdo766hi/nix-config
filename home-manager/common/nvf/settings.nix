@@ -30,8 +30,6 @@ in {
       updatetime = 250;
       splitright = true;
       splitbelow = true;
-      ignorecase = true;
-      smartcase = true;
       termguicolors = true;
       autoread = true;
       mouse = "a";
@@ -54,10 +52,7 @@ in {
       smartindent = true;
     };
 
-    lineNumberMode = "relNumber";
     searchCase = "smart";
-    preventJunkFiles = true;
-    hideSearchHighlight = false;
 
     autocmds = [
       {
@@ -102,12 +97,19 @@ in {
           spacing = 2;
           source = "if_many";
         };
-        signs = true;
+        signs.text = mkLuaInline ''
+          {
+            [vim.diagnostic.severity.ERROR] = '󰅚 ',
+            [vim.diagnostic.severity.WARN] = '󰀪 ',
+            [vim.diagnostic.severity.INFO] = '󰋽 ',
+            [vim.diagnostic.severity.HINT] = '󰌶 ',
+          }
+        '';
         update_in_insert = false;
         severity_sort = true;
         float = {
           border = "rounded";
-          source = "always";
+          source = true;
         };
       };
     };
@@ -116,26 +118,30 @@ in {
       enable = true;
       formatOnSave = false;
       inlayHints.enable = true;
-      lspkind.enable = true;
       trouble.enable = true;
       servers."typescript-language-server".filetypes = ["typescriptreact" "javascriptreact"];
     };
 
-    autocomplete = {
-      enableSharedCmpSources = true;
-      nvim-cmp = {
-        enable = true;
-        sourcePlugins = with pkgs.vimPlugins; [
-          cmp-nvim-lsp
-          cmp-buffer
-          cmp-path
-          cmp-nvim-lua
-        ];
-        sources = {
-          nvim_lsp = "[LSP]";
-          buffer = "[Buffer]";
-          path = "[Path]";
-          nvim_lua = "[Lua]";
+    autocomplete.blink-cmp = {
+      enable = true;
+      friendly-snippets.enable = true;
+      # Tab/S-Tab are defined below without nvf's auto-show-on-Tab behaviour.
+      mappings = {
+        next = null;
+        previous = null;
+      };
+      setupOpts = {
+        # Enter only accepts an explicitly selected item; otherwise it inserts a newline.
+        completion.list.selection.preselect = false;
+        signature.enabled = true;
+        keymap = {
+          "<Tab>" = ["select_next" "snippet_forward" "fallback"];
+          "<S-Tab>" = ["select_prev" "snippet_backward" "fallback"];
+          "<Down>" = ["select_next" "fallback"];
+          "<Up>" = ["select_prev" "fallback"];
+          "<C-n>" = ["select_next" "fallback"];
+          "<C-p>" = ["select_prev" "fallback"];
+          "<C-y>" = ["select_and_accept" "fallback"];
         };
       };
     };
@@ -224,16 +230,9 @@ in {
       };
     };
 
-    snippets.luasnip = {
-      enable = true;
-      providers = with pkgs.vimPlugins; [
-        friendly-snippets
-      ];
-    };
+    snippets.luasnip.enable = true;
 
     autopairs.nvim-autopairs.enable = true;
-
-    comments.comment-nvim.enable = true;
 
     git.gitsigns = {
       enable = true;
@@ -336,7 +335,7 @@ in {
     };
 
     statusline.lualine.enable = true;
-    tabline.nvimBufferline.enable = true;
+    visuals.fidget-nvim.enable = true;
 
     binds.whichKey = {
       enable = true;
@@ -346,7 +345,6 @@ in {
         "<leader>c" = "Code";
         "<leader>b" = "Buffer";
         "<leader>t" = "Terminal / toggles";
-        "<leader>h" = null; # Clear search, not a prefix for Git actions.
       };
     };
 
@@ -470,30 +468,29 @@ in {
           desc = "Go to declaration";
         };
         "gI" = {
-          action = "<cmd>lua vim.lsp.buf.implementation()<CR>";
+          action = "<cmd>Telescope lsp_implementations<CR>";
           desc = "Go to implementation";
         };
         "gy" = {
-          action = "<cmd>lua vim.lsp.buf.type_definition()<CR>";
+          action = "<cmd>Telescope lsp_type_definitions<CR>";
           desc = "Go to type definition";
         };
 
-        "<leader>tn" = {
-          action = "<cmd>BufferLineCycleNext<CR>";
-          desc = "Next buffer tab";
-        };
-        "<leader>tp" = {
-          action = "<cmd>BufferLineCyclePrev<CR>";
-          desc = "Previous buffer tab";
-        };
-        "<leader>tc" = {
-          action = "<cmd>BufferLinePickClose<CR>";
-          desc = "Close buffer tab";
-        };
-
-        "<leader>h" = {
+        "<Esc>" = {
           action = "<cmd>nohlsearch<CR>";
           desc = "Clear search highlight";
+        };
+        "J" = {
+          action = "mzJ`z";
+          desc = "Join lines and keep cursor";
+        };
+        "Q" = {
+          action = "<nop>";
+          desc = "Disable Ex mode";
+        };
+        "<leader>s" = {
+          action = ":%s/\\<<C-r><C-w>\\>/<C-r><C-w>/gI<Left><Left><Left>";
+          desc = "Substitute word under cursor";
         };
 
         "<leader>gg" = {
@@ -527,11 +524,12 @@ in {
         };
 
         "gd" = {
-          action = "<cmd>lua vim.lsp.buf.definition()<CR>";
+          action = "<cmd>Telescope lsp_definitions<CR>";
           desc = "Go to definition";
         };
-        "gr" = {
-          action = "<cmd>lua vim.lsp.buf.references()<CR>";
+        # Neovim's native gr* prefix stays intact (grn, gra, gri, grt); a bare gr would wait timeoutlen.
+        "grr" = {
+          action = "<cmd>Telescope lsp_references<CR>";
           desc = "Show references";
         };
         "K" = {
@@ -574,37 +572,6 @@ in {
         };
       });
 
-    luaConfigRC.cmp-arrow-keys = ''
-      local cmp = require('cmp')
-
-      cmp.setup({
-        preselect = cmp.PreselectMode.None,
-        mapping = cmp.mapping.preset.insert({
-          ['<Down>'] = cmp.mapping.select_next_item(),
-          ['<Up>'] = cmp.mapping.select_prev_item(),
-          ['<CR>'] = cmp.mapping.confirm({ select = false }),
-          ['<C-Space>'] = cmp.mapping.complete(),
-          ['<Tab>'] = cmp.mapping(function(fallback)
-            if cmp.visible() then
-              cmp.select_next_item()
-            elseif require('luasnip').expand_or_locally_jumpable() then
-              require('luasnip').expand_or_jump()
-            else
-              fallback()
-            end
-          end, { 'i', 's' }),
-          ['<S-Tab>'] = cmp.mapping(function(fallback)
-            if cmp.visible() then
-              cmp.select_prev_item()
-            elseif require('luasnip').locally_jumpable(-1) then
-              require('luasnip').jump(-1)
-            else
-              fallback()
-            end
-          end, { 'i', 's' }),
-        }),
-      })
-    '';
 
     luaConfigRC.fish-terminal = ''
       function ResizeFishTerminal(delta)

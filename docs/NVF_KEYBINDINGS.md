@@ -14,7 +14,7 @@ there is no Mason or runtime plugin installation step.
 
 1. `Space ff` finds a file; `Space fg` searches project text.
 2. Mark your working files with `Space a`, then jump with `Space 1`–`4`.
-3. Use `gd` / `gr` for definitions / references; `Ctrl+o` jumps back.
+3. Use `gd` / `grr` for definitions / references; `Ctrl+o` jumps back.
 4. `Space gp` previews a Git hunk; `Space gs` stages it.
 5. `Space cf` formats on demand. **Format-on-save remains off.**
 
@@ -53,19 +53,20 @@ Ghostty and Kitty (`:checkhealth snacks` for troubleshooting).
 | `Ctrl+h/j/k/l` | Move between splits |
 | `Shift+h/l` | Previous / next buffer |
 | `Space bd` | Delete a buffer while preserving splits; unsaved changes prompt |
-| `Space tn/tp/tc` | Bufferline next / previous / choose a buffer to close (not tabs) |
 | `Ctrl+d/u` | Half-page scroll, then center the cursor |
 | `n` / `N` | Next / previous match, centered and unfolded |
+| `J` | Join lines without moving the cursor |
+| `Space s` | Substitute the word under the cursor across the file |
 | `J` / `K` in visual mode | Move selected lines down / up and reindent |
 | `<` / `>` in visual mode | Indent and keep the selection |
 | `Space p` in visual mode | Paste without replacing the yank register |
-| `gcc` / visual `gc` | Toggle comments |
+| `gcc` / visual `gc` | Toggle comments (built into Neovim) |
 | `ysiw"` | Surround a word with double quotes |
 | `cs"'` / `ds"` | Change double quotes to single / delete surrounding quotes |
 | `S` in visual mode | Surround a selection |
 | `cia` / `cif` | Change an argument / function-call contents (mini.ai) |
 | `Space u` | Browse persistent, branching undo history |
-| `Space h` | Clear search highlighting |
+| `Esc` | Clear search highlighting |
 
 Treesitter highlights the configured languages. Folding starts disabled;
 use `zi` to enable it, then `zc` / `zo` to close / open a fold and `zM` / `zR`
@@ -76,9 +77,9 @@ keeps enclosing code visible in windows tall enough to benefit from it.
 
 | Key | Action |
 |-----|--------|
-| `gd` / `gD` / `gI` / `gy` | Definition / declaration / implementation / type |
-| `gr` / `K` | References / hover documentation |
-| `Space rn` / `Space ca` | Rename / code action |
+| `gd` / `gD` / `gI` / `gy` | Definition / declaration / implementation / type (Telescope) |
+| `grr` / `K` | References (Telescope) / hover documentation |
+| `Space rn` / `Space ca` | Rename / code action (also native `grn` / `gra`) |
 | `Space cs` / `Space cf` | Signature help / manual Conform formatting |
 | `[d` / `]d` | Previous / next diagnostic, with a popup |
 | `Space cd` / `Space cq` | Line diagnostics / diagnostics in quickfix |
@@ -91,8 +92,7 @@ keeps enclosing code visible in windows tall enough to benefit from it.
 | `Space gd` / `Space gD` | Diff the file / compare against the previous revision |
 | `Space gg` | LazyGit floating terminal, integrated with this Neovim instance |
 
-Git actions now use `Space g…`, not the old `Space h…` prefix, so clearing search
-with `Space h` is unambiguous. Reset actions discard edits: preview first.
+Reset actions discard edits: preview first.
 
 ## Completion and snippets
 
@@ -101,9 +101,14 @@ with `Space h` is unambiguous. Reset actions discard edits: preview first.
 | `Ctrl+Space` | Request completion |
 | `Down` / `Up`, `Ctrl+n/p` | Select a completion |
 | `Enter` | Accept an explicitly selected completion; otherwise a normal newline |
+| `Ctrl+y` | Accept the selected (or first) completion |
 | `Tab` | Next completion, or expand/jump forward in a snippet |
 | `Shift+Tab` | Previous completion, or jump backward in a snippet |
 | `Ctrl+e` | Close the completion menu |
+| `Ctrl+d` / `Ctrl+f` | Scroll completion documentation |
+
+Completion uses blink.cmp with its Rust matcher; signature help appears while typing
+arguments.
 
 ## Terminal
 
