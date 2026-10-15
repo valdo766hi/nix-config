@@ -17,15 +17,14 @@
 
   outputs = inputs @ {nixpkgs, ...}: {
     packages = nixpkgs.lib.genAttrs ["x86_64-linux" "aarch64-darwin"] (system: let
-      pi = import ./. {
-        inherit inputs;
-        pkgs = import nixpkgs {
-          inherit system;
-          config.allowUnfree = true;
-        };
+      pkgs = import nixpkgs {
+        inherit system;
+        config.allowUnfree = true;
       };
+      pi = import ./. {inherit inputs pkgs;};
     in {
       inherit pi;
+      inherit (pkgs) herdr;
       default = pi;
     });
   };
