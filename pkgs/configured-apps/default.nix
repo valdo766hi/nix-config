@@ -65,7 +65,9 @@ in {
     compactionRatio,
     runtimeInputs,
   }: let
-    tools = [pkgs.coreutils pkgs.bash pkgs.fd pkgs.ripgrep pkgs.gitMinimal pkgs.nodejs_22] ++ runtimeInputs;
+    tools = [pkgs.coreutils pkgs.bash pkgs.fd pkgs.ripgrep pkgs.gitMinimal pkgs.nodejs_22]
+      ++ lib.optionals pkgs.stdenv.hostPlatform.isLinux [pkgs.python3 pkgs.gnumake pkgs.stdenv.cc]
+      ++ runtimeInputs;
     files = agentFiles // {
       "settings.json" = pkgs.writeText "pi-portable-settings.json" (builtins.toJSON (settings // {
         shellPath = lib.getExe pkgs.bash;
