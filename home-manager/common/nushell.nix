@@ -27,7 +27,7 @@
     mkdir -p "$HOME/.config/nushell" "$HOME/.local/share/nushell/vendor/autoload"
 
     ${pkgs.starship}/bin/starship init nu > "$HOME/.local/share/nushell/vendor/autoload/starship.nu"
-    ${pkgs.atuin}/bin/atuin init nu > "$HOME/.local/share/nushell/vendor/autoload/atuin.nu"
+    ${config.programs.atuin.package}/bin/atuin init nu > "$HOME/.local/share/nushell/vendor/autoload/atuin.nu"
     ${pkgs.zoxide}/bin/zoxide init nushell > "$HOME/.local/share/nushell/vendor/autoload/zoxide.nu"
   '';
 

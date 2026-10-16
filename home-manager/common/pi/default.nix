@@ -108,9 +108,9 @@ in {
       tuiMode = "fullscreen";
       fullscreenExitOutput = "resume-hint";
       defaultProvider = "openai-codex";
-      defaultModel = "gpt-6-luna";
+      defaultModel = "gpt-6.1-sol";
       hideThinkingBlock = true;
-      defaultThinkingLevel = "max";
+      defaultThinkingLevel = "high";
       defaultTools = ["+codemode"];
       compaction.enabled = true;
       packages = [

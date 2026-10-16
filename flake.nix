@@ -19,6 +19,8 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
+    # Keep Darwin Atuin on the previous snapshot while 18.23.0's PTY test fails.
+    nixpkgs-atuin.url = "github:nixos/nixpkgs/8edc0c72e3a38faf5434e40d1f19431125fe4b30";
 
     nix-darwin = {
       url = "github:nix-darwin/nix-darwin/master";
