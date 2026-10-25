@@ -33,7 +33,8 @@ in {
       termguicolors = true;
       autoread = true;
       mouse = "a";
-      wrap = false;
+      wrap = true;
+      linebreak = true;
       breakindent = true;
       splitkeep = "screen";
       inccommand = "split";
