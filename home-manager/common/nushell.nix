@@ -7,6 +7,7 @@
   # Keep the existing vendor autoload files as the single integration owner.
   home.shell.enableNushellIntegration = false;
   programs.nushell.enable = true;
+  programs.nushell.loadSessionVariables = true;
   programs.nushell.shellAliases = lib.optionalAttrs pkgs.stdenv.hostPlatform.isLinux {
     bjg = ''echo "I use NixOS, BTW"'';
   };
