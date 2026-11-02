@@ -1,4 +1,5 @@
-{lib, pkgs, ...}: let
+{inputs, lib, pkgs, ...}: let
+  claudeCode = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.claude-code;
   plannotator = pkgs.callPackage ../../../pkgs/plannotator {};
   statusline = pkgs.writeShellApplication {
     name = "claude-statusline";
@@ -97,7 +98,7 @@
     }];
   });
 in {
-  home.packages = [plannotator]; # RTK is already owned by common/packages.nix.
+  home.packages = [claudeCode plannotator]; # RTK is already owned by common/packages.nix.
 
   home.file = (lib.mapAttrs' (name: agent: lib.nameValuePair ".claude/agents/${name}.md" {
     text = ''
