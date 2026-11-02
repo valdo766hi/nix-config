@@ -84,6 +84,10 @@ are written atomically; registry, checker, combined-audit, or editing errors
 leave the configuration unchanged. A vulnerable candidate is skipped, while
 other secure candidates may still be updated together.
 
+The `pi-tools` check tests the published YOLO overlay and permission gate at
+these pins. When updating either package, also update its archive integrity
+hash in `home-manager/common/pi/check.nix` from the npm release metadata.
+
 The command finds this repository automatically at `$XDG_CONFIG_HOME/nix`
 (default `~/.config/nix`) or from the current Git checkout. Direct package
 versions are pinned in the Nix module, but the installed dependency tree under

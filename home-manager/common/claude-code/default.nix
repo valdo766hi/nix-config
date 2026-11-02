@@ -121,12 +121,13 @@ in {
   home.activation.claudeCodeSettings = lib.hm.dag.entryAfter ["writeBoundary"] ''
     set -euo pipefail
     config="$HOME/.claude/settings.json"
-    temp_file="$(${pkgs.coreutils}/bin/mktemp)"
+    temp_file=""
     trap '${pkgs.coreutils}/bin/rm -f "$temp_file"' EXIT
 
     if [ -f "$config" ] && ! ${pkgs.jq}/bin/jq empty "$config" >/dev/null 2>&1; then
       echo "warning: skipping invalid Claude Code settings: $config" >&2
     else
+      temp_file="$(${pkgs.coreutils}/bin/mktemp "$config.XXXXXX")"
       merge() {
         ${pkgs.jq}/bin/jq --slurpfile managed ${settings} \
           --from-file ${./merge-settings.jq} > "$temp_file"
@@ -143,6 +144,7 @@ in {
     config="$HOME/.claude.json"
     if [ -f "$config" ]; then
       if ${pkgs.jq}/bin/jq empty "$config" >/dev/null 2>&1; then
+        temp_file="$(${pkgs.coreutils}/bin/mktemp "$config.XXXXXX")"
         ${pkgs.jq}/bin/jq 'del(.mcpServers.context7, .mcpServers.exa, .mcpServers.github)' "$config" > "$temp_file"
         mv "$temp_file" "$config"
       else

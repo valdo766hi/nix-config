@@ -81,6 +81,21 @@
       env -u XDG_CONFIG_HOME -u XDG_DATA_HOME nu --no-history --execute 'try { source ${startupTest}; exit 0 } catch {|err| print --stderr $err.msg; exit 1 }'
       touch $out
     '';
+  mkClaudeCheck = system: let
+    testPkgs = inputs.nixpkgs.legacyPackages.${system};
+    profile = self.homeConfigurations."rivaldo@${
+      if testPkgs.stdenv.hostPlatform.isDarwin then "Rivaldos-MacBook-Pro" else "thinker"
+    }";
+    fixtureScript = testPkgs.writeText "claude-settings-fixture.sh"
+      profile.config.home.activation.claudeCodeSettings.data;
+  in testPkgs.runCommand "check-claude-settings" {
+    nativeBuildInputs = [testPkgs.bash testPkgs.jq testPkgs.python3];
+  } ''
+    cp ${../home-manager/common/claude-code/merge-settings.test.sh} merge-settings.test.sh
+    cp ${../home-manager/common/claude-code/merge-settings.jq} merge-settings.jq
+    bash merge-settings.test.sh ${fixtureScript}
+    touch $out
+  '';
   mkPiCheck = system: let
     testPkgs = inputs.nixpkgs.legacyPackages.${system};
   in testPkgs.runCommand "check-pi-config" {nativeBuildInputs = [testPkgs.python3];} ''
@@ -102,6 +117,10 @@
     '';
 in {
   aarch64-darwin = {
+    claude-settings = mkClaudeCheck "aarch64-darwin";
+    pi-tools = inputs.nixpkgs.legacyPackages.aarch64-darwin.callPackage ../home-manager/common/pi/check.nix {
+      packageSpecs = home.config.programs.pi-coding-agent.settings.packages;
+    };
     pi-config = mkPiCheck "aarch64-darwin";
     neovim-config = mkNeovimCheck "aarch64-darwin";
     nushell-config = mkNushellCheck "aarch64-darwin";
@@ -128,7 +147,10 @@ in {
     home-profile = home.activationPackage;
 
     pi-fast-extension = pkgs.callPackage ../home-manager/common/pi/extensions/fast/check.nix {};
-    pi-tools = pkgs.callPackage ../home-manager/common/pi/check.nix {};
+    claude-settings = mkClaudeCheck "x86_64-linux";
+    pi-tools = pkgs.callPackage ../home-manager/common/pi/check.nix {
+      packageSpecs = home.config.programs.pi-coding-agent.settings.packages;
+    };
     pi-config = mkPiCheck "x86_64-linux";
   };
 }

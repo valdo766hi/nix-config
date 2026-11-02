@@ -1,6 +1,7 @@
 // @ts-nocheck -- the Nix check supplies Node types and Pi API stubs at runtime.
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
+import { EventEmitter } from "node:events";
 import {
 	chmodSync,
 	existsSync,
@@ -17,6 +18,7 @@ import { join } from "node:path";
 import { test } from "node:test";
 import rtkExtension from "./rtk.ts";
 import yoloExtension from "./yolo.ts";
+import { applyPermissionGate } from "./permission-gate.ts";
 import tokenSpeedExtension from "./token-speed.ts";
 
 function tempDir(prefix: string): string {
@@ -68,6 +70,41 @@ exit 99
 	rmSync(dir, { recursive: true, force: true });
 });
 
+test("package updater skips vulnerable candidates and applies secure updates", () => {
+	const dir = tempDir("pi-update-mixed-");
+	try {
+		const config = join(dir, "default.nix");
+		const tree = join(dir, "tree");
+		mkdirSync(tree);
+		writeFileSync(config, 'packages = [ "npm:vulnerable@1.0.0" "npm:secure@1.0.0" ];\n');
+		writeFileSync(join(tree, "package.json"), '{"dependencies":{"vulnerable":"1.0.0","secure":"1.0.0"}}\n');
+		writeFileSync(join(tree, "package-lock.json"), "{}\n");
+		executable(join(dir, "npm"), `#!/bin/sh
+if [ "$1" = view ]; then printf '"2.0.0"\\n'; exit 0; fi
+if [ "$1" = install ]; then printf '%s\\n' "$*" > candidate; exit 0; fi
+status=0
+if grep -q 'vulnerable@2.0.0' candidate; then status=1; fi
+if [ "$1" = audit ] && [ "$2" = fix ]; then exit "$status"; fi
+if [ "$1" = audit ]; then
+  printf '{"metadata":{"vulnerabilities":{"total":%s}},"vulnerabilities":{}}\\n' "$status"
+  exit "$status"
+fi
+exit 99
+`);
+		const result = run("./pi-package-update", ["update"], {
+			PATH: `${dir}:${process.env.PATH}`,
+			PI_PACKAGES_CONFIG: config,
+			PI_PACKAGE_SECURITY_CHECK: join(process.cwd(), "pi-package-security-check"),
+			PI_NPM_DIR: tree,
+		});
+		assert.equal(result.status, 1, result.stderr);
+		assert.equal(readFileSync(config, "utf8"), 'packages = [ "npm:vulnerable@1.0.0" "npm:secure@2.0.0" ];\n');
+		assert.match(result.stdout, /blocked=1 updated=1 errors=0/);
+	} finally {
+		rmSync(dir, { recursive: true, force: true });
+	}
+});
+
 test("security checker distinguishes clean, vulnerable, and invalid audit results", () => {
 	const dir = tempDir("pi-audit-");
 	const tree = join(dir, "tree");
@@ -108,7 +145,7 @@ exit "$AUDIT_STATUS"
 	rmSync(dir, { recursive: true, force: true });
 });
 
-test("candidate check rejects failed npm audit fix", () => {
+test("candidate check classifies remaining advisories separately from repair errors", () => {
 	const dir = tempDir("pi-candidate-");
 	const tree = join(dir, "tree");
 	mkdirSync(tree);
@@ -116,16 +153,23 @@ test("candidate check rejects failed npm audit fix", () => {
 	writeFileSync(join(tree, "package-lock.json"), "{}\n");
 	executable(join(dir, "npm"), `#!/bin/sh
 if [ "$1" = install ]; then exit 0; fi
-if [ "$1" = audit ] && [ "$2" = fix ]; then exit 1; fi
+if [ "$1" = audit ] && [ "$2" = fix ]; then exit "$FIX_STATUS"; fi
+if [ "$1" = audit ]; then
+  printf '{"metadata":{"vulnerabilities":{"total":%s}},"vulnerabilities":{}}\\n' "$AUDIT_STATUS"
+  exit "$AUDIT_STATUS"
+fi
 exit 99
 `);
 
-	const result = run("./pi-package-security-check", ["--candidate", "test-package@2.0.0"], {
-		PATH: `${dir}:${process.env.PATH}`,
-		PI_NPM_DIR: tree,
-	});
-	assert.equal(result.status, 2, result.stderr);
-	assert.match(result.stderr, /could not repair the candidate dependency tree/);
+	for (const [fix, audit, expected] of [[0, 0, 0], [1, 1, 1], [1, 0, 0], [2, 0, 2]]) {
+		const result = run("./pi-package-security-check", ["--candidate", "test-package@2.0.0"], {
+			PATH: `${dir}:${process.env.PATH}`,
+			PI_NPM_DIR: tree,
+			FIX_STATUS: String(fix),
+			AUDIT_STATUS: String(audit),
+		});
+		assert.equal(result.status, expected, result.stderr);
+	}
 	rmSync(dir, { recursive: true, force: true });
 });
 
@@ -153,55 +197,101 @@ printf '%s\\n' '{"metadata":{"vulnerabilities":{"total":0}},"vulnerabilities":{}
 	rmSync(dir, { recursive: true, force: true });
 });
 
-test("yolo command atomically updates the native permission setting", async () => {
+test("published YOLO overlay preserves denials, native config, and session isolation", async () => {
 	const agentDir = tempDir("pi-yolo-");
 	const configDir = join(agentDir, "extensions", "pi-permission-system");
 	mkdirSync(configDir, { recursive: true });
 	const configPath = join(configDir, "config.json");
-	writeFileSync(configPath, '{"yoloMode":false}\n');
+	const config = readFileSync("permissions.json", "utf8");
+	writeFileSync(configPath, config);
+	const previousAgentDir = process.env.TEST_AGENT_DIR;
 	process.env.TEST_AGENT_DIR = agentDir;
 
-	const handlers = new Map<string, (event: any, ctx: any) => any>();
-	const commands = new Map<string, any>();
-	const entries: unknown[] = [];
-	let reloads = 0;
-	const ctx = {
-		sessionManager: { getBranch: () => [] },
-		ui: { setStatus() {}, notify() {} },
-		reload: async () => {
-			reloads += 1;
-		},
-	};
-	const pi = {
-		on: (event: string, handler: any) => handlers.set(event, handler),
-		registerCommand: (name: string, command: any) =>
-			commands.set(name, command),
-		appendEntry: (_type: string, data: unknown) => entries.push(data),
-	};
+	function session(id: string) {
+		const handlers = new Map<string, any>();
+		const commands = new Map<string, any>();
+		const events = new EventEmitter();
+		const statuses = new Map<string, string>();
+		let dialogs = 0;
+		const ctx = {
+			sessionManager: { getSessionId: () => id },
+			abort: () => assert.fail("valid session state must not abort"),
+			reload: () => assert.fail("YOLO must not reload Pi"),
+			ui: {
+				setStatus: (key: string, value: string) => statuses.set(key, value),
+				notify() {},
+				select: async () => { dialogs++; return "No"; },
+				custom: async () => { dialogs++; return { approved: false, state: "denied" }; },
+			},
+		};
+		yoloExtension({
+			on: (name: string, handler: any) => handlers.set(name, handler),
+			registerCommand: (name: string, command: any) => commands.set(name, command),
+			registerFlag() {},
+			getFlag: () => false,
+			events: { on: (name: string, handler: any) => {
+				events.on(name, handler);
+				return () => events.off(name, handler);
+			} },
+		} as any);
+		handlers.get("session_start")({}, ctx);
+		return {
+			ctx, events, statuses,
+			command: (mode: string) => commands.get("yolo").handler(mode, ctx),
+			stop: () => handlers.get("session_shutdown")({}, ctx),
+			toolCall: () => handlers.get("tool_call")({}, ctx),
+			dialogs: () => dialogs,
+			prompt: () => {
+				events.emit("permissions:ui_prompt", { requestId: "request", source: "tool_call" });
+				return ctx.ui.custom(() => {}, { overlay: false });
+			},
+		};
+	}
 
-	yoloExtension(pi as any);
-	const sessionStart = handlers.get("session_start");
-	assert.ok(sessionStart);
-	sessionStart({}, ctx);
-	assert.equal(JSON.parse(readFileSync(configPath, "utf8")).yoloMode, false);
-	const yolo = commands.get("yolo");
-	assert.ok(yolo);
 	try {
-		await yolo.handler("on", ctx);
-	} catch (error) {
-		assert.fail(error);
+		const first = session("first");
+		assert.equal(first.statuses.get("yolo"), "YOLO: OFF");
+		assert.equal((await first.prompt()).approved, false);
+		await first.command("on");
+		assert.equal(first.statuses.get("yolo"), "YOLO: ON");
+		assert.equal((await first.prompt()).approved, true);
+		assert.equal(first.dialogs(), 1);
+		assert.equal(first.toolCall(), undefined, "the overlay must not override tool decisions");
+
+		const { permission } = JSON.parse(config);
+		for (const rule of [permission.path["*/auth.json*"], permission.bash["sudo *"], permission.bash["rm *"]]) {
+			const result = await applyPermissionGate({
+				state: typeof rule === "string" ? rule : rule.action,
+				promptForApproval: () => assert.fail("explicit denials must not open an approval dialog"),
+				canGrantForSession: false,
+				writeLog() {}, logContext: {}, decidedByRule: { kind: "rule" },
+				messages: { denyReason: "denied", refusedReason: () => "refused" },
+			});
+			assert.equal(result.action, "block");
+		}
+		assert.equal(await first.ctx.ui.select("Unrelated", ["Yes", "No", "No, provide reason"]), "No");
+		first.events.emit("permissions:ui_prompt", { requestId: "expired", source: "tool_call" });
+		await Promise.resolve();
+		assert.equal((await first.ctx.ui.custom(() => {}, { overlay: false })).approved, false);
+
+		const second = session("second");
+		assert.equal(second.statuses.get("yolo"), "YOLO: OFF");
+		assert.equal((await second.prompt()).approved, false);
+		assert.equal(first.statuses.get("yolo"), "YOLO: ON");
+		second.stop();
+		first.stop();
+		const resumed = session("first");
+		assert.equal(resumed.statuses.get("yolo"), "YOLO: ON");
+		assert.equal((await resumed.prompt()).approved, true);
+		await resumed.command("off");
+		assert.equal((await resumed.prompt()).approved, false);
+		resumed.stop();
+		assert.equal(readFileSync(configPath, "utf8"), config);
+	} finally {
+		if (previousAgentDir === undefined) delete process.env.TEST_AGENT_DIR;
+		else process.env.TEST_AGENT_DIR = previousAgentDir;
+		rmSync(agentDir, { recursive: true, force: true });
 	}
-	assert.equal(JSON.parse(readFileSync(configPath, "utf8")).yoloMode, true);
-	assert.equal(reloads, 1);
-	assert.deepEqual(entries, [{ enabled: true }]);
-	try {
-		await yolo.handler("off", ctx);
-	} catch (error) {
-		assert.fail(error);
-	}
-	assert.equal(JSON.parse(readFileSync(configPath, "utf8")).yoloMode, false);
-	assert.equal(reloads, 2);
-	rmSync(agentDir, { recursive: true, force: true });
 });
 
 test("permission policy retains hard credential and deletion denials", () => {

@@ -153,7 +153,7 @@ repair_installed() {
 }
 
 check_candidate() {
-  local status
+  local status fix_status
   local candidates=("$@")
   local normalized=()
   require_tree
@@ -207,7 +207,7 @@ NODE
   (cd "$TEMP_DIR" && npm audit fix --include=dev --package-lock-only --ignore-scripts --legacy-peer-deps)
   fix_status=$?
   set -e
-  if [[ $fix_status -ne 0 ]]; then
+  if [[ $fix_status -gt 1 ]]; then
     fail "npm could not repair the candidate dependency tree."
     return 2
   fi

@@ -1,6 +1,17 @@
-{runCommand, nodejs_24, python3, bash, coreutils}:
-runCommand "check-pi-tools" {
-  nativeBuildInputs = [nodejs_24 python3 bash coreutils];
+{lib, runCommand, fetchurl, nodejs_24, python3, bash, coreutils, gnutar, gzip, packageSpecs}: let
+  fetchPackage = name: hash: let
+    prefix = "npm:${name}@";
+    version = lib.removePrefix prefix (lib.findFirst (lib.hasPrefix prefix)
+      (throw "Missing Pi package pin: ${name}") packageSpecs);
+    basename = lib.last (lib.splitString "/" name);
+  in fetchurl {
+    url = "https://registry.npmjs.org/${name}/-/${basename}-${version}.tgz";
+    inherit hash;
+  };
+  yolo = fetchPackage "@valdo766hi/pi-yolo" "sha512-tz794xz63VzY1opNgatnusg9ibuHyq/qK+ciT2CHhaxAXcaC2BoJOSrw7yOuqlNIKKhxk04FC46N5JSeSrB5uw==";
+  permissions = fetchPackage "@gotgenes/pi-permission-system" "sha512-KjjN4/Cbiyc/MKDdZtFNwRtYSb0HjnOWA8qEMOcyAL+VdgX0uy98KP5M8JKhlfKtoz7TxTreNV/LxT5RLUXCmQ==";
+in runCommand "check-pi-tools" {
+  nativeBuildInputs = [nodejs_24 python3 bash coreutils gnutar gzip];
 } ''
   mkdir -p node_modules/@earendil-works/pi-coding-agent
   cat > node_modules/@earendil-works/pi-coding-agent/package.json <<'EOF'
@@ -16,7 +27,8 @@ export function isToolCallEventType(tool, event) {
 }
 EOF
 
-  cp ${./extensions/yolo/yolo.ts} yolo.ts
+  tar -xOf ${yolo} package/yolo.ts > yolo.ts
+  tar -xOf ${permissions} package/src/policy/permission-gate.ts > permission-gate.ts
   mkdir -p node_modules/@earendil-works/pi-tui
   cat > node_modules/@earendil-works/pi-tui/package.json <<'EOF'
 {"type":"module"}
