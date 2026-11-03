@@ -83,7 +83,8 @@
     };
 
     pi = {
-      url = "github:earendil-works/pi/main";
+      # Pi 1.4.0; 1.5.0 has an incomplete Nix install lockfile.
+      url = "github:earendil-works/pi/d5b3de22d0e24a3e9c38a9410d3329b099717283";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 

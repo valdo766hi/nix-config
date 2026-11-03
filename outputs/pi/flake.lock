@@ -1,28 +1,5 @@
 {
   "nodes": {
-    "root": {
-      "inputs": {
-        "nixpkgs": "nixpkgs",
-        "home-manager": "home-manager",
-        "pi": "pi"
-      }
-    },
-    "nixpkgs": {
-      "locked": {
-        "lastModified": 1791487292,
-        "narHash": "sha256-tqM7xDEsaeK1p6VvRygeZ9LkQRpUUkbRT02BHv6hnTM=",
-        "owner": "nixos",
-        "repo": "nixpkgs",
-        "rev": "8edc0c72e3a38faf5434e40d1f19431125fe4b30",
-        "type": "github"
-      },
-      "original": {
-        "owner": "nixos",
-        "ref": "nixpkgs-unstable",
-        "repo": "nixpkgs",
-        "type": "github"
-      }
-    },
     "home-manager": {
       "inputs": {
         "nixpkgs": [
@@ -43,25 +20,19 @@
         "type": "github"
       }
     },
-    "pi": {
-      "inputs": {
-        "nixpkgs": [
-          "nixpkgs"
-        ],
-        "nixpkgs-darwin-x64": "nixpkgs-darwin-x64"
-      },
+    "nixpkgs": {
       "locked": {
-        "lastModified": 1791968180,
-        "narHash": "sha256-sPhGcjoChVrkTbp6LRnTnvpR0if8tJ3X+AAAj6+SrF8=",
-        "owner": "earendil-works",
-        "repo": "pi",
-        "rev": "60ac3bcc3b8d6df34a44c0ed677a9eb9c74e52ac",
+        "lastModified": 1791487292,
+        "narHash": "sha256-tqM7xDEsaeK1p6VvRygeZ9LkQRpUUkbRT02BHv6hnTM=",
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "8edc0c72e3a38faf5434e40d1f19431125fe4b30",
         "type": "github"
       },
       "original": {
-        "owner": "earendil-works",
-        "ref": "main",
-        "repo": "pi",
+        "owner": "nixos",
+        "ref": "nixpkgs-unstable",
+        "repo": "nixpkgs",
         "type": "github"
       }
     },
@@ -79,6 +50,35 @@
         "ref": "nixpkgs-26.05-darwin",
         "repo": "nixpkgs",
         "type": "github"
+      }
+    },
+    "pi": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "nixpkgs-darwin-x64": "nixpkgs-darwin-x64"
+      },
+      "locked": {
+        "lastModified": 1792915539,
+        "narHash": "sha256-7W+9yJThwvee6RnrLr3VzAhmW6ES6mNUvgU7zaJ0zUo=",
+        "owner": "earendil-works",
+        "repo": "pi",
+        "rev": "d5b3de22d0e24a3e9c38a9410d3329b099717283",
+        "type": "github"
+      },
+      "original": {
+        "owner": "earendil-works",
+        "repo": "pi",
+        "rev": "d5b3de22d0e24a3e9c38a9410d3329b099717283",
+        "type": "github"
+      }
+    },
+    "root": {
+      "inputs": {
+        "home-manager": "home-manager",
+        "nixpkgs": "nixpkgs",
+        "pi": "pi"
       }
     }
   },
