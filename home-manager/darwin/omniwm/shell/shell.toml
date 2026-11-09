@@ -1,0 +1,13 @@
+profile = "default"
+
+[profiles.default]
+leading = ["workspaces"]
+center = []
+trailing = []
+
+[profiles.default.workspaceBar]
+backgroundOpacity = 0.1
+fullWidth = false
+height = 24.0
+reserveLayoutSpace = false
+systemStatsButton = false

@@ -10,22 +10,32 @@ Do not update OmniWM by running an unreviewed `brew upgrade`. Use the workflow
 below so the tap revision, configuration evaluation, and documentation remain
 reviewable.
 
-## 0.7.6 Compatibility
+## 0.8.0 Compatibility
 
-The pinned cask moves from 0.7.5 to [0.7.6](https://github.com/OmniNull/OmniWM/releases/tag/v0.7.6);
+The pinned cask moves from 0.7.6 to [0.8.0](https://github.com/OmniNull/OmniWM/releases/tag/v0.8.0);
 Apple Silicon and macOS 26 Tahoe requirements are unchanged.
 
-- Settings remain schema 4; no managed TOML or hotkey migration is required.
-  New Workspace Bar auto-hide and menu bar icon settings default to the 0.7.5
-  behavior.
-- `[gestures] fingerCount = 2` now rejects the whole settings file. The managed
-  value is `3`; two-finger scrolling goes back to apps.
-- Hotkeys missing from `settings.toml` are unassigned instead of rejected. The new
-  Toggle Floating/Tiled Focus action is unassigned.
-- IPC uses protocol 19 instead of 18. Use the bundled `omniwmctl`; IPC remains
+- Managed settings use schema 5. The six resize span actions now use
+  `resizeContainerPrimarySpan`, `resizeWindowPrimarySpan`, and
+  `resizeWindowSecondarySpan` with `.shrink` / `.grow`; bindings are unchanged.
+  `[niri].resizeStepPercent = 10.0` preserves the old 10% steps instead of the
+  new 5% default.
+- OmniShell replaces the fixed workspace bar. The managed
+  [`shell/shell.toml`](../home-manager/darwin/omniwm/shell/shell.toml) selects Default
+  with only the workspaces widget, a compact 24 pt bar, background opacity 0.1,
+  no reserved layout space, and no System Stats button. Profile settings override
+  the same keys in `[workspaceBar]`. The renderer is new, so appearance may differ.
+  Keeping `fullWidth = false` avoids the new full-width bar's menu-bar auto-hide.
+- Home Manager copies both TOML files to writable locations on each activation.
+  Persist bar changes in the managed shell file, not only in
+  **Settings > Styles & Widgets**; GUI edits are replaced on activation.
+- The new window switcher defaults to disabled, preserving `Option + Tab` for
+  focus history. Quake terminal dragging now uses `Command + Option + drag`.
+- IPC uses protocol 22 instead of 19. Use the bundled `omniwmctl`; IPC remains
   disabled in this configuration.
-- Hidden Bar concealment now also requires Full Disk Access. No apps are selected
-  for concealment in the managed configuration.
+- Optional widgets may request additional permissions. Hidden Bar concealment
+  still needs Full Disk Access; no apps are selected for concealment here.
+- Keep updates Nix-managed; do not use the new in-app **Install and Relaunch**.
 - The [Ghostty native-tab issue](https://github.com/OmniNull/OmniWM/issues/643)
   remains open. Test `Command + T` and tab switching after updating.
 
@@ -86,7 +96,8 @@ If upstream default shortcuts changed, update
 that the managed
 [`settings.toml`](../home-manager/darwin/omniwm/settings.toml) still decodes with
 the new release. Home Manager copies it to a writable settings file on every
-activation rather than linking OmniWM directly to the Nix store.
+activation rather than linking OmniWM directly to the Nix store. It also copies
+`home-manager/darwin/omniwm/shell/shell.toml` to `~/.config/omniwm/shell/shell.toml`.
 
 ## 3. Validate Before Activation
 
@@ -106,8 +117,9 @@ and issue review is incomplete.
 
 ## 4. Activate
 
-On the target Mac, quit OmniWM first: Homebrew replaces the app bundle
-underneath a running instance. Then use the
+On the target Mac, preserve the live settings and quit OmniWM first: Homebrew
+replaces the app bundle underneath a running instance, and 0.7.6 cannot read the
+managed schema-5 file. Then use the
 [manual Darwin activation](MAINTENANCE.md#apply-manually-on-the-target-host)
 and reopen OmniWM. Activation is an operator step, never coding-agent validation.
 
@@ -132,6 +144,8 @@ Then check manually:
 - Input Monitoring is still granted.
 - **Displays have separate Spaces** remains enabled.
 - The Home Manager-managed borders and gaps still apply without migration warnings.
+- The compact workspace bar stays 24 pt, does not reserve layout space, and has no
+  System Stats button; macOS menu-bar auto-hiding has not changed.
 - Representative bindings work: `Option + H/J/K/L`, `Option + 1-9`,
   `Option + Shift + H/J/K/L`, `Option + Return`, and
   `Control + Option + Shift + L`.
@@ -143,10 +157,11 @@ new regression appears.
 ## Rollback
 
 Preserve local work and live settings before recovery. Review the known-good
-`homebrew-cask` pin **and its matching managed `settings.toml`** in Git.
-OmniWM 0.7.4 through 0.7.6 use schema 4. Downgrading to 0.7.3 requires schema-3 source
-and live settings: restoring only `settings.toml.pre-v4` is insufficient if
-Home Manager later copies schema 4 over it again.
+`homebrew-cask` pin **and its matching managed OmniWM module and TOML files** in Git.
+OmniWM 0.7.4 through 0.7.6 use schema 4 and cannot load schema 5. Restore the
+schema-4 source and live settings before reopening 0.7.6. OmniWM creates a
+`settings.toml.pre-v5` backup only when it migrates an older live file itself;
+Home Manager installing an already-schema-5 file does not create that backup.
 
 Evaluate the reviewed source before applying it manually. For system generation
 recovery, see [manual rollback](MAINTENANCE.md#roll-back-manually).

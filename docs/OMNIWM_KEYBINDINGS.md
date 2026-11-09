@@ -7,8 +7,8 @@
 Managed settings:
 [`home-manager/darwin/omniwm/settings.toml`](../home-manager/darwin/omniwm/settings.toml).
 
-This reference records the upstream OmniWM **0.7.6** hotkeys plus the managed
-shortcut overrides. Home Manager replaces the arrow-based focus and move
+This reference records the managed OmniWM **0.8.0** shortcuts and selected
+unassigned actions. Home Manager replaces the arrow-based focus and move
 bindings with Vim-style keys so macOS can keep `Option + Arrow` for text editing.
 
 ## First Run
@@ -25,7 +25,7 @@ The nix-darwin module installs OmniWM and opens it at login. On the first
 launch, grant Accessibility and Input Monitoring access when prompted. Keep one macOS Space per
 display and use OmniWM workspaces for normal navigation.
 
-All shortcuts can be changed in **OmniWM Settings > Hotkeys**. Changes made
+All shortcuts can be changed in **OmniWM Settings > Keyboard Shortcuts**. Changes made
 only in the GUI last until the next Home Manager activation; persistent changes
 belong in `home-manager/darwin/omniwm/settings.toml`. `Hyper` defaults to the
 literal `Control + Option + Shift + Command` chord, and its modifier set is
@@ -40,7 +40,7 @@ keyboard binding.
 - `Niri` works only when the active workspace uses the Niri layout.
 - `Dwindle` works only when the active workspace uses the Dwindle layout.
 - `Unassigned` means OmniWM provides the action, but no default shortcut. It
-  can be assigned in **Settings > Hotkeys**.
+  can be assigned in **Settings > Keyboard Shortcuts**.
 
 ## Workspace
 
@@ -138,6 +138,14 @@ controls whether focus follows it.
 | Move Container Up / Down | `Unassigned` | `Dwindle` |
 | Toggle Column Tabbed | `Option + T` | `Niri` |
 | Toggle Container Full Primary Span | `Option + Shift + F` | `Niri` |
+| Shrink / Grow Container Primary Span | `Option + -` / `Option + =` | `Niri` |
+| Shrink / Grow Window Secondary Span | `Option + Shift + -` / `Option + Shift + =` | `Niri` |
+| Shrink / Grow Window Primary Span | `Unassigned` | `Niri` |
+
+The managed `[niri].resizeStepPercent = 10.0` preserves 10% resize steps;
+OmniWM 0.8.0 otherwise defaults to 5%. The new window switcher stays disabled
+by default, so `Option + Tab` continues to focus the previous window. Quake
+terminal dragging now uses `Command + Option + drag`.
 
 In Niri, the everyday focus and move bindings adapt to the column model.
 Moving left or right can expel a focused window from a multi-window column or
@@ -165,11 +173,12 @@ Structural Dwindle moves are unavailable while Overview is open.
 
 ## Sources and Version Drift
 
-- [OmniWM 0.7.6 release](https://github.com/OmniNull/OmniWM/releases/tag/v0.7.6)
-- [Upstream Keyboard Shortcuts tables](https://github.com/OmniNull/OmniWM/blob/v0.7.6/README.md#keyboard-shortcuts)
+- [OmniWM 0.8.0 release](https://github.com/OmniNull/OmniWM/releases/tag/v0.8.0)
+- [Upstream Keyboard Shortcuts tables](https://github.com/OmniNull/OmniWM/blob/v0.8.0/README.md#keyboard-shortcuts)
 - [Official Homebrew cask](https://github.com/Homebrew/homebrew-cask/blob/main/Casks/o/omniwm.rb)
 
-This document is pinned to the defaults published for OmniWM 0.7.6. Upstream
+This document follows the managed OmniWM 0.8.0 configuration, not every upstream
+action. Unlisted actions remain unassigned unless configured separately. Upstream
 may add actions or change defaults in later releases. Before updating OmniWM,
 follow [OMNIWM_UPDATES.md](./OMNIWM_UPDATES.md), review the release notes and
 relevant issues, and compare the upstream tables with this document.

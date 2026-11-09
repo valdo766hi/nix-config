@@ -1,4 +1,4 @@
-schemaVersion = 4
+schemaVersion = 5
 monitorBarOverrides = []
 monitorDwindleOverrides = []
 monitorGapOverrides = []
@@ -90,6 +90,7 @@ centerFocusedColumn = "never"
 containerPrimarySpanPresets = [0.3333333333333333, 0.5, 0.6666666666666666]
 defaultContainerPrimarySpan = 0.5
 infiniteLoop = false
+resizeStepPercent = 10.0
 singleWindowFit = "fill"
 visibleContainerCount = 2
 
@@ -716,27 +717,27 @@ id = "resetWindowSecondarySpan"
 
 [[hotkeys]]
 binding = "Option+Minus"
-id = "setContainerPrimarySpan.decrease10Percent"
+id = "resizeContainerPrimarySpan.shrink"
 
 [[hotkeys]]
 binding = "Option+Equal"
-id = "setContainerPrimarySpan.increase10Percent"
+id = "resizeContainerPrimarySpan.grow"
 
 [[hotkeys]]
 binding = "Unassigned"
-id = "setWindowPrimarySpan.decrease10Percent"
+id = "resizeWindowPrimarySpan.shrink"
 
 [[hotkeys]]
 binding = "Unassigned"
-id = "setWindowPrimarySpan.increase10Percent"
+id = "resizeWindowPrimarySpan.grow"
 
 [[hotkeys]]
 binding = "Option+Shift+Minus"
-id = "setWindowSecondarySpan.decrease10Percent"
+id = "resizeWindowSecondarySpan.shrink"
 
 [[hotkeys]]
 binding = "Option+Shift+Equal"
-id = "setWindowSecondarySpan.increase10Percent"
+id = "resizeWindowSecondarySpan.grow"
 
 [[hotkeys]]
 binding = "Option+Shift+B"
