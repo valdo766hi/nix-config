@@ -18,7 +18,7 @@ in {
     fluxcd
     cilium-cli
     kustomize
-    teleport
+    (teleport_18.override {withRdpClient = false;})
     fzf
     kubernetes-helm
     jq
