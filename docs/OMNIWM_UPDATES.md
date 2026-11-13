@@ -18,7 +18,7 @@ Apple Silicon and macOS 26 Tahoe requirements are unchanged.
 - Managed settings use schema 5. The six resize span actions now use
   `resizeContainerPrimarySpan`, `resizeWindowPrimarySpan`, and
   `resizeWindowSecondarySpan` with `.shrink` / `.grow`; bindings are unchanged.
-  `[niri].resizeStepPercent = 10.0` preserves the old 10% steps instead of the
+  `[niri].resizeStepPercent = 10` preserves the old 10% steps instead of the
   new 5% default.
 - OmniShell replaces the fixed workspace bar. The managed
   [`shell/shell.toml`](../home-manager/darwin/omniwm/shell/shell.toml) selects Default

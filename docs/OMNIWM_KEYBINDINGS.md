@@ -142,7 +142,7 @@ controls whether focus follows it.
 | Shrink / Grow Window Secondary Span | `Option + Shift + -` / `Option + Shift + =` | `Niri` |
 | Shrink / Grow Window Primary Span | `Unassigned` | `Niri` |
 
-The managed `[niri].resizeStepPercent = 10.0` preserves 10% resize steps;
+The managed `[niri].resizeStepPercent = 10` preserves 10% resize steps;
 OmniWM 0.8.0 otherwise defaults to 5%. The new window switcher stays disabled
 by default, so `Option + Tab` continues to focus the previous window. Quake
 terminal dragging now uses `Command + Option + drag`.
