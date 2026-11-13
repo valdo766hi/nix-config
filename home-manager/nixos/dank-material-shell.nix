@@ -1,13 +1,8 @@
-{
-  inputs,
-  pkgs,
-  ...
-}: {
+{inputs, ...}: {
   imports = [inputs.dankMaterialShell.homeModules.dank-material-shell];
 
   programs.dank-material-shell = {
     enable = true;
-    quickshell.package = pkgs.quickshell;
 
     systemd = {
       enable = true;

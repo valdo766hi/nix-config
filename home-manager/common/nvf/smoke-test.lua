@@ -2,7 +2,7 @@
 local vim = assert(rawget(_G, "vim"), "Run this test inside configured Neovim")
 local ok, err = xpcall(function()
   assert(vim.v.errmsg == "", vim.v.errmsg)
-  assert(vim.g.formatsave == false, "format-on-save must remain disabled")
+  assert(vim.g.nvf_format_save == false, "format-on-save must remain disabled")
   assert(vim.o.laststatus == 3 and vim.o.winborder == "rounded")
   assert(vim.fn.maparg(" ff", "n"):find("fff", 1, true), "FFF mapping was overridden")
   assert(vim.fn.maparg("<C-h>", "n") == "<C-W>h", "window navigation was overridden")
