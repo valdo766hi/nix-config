@@ -51,21 +51,6 @@
         "type": "github"
       }
     },
-    "crane": {
-      "locked": {
-        "lastModified": 1793836618,
-        "narHash": "sha256-TREenflwEjxOSq292FYwbc3kEm7TDRtXCZRNWEdjBmg=",
-        "owner": "ipetkov",
-        "repo": "crane",
-        "rev": "79fd63528501446749c09f08cad486a58c7d173e",
-        "type": "github"
-      },
-      "original": {
-        "owner": "ipetkov",
-        "repo": "crane",
-        "type": "github"
-      }
-    },
     "dank-qml-common": {
       "flake": false,
       "locked": {
@@ -510,22 +495,6 @@
         "type": "github"
       }
     },
-    "nixpkgs_2": {
-      "locked": {
-        "lastModified": 1790822859,
-        "narHash": "sha256-69xHQhAeMAD2wDXO7T2pcOZIF9Sga2W+JkmY2a11Ops=",
-        "owner": "NixOS",
-        "repo": "nixpkgs",
-        "rev": "c59305bab2065cfecc4944690d9eedbb56f3a9fa",
-        "type": "github"
-      },
-      "original": {
-        "owner": "NixOS",
-        "ref": "nixos-unstable",
-        "repo": "nixpkgs",
-        "type": "github"
-      }
-    },
     "noctalia": {
       "inputs": {
         "nixpkgs": [
@@ -627,71 +596,11 @@
         "noctalia": "noctalia",
         "nvf": "nvf",
         "pi": "pi",
-        "sonora": "sonora",
-        "sonora-homebrew": "sonora-homebrew",
         "sops-nix": "sops-nix",
         "vicinae": "vicinae",
         "vicinae-extensions": "vicinae-extensions",
         "winapps": "winapps",
         "zen-browser": "zen-browser"
-      }
-    },
-    "rust-overlay": {
-      "inputs": {
-        "nixpkgs": [
-          "sonora",
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1789196581,
-        "narHash": "sha256-yJr1Bt4fKkKIpPYbsKGqJ0VFdoDnURgRwuffmBQ2WzY=",
-        "owner": "oxalica",
-        "repo": "rust-overlay",
-        "rev": "228ecefb6329d5a531b77b46b581a2f0c26ee056",
-        "type": "github"
-      },
-      "original": {
-        "owner": "oxalica",
-        "repo": "rust-overlay",
-        "type": "github"
-      }
-    },
-    "sonora": {
-      "inputs": {
-        "crane": "crane",
-        "nixpkgs": "nixpkgs_2",
-        "rust-overlay": "rust-overlay"
-      },
-      "locked": {
-        "lastModified": 1794794414,
-        "narHash": "sha256-t0MEYgXib377rcwXQP4yqugIQu+oLcQWV1PI28yvSfU=",
-        "owner": "sonorahq",
-        "repo": "sonora",
-        "rev": "887e3643ee3f3386787bd448720fcd99af523fd5",
-        "type": "github"
-      },
-      "original": {
-        "owner": "sonorahq",
-        "ref": "stable",
-        "repo": "sonora",
-        "type": "github"
-      }
-    },
-    "sonora-homebrew": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1794796573,
-        "narHash": "sha256-ssWXKRCQiVsZBG7luyArhvoMvLEo2w/6hbtDPMatUhY=",
-        "owner": "nolight132",
-        "repo": "homebrew-tap",
-        "rev": "5006be19ae03a84380798e42a058ee6cb9789240",
-        "type": "github"
-      },
-      "original": {
-        "owner": "nolight132",
-        "repo": "homebrew-tap",
-        "type": "github"
       }
     },
     "sops-nix": {

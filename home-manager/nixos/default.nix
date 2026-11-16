@@ -21,7 +21,6 @@
     keepassxc
     obs-studio
     podman-compose
-    inputs.sonora.packages.${pkgs.stdenv.hostPlatform.system}.default
   ];
   programs.zen-browser.enable = true;
   systemd.user.startServices = "sd-switch";
