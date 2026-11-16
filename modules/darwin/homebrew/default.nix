@@ -15,6 +15,7 @@
     taps = {
       "homebrew/homebrew-core" = inputs.homebrew-core;
       "homebrew/homebrew-cask" = inputs.homebrew-cask;
+      "nolight132/homebrew-tap" = inputs.sonora-homebrew;
     };
     mutableTaps = false;
   };
@@ -46,6 +47,7 @@
       "obs"
       "pritunl"
       "raycast"
+      "nolight132/tap/sonora"
       "telegram"
       "vlc"
       "cursor"
@@ -54,6 +56,7 @@
     taps = [
       "homebrew/core"
       "homebrew/cask"
+      "nolight132/tap"
     ];
   };
 }
