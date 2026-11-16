@@ -46,7 +46,7 @@ local ok, err = xpcall(function()
   vim.api.nvim_set_current_buf(buf)
   vim.api.nvim_buf_set_name(buf, vim.fn.tempname() .. ".lua")
   vim.api.nvim_buf_set_lines(buf, 0, -1, false, { "local value = 1" })
-  for _, language in ipairs({ "lua", "nix", "go", "json", "yaml", "typescript", "tsx", "fish", "markdown" }) do
+  for _, language in ipairs({ "lua", "nix", "go", "json", "yaml", "typescript", "tsx", "fish", "markdown", "toml", "nu" }) do
     local parser = vim.treesitter.get_parser(buf, language)
     assert(parser:parse()[1], "parser did not load: " .. language)
     assert(vim.treesitter.query.get(language, "highlights"), "missing highlights: " .. language)
@@ -59,7 +59,18 @@ local ok, err = xpcall(function()
   for _, formatter in ipairs({ "alejandra", "stylua", "prettier" }) do
     assert(conform.get_formatter_info(formatter).available, "missing formatter: " .. formatter)
   end
-  for _, server in ipairs({ "nixd", "gopls", "vscode-json-language-server" }) do
+  for _, ft in ipairs({ "typescriptreact", "javascriptreact", "toml", "fish" }) do
+    for _, formatter in ipairs(assert(conform.formatters_by_ft[ft], "no formatter for " .. ft)) do
+      assert(conform.get_formatter_info(formatter).available, "missing formatter: " .. formatter)
+    end
+  end
+  local linters = require("lint").linters_by_ft
+  assert(vim.deep_equal(linters.markdown, { "rumdl" }), "Markdown must lint with Rumdl only")
+  assert(vim.deep_equal(linters.typescriptreact, { "eslint_d" }), "TSX must lint like TypeScript")
+  assert(not pcall(require, "trouble"), "Trouble should not be installed")
+  assert(vim.lsp.config.nixd.settings.nixd.options.nixos, "nixd option completion is missing")
+  assert(vim.lsp.config["rust-analyzer"].settings["rust-analyzer"].checkOnSave == false, "cargo check must not run on save")
+  for _, server in ipairs({ "nixd", "gopls", "vscode-json-language-server", "taplo", "fish-lsp", "nushell" }) do
     local cmd = assert(vim.lsp.config[server], "missing LSP configuration: " .. server).cmd
     assert(type(cmd) == "table" and vim.fn.executable(cmd[1]) == 1, "missing LSP: " .. server)
   end

@@ -121,12 +121,16 @@ arguments.
 
 ## Language support and validation
 
-Nix, Rust, Lua, Bash, TypeScript/JavaScript (including TSX/JSX), Python, Go,
-JSON/JSONC, YAML, and Markdown have syntax support. Native nvf presets provide
-language tools: nixd, rust-analyzer, lua-language-server, typescript-language-server,
-basedpyright, gopls, vscode-json-language-server, and yaml-language-server.
-Markdown uses Rumdl for formatting/linting rather than an LSP. Go uses gopls;
-project-specific Go linters are intentionally not installed globally.
+Nix, Rust, Lua, Bash, Fish, Nushell, TypeScript/JavaScript (including TSX/JSX),
+Python, Go, JSON/JSONC, YAML, TOML, and Markdown have syntax support. Native nvf
+presets provide language tools: nixd, rust-analyzer, lua-language-server,
+typescript-language-server, basedpyright, gopls, vscode-json-language-server,
+yaml-language-server, fish-lsp, the Nushell LSP, and Taplo. nixd completes
+options from this flake's NixOS, nix-darwin, and Home Manager configurations in
+`~/.config/nix`. rust-analyzer does not run `cargo check` on save; run
+`cargo check` or `cargo clippy` for borrow-checker and lint errors. Markdown uses Rumdl for formatting/linting rather than an LSP.
+Project-specific Go and Python linters (golangci-lint, mypy) are intentionally
+not installed globally.
 
 Helpful commands: `:ConformInfo`, `:checkhealth`, `:checkhealth snacks`.
 

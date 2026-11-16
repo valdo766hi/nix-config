@@ -1,4 +1,5 @@
 {
+  config,
   inputs,
   pkgs,
   lib,
@@ -10,6 +11,6 @@
     enable = true;
     enableManpages = true;
     defaultEditor = true;
-    settings = import ./settings.nix {inherit inputs pkgs lib;};
+    settings = import ./settings.nix {inherit config pkgs lib;};
   };
 }

@@ -35,7 +35,6 @@ in {
     gp = "git push";
     gl = "git log --oneline --graph";
     ll = "ls -la";
-    vim = "nvim";
     nv = "nvim";
     ff = "fastfetch";
     k = "kubectl";

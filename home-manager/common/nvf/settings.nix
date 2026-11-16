@@ -1,4 +1,5 @@
 {
+  config,
   pkgs,
   lib,
   ...
@@ -31,7 +32,6 @@ in {
       splitright = true;
       splitbelow = true;
       termguicolors = true;
-      autoread = true;
       mouse = "a";
       wrap = true;
       linebreak = true;
@@ -71,8 +71,6 @@ in {
       (with pkgs; [
         chafa
         imagemagick
-        poppler-utils
-        ffmpegthumbnailer
         ripgrep
         fd
         git
@@ -86,12 +84,13 @@ in {
         pkgs.pngpaste
       ];
 
-    withPython3 = true;
-    python3Packages = ["pynvim"];
-    withNodeJs = true;
-
     diagnostics = {
       enable = true;
+      # Lint TSX/JSX like .ts: eslint_d only in projects with an ESLint config.
+      nvim-lint.linters_by_ft = {
+        typescriptreact = ["eslint_d"];
+        javascriptreact = ["eslint_d"];
+      };
       config = {
         underline = true;
         virtual_text = {
@@ -119,8 +118,31 @@ in {
       enable = true;
       formatOnSave = false;
       inlayHints.enable = true;
-      trouble.enable = true;
-      servers."typescript-language-server".filetypes = ["typescriptreact" "javascriptreact"];
+      # The keymaps below cover these; avoid a parallel, undocumented <leader>l layer.
+      mappings = lib.genAttrs [
+        "goToDefinition" "goToDeclaration" "goToType" "listImplementations" "listReferences"
+        "nextDiagnostic" "previousDiagnostic" "openDiagnosticFloat" "documentHighlight"
+        "listDocumentSymbols" "addWorkspaceFolder" "removeWorkspaceFolder" "listWorkspaceFolders"
+        "listWorkspaceSymbols" "hover" "signatureHelp" "renameSymbol" "codeAction" "format"
+        "toggleFormatOnSave"
+      ] (_: null);
+      # Skip whole-workspace `cargo check` on every save; run cargo check/clippy on demand.
+      servers."rust-analyzer".settings."rust-analyzer".checkOnSave = false;
+      servers.nixd.settings.nixd = let
+        # Absolute: nixd resolves ./. against Neovim's working directory, not the project root.
+        flake = ''(builtins.getFlake "${config.xdg.configHome}/nix")'';
+        home =
+          if pkgs.stdenv.hostPlatform.isDarwin
+          then "rivaldo@Rivaldos-MacBook-Pro"
+          else "rivaldo@thinker";
+      in {
+        nixpkgs.expr = "import ${flake}.inputs.nixpkgs {}";
+        options = {
+          nixos.expr = "${flake}.nixosConfigurations.thinker.options";
+          nix-darwin.expr = ''${flake}.darwinConfigurations."Rivaldos-MacBook-Pro".options'';
+          home-manager.expr = ''${flake}.homeConfigurations."${home}".options'';
+        };
+      };
     };
 
     autocomplete.blink-cmp = {
@@ -254,7 +276,6 @@ in {
       enable = true;
       fold = true;
       indent.enable = false; # Keep filetype indentation; no automatic reindent.
-      grammars = with pkgs.vimPlugins.nvim-treesitter.grammarPlugins; [fish tsx];
       context = {
         enable = true;
         setupOpts = {
@@ -644,6 +665,11 @@ in {
         extraDiagnostics.enable = true;
       };
 
+      tsx = {
+        enable = true;
+        extraDiagnostics.enable = false; # nvf only offers Biome, which runs without a project config.
+      };
+
       markdown = {
         enable = true;
         lsp.enable = false;
@@ -651,13 +677,17 @@ in {
           enable = true;
           type = ["rumdl"];
         };
-        extraDiagnostics.enable = true;
+        extraDiagnostics = {
+          enable = true;
+          types = ["rumdl"];
+        };
       };
 
       python = {
         enable = true;
         lsp.enable = true;
         format.enable = true;
+        extraDiagnostics.enable = false; # Project-specific type checkers belong in dev shells.
       };
 
       go = {
@@ -674,6 +704,14 @@ in {
         enable = true;
         lsp.enable = true;
       };
+
+      toml = {
+        enable = true;
+        extraDiagnostics.enable = false; # Taplo's LSP already reports diagnostics.
+      };
+
+      fish.enable = true;
+      nu.enable = true;
     };
   };
 }
