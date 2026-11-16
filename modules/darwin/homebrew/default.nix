@@ -40,6 +40,7 @@
       "grok-bot"
       "ghostty"
       "google-chrome"
+      "herdr-app"
       "iterm2"
       "keepassxc"
       "obs"

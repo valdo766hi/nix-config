@@ -17,6 +17,7 @@
   home.homeDirectory = lib.mkDefault "/home/rivaldo";
   home.packages = with pkgs; [
     ghostty
+    herdr-desktop
     keepassxc
     obs-studio
     podman-compose
