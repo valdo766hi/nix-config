@@ -40,6 +40,9 @@
     configFiles = cfg.home.file;
     startupTest = testPkgs.writeText "nushell-startup.nu" ''
       use std/assert
+      # Exercise cleanup even when integrations don't start background jobs.
+      job spawn { sleep 1min } | ignore
+      job list | each {|job| try { job kill $job.id }} | ignore
       assert equal $env.STARSHIP_SHELL "nu" "Starship was not initialized"
       assert equal ($env.PROMPT_COMMAND | describe) "closure" "Missing Starship prompt"
       assert equal $env.NPM_CONFIG_PREFIX ($env.HOME | path join ".npm-global") "env.nu was not loaded"
