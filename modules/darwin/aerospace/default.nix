@@ -1,8 +1,4 @@
-{
-  pkgs,
-  lib,
-  ...
-}: let
+{pkgs, ...}: let
   exec = cmd: "exec-and-forget ${cmd}";
   openApp = app: exec ''open -a "${app}"'';
   openAppNew = app: exec ''open -n -a "${app}"'';
