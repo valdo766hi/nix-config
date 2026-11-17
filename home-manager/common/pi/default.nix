@@ -117,6 +117,7 @@ in {
         "npm:pi-lens@4.4.8"
         # npm:pi-mcp-adapter@5.0.0 (unquoted so pi-package-update skips it)
         "git:github.com/algal/pi-openai-server-compaction@8a3de2f3b0c178fdd6f73f2f94172dfc3943e466"
+        "git:github.com/dmmulroy/pi-claude-cli@31e02ea41081b99a6e2f1903eec6c53abad82103"
         "npm:@plannotator/pi-extension@0.28.45"
         "npm:pi-subagents@0.84.0"
         "npm:@gotgenes/pi-permission-system@39.1.2"
