@@ -1,6 +1,8 @@
-{ pkgs, lib, ... }:
-
-let
+{
+  pkgs,
+  lib,
+  ...
+}: let
   exec = cmd: "exec-and-forget ${cmd}";
   openApp = app: exec ''open -a "${app}"'';
   openAppNew = app: exec ''open -n -a "${app}"'';
@@ -24,14 +26,14 @@ let
     "KeePassXC"
   ];
 
-  floatRules = map
+  floatRules =
+    map
     (name: {
-      "if" = { "app-name-regex-substring" = name; };
+      "if" = {"app-name-regex-substring" = name;};
       run = "layout floating";
       "check-further-callbacks" = true;
     })
     floatApps;
-
 in {
   services.aerospace = {
     enable = true;
@@ -57,7 +59,7 @@ in {
       default-root-container-layout = "tiles";
       default-root-container-orientation = "auto";
 
-      on-focused-monitor-changed = [ "move-mouse monitor-lazy-center" ];
+      on-focused-monitor-changed = ["move-mouse monitor-lazy-center"];
 
       mode.main.binding = {
         alt-h = "focus left";

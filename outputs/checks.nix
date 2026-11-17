@@ -89,25 +89,31 @@
     '';
   mkClaudeCheck = system: let
     testPkgs = pkgsFor.${system};
-    profile = self.homeConfigurations."rivaldo@${
-      if testPkgs.stdenv.hostPlatform.isDarwin then "Rivaldos-MacBook-Pro" else "thinker"
-    }";
-    fixtureScript = testPkgs.writeText "claude-settings-fixture.sh"
+    profile =
+      self.homeConfigurations."rivaldo@${
+        if testPkgs.stdenv.hostPlatform.isDarwin
+        then "Rivaldos-MacBook-Pro"
+        else "thinker"
+      }";
+    fixtureScript =
+      testPkgs.writeText "claude-settings-fixture.sh"
       profile.config.home.activation.claudeCodeSettings.data;
-  in testPkgs.runCommand "check-claude-settings" {
-    nativeBuildInputs = [testPkgs.bash testPkgs.jq testPkgs.python3];
-  } ''
-    cp ${../home-manager/common/claude-code/merge-settings.test.sh} merge-settings.test.sh
-    cp ${../home-manager/common/claude-code/merge-settings.jq} merge-settings.jq
-    bash merge-settings.test.sh ${fixtureScript}
-    touch $out
-  '';
+  in
+    testPkgs.runCommand "check-claude-settings" {
+      nativeBuildInputs = [testPkgs.bash testPkgs.jq testPkgs.python3];
+    } ''
+      cp ${../home-manager/common/claude-code/merge-settings.test.sh} merge-settings.test.sh
+      cp ${../home-manager/common/claude-code/merge-settings.jq} merge-settings.jq
+      bash merge-settings.test.sh ${fixtureScript}
+      touch $out
+    '';
   mkPiCheck = system: let
     testPkgs = pkgsFor.${system};
-  in testPkgs.runCommand "check-pi-config" {nativeBuildInputs = [testPkgs.python3];} ''
-    python ${../pkgs/configured-apps/pi-smoke-test.py} ${self.packages.${system}.pi}/bin/pi
-    touch $out
-  '';
+  in
+    testPkgs.runCommand "check-pi-config" {nativeBuildInputs = [testPkgs.python3];} ''
+      python ${../pkgs/configured-apps/pi-smoke-test.py} ${self.packages.${system}.pi}/bin/pi
+      touch $out
+    '';
   mkNeovimCheck = system:
     pkgsFor.${system}.runCommand "check-neovim-config" {} ''
       export HOME="$TMPDIR/home"

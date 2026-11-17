@@ -1,4 +1,9 @@
-{inputs, lib, pkgs, ...}: let
+{
+  inputs,
+  lib,
+  pkgs,
+  ...
+}: let
   claudeCode = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.claude-code;
   plannotator = pkgs.callPackage ../../../pkgs/plannotator {};
   statusline = pkgs.writeShellApplication {
@@ -82,7 +87,11 @@
   };
   settings = pkgs.writeText "claude-code-settings.json" (builtins.toJSON {
     model = "claude-opus-5-5";
-    attribution = {commit = ""; pr = ""; sessionUrl = false;};
+    attribution = {
+      commit = "";
+      pr = "";
+      sessionUrl = false;
+    };
     statusLine = {
       type = "command";
       command = lib.getExe statusline;
@@ -92,31 +101,44 @@
       source = "github";
       repo = "backnotprop/plannotator";
     };
-    hooks.PreToolUse = [{
-      matcher = "Bash";
-      hooks = [{type = "command"; command = "${lib.getExe (pkgs.callPackage ../../../pkgs/rtk {})} hook claude";}];
-    }];
+    hooks.PreToolUse = [
+      {
+        matcher = "Bash";
+        hooks = [
+          {
+            type = "command";
+            command = "${lib.getExe (pkgs.callPackage ../../../pkgs/rtk {})} hook claude";
+          }
+        ];
+      }
+    ];
   });
 in {
   home.packages = [claudeCode plannotator]; # RTK is already owned by common/packages.nix.
 
-  home.file = (lib.mapAttrs' (name: agent: lib.nameValuePair ".claude/agents/${name}.md" {
-    text = ''
-      ---
-      name: ${name}
-      description: ${agent.description}
-      model: ${agent.model}
-      tools: ${lib.concatStringsSep ", " agent.tools}
-      ---
+  home.file =
+    (lib.mapAttrs' (name: agent:
+      lib.nameValuePair ".claude/agents/${name}.md" {
+        text = ''
+          ---
+          name: ${name}
+          description: ${agent.description}
+          model: ${agent.model}
+          tools: ${lib.concatStringsSep ", " agent.tools}
+          ---
 
-      ${agent.prompt}
-    '';
-  }) agents) // {
-    ".claude/CLAUDE.md".text = builtins.readFile ../agent-instructions.md + ''
+          ${agent.prompt}
+        '';
+      })
+    agents)
+    // {
+      ".claude/CLAUDE.md".text =
+        builtins.readFile ../agent-instructions.md
+        + ''
 
-      Delegate only when the user asks for it. Never add Claude/AI attribution to commit messages, trailers, or pull request descriptions, even when asked to use Git.
-    '';
-  };
+          Delegate only when the user asks for it. Never add Claude/AI attribution to commit messages, trailers, or pull request descriptions, even when asked to use Git.
+        '';
+    };
 
   home.activation.claudeCodeSettings = lib.hm.dag.entryAfter ["writeBoundary"] ''
     set -euo pipefail

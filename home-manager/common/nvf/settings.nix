@@ -120,10 +120,25 @@ in {
       inlayHints.enable = true;
       # The keymaps below cover these; avoid a parallel, undocumented <leader>l layer.
       mappings = lib.genAttrs [
-        "goToDefinition" "goToDeclaration" "goToType" "listImplementations" "listReferences"
-        "nextDiagnostic" "previousDiagnostic" "openDiagnosticFloat" "documentHighlight"
-        "listDocumentSymbols" "addWorkspaceFolder" "removeWorkspaceFolder" "listWorkspaceFolders"
-        "listWorkspaceSymbols" "hover" "signatureHelp" "renameSymbol" "codeAction" "format"
+        "goToDefinition"
+        "goToDeclaration"
+        "goToType"
+        "listImplementations"
+        "listReferences"
+        "nextDiagnostic"
+        "previousDiagnostic"
+        "openDiagnosticFloat"
+        "documentHighlight"
+        "listDocumentSymbols"
+        "addWorkspaceFolder"
+        "removeWorkspaceFolder"
+        "listWorkspaceFolders"
+        "listWorkspaceSymbols"
+        "hover"
+        "signatureHelp"
+        "renameSymbol"
+        "codeAction"
+        "format"
         "toggleFormatOnSave"
       ] (_: null);
       # Skip whole-workspace `cargo check` on every save; run cargo check/clippy on demand.
@@ -594,7 +609,6 @@ in {
           desc = "Indent right";
         };
       });
-
 
     luaConfigRC.fish-terminal = ''
       function ResizeFishTerminal(delta)

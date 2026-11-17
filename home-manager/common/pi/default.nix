@@ -1,4 +1,8 @@
-{inputs, pkgs, ...}: let
+{
+  inputs,
+  pkgs,
+  ...
+}: let
   piPackage = inputs.pi.packages.${pkgs.stdenv.hostPlatform.system}.pi;
 
   # Pi is launched from shells that contain provider and Git credentials. Keep
@@ -51,7 +55,7 @@
     '';
   };
 in {
-  imports = [ ./subagent ];
+  imports = [./subagent];
 
   home.packages = [skillSecCheck piTmpRm];
 

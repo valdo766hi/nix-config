@@ -2,8 +2,7 @@
   lib,
   stdenvNoCC,
   fetchurl,
-}:
-let
+}: let
   version = "0.51.0";
   sources = {
     x86_64-linux = {
@@ -19,30 +18,30 @@ let
     sources.${stdenvNoCC.hostPlatform.system}
     or (throw "rtk is not packaged for ${stdenvNoCC.hostPlatform.system} in this repository");
 in
-stdenvNoCC.mkDerivation {
-  pname = "rtk";
-  inherit version;
+  stdenvNoCC.mkDerivation {
+    pname = "rtk";
+    inherit version;
 
-  src = fetchurl {
-    inherit (source) url hash;
-  };
+    src = fetchurl {
+      inherit (source) url hash;
+    };
 
-  dontUnpack = true;
+    dontUnpack = true;
 
-  installPhase = ''
-    runHook preInstall
-    mkdir -p "$out/bin"
-    tar -xzf "$src" -C "$out/bin"
-    chmod +x "$out/bin/rtk"
-    runHook postInstall
-  '';
+    installPhase = ''
+      runHook preInstall
+      mkdir -p "$out/bin"
+      tar -xzf "$src" -C "$out/bin"
+      chmod +x "$out/bin/rtk"
+      runHook postInstall
+    '';
 
-  meta = {
-    description = "CLI proxy that reduces LLM token consumption on common dev commands";
-    homepage = "https://github.com/rtk-ai/rtk";
-    license = lib.licenses.asl20;
-    mainProgram = "rtk";
-    platforms = builtins.attrNames sources;
-    sourceProvenance = [lib.sourceTypes.binaryNativeCode];
-  };
-}
+    meta = {
+      description = "CLI proxy that reduces LLM token consumption on common dev commands";
+      homepage = "https://github.com/rtk-ai/rtk";
+      license = lib.licenses.asl20;
+      mainProgram = "rtk";
+      platforms = builtins.attrNames sources;
+      sourceProvenance = [lib.sourceTypes.binaryNativeCode];
+    };
+  }

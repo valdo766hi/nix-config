@@ -20,9 +20,11 @@ in {
       experimental-features = ["nix-command" "flakes"];
       auto-optimise-store = true;
       substituters = ["https://cache.nixos.org"] ++ caches.substituters;
-      trusted-public-keys = [
-        "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
-      ] ++ caches.trustedPublicKeys;
+      trusted-public-keys =
+        [
+          "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
+        ]
+        ++ caches.trustedPublicKeys;
     };
     gc = {
       automatic = true;

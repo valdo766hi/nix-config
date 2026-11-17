@@ -5,7 +5,7 @@
       thinking = "low";
       defaultContext = "fresh";
       acceptanceRole = "read-only";
-      tools = [ "read" "grep" "find" "ls" "bash" "codemode" "mcp:context7" "mcp:exa" "contact_supervisor" ];
+      tools = ["read" "grep" "find" "ls" "bash" "codemode" "mcp:context7" "mcp:exa" "contact_supervisor"];
     };
 
     delegate = {
@@ -13,7 +13,7 @@
       thinking = "low";
       defaultContext = "fresh";
       acceptanceRole = "read-only";
-      tools = [ "read" "grep" "find" "ls" "bash" "contact_supervisor" ];
+      tools = ["read" "grep" "find" "ls" "bash" "contact_supervisor"];
     };
 
     researcher = {
@@ -21,7 +21,7 @@
       thinking = "medium";
       defaultContext = "fresh";
       acceptanceRole = "read-only";
-      tools = [ "read" "codemode" "mcp:context7" "mcp:exa" "contact_supervisor" ];
+      tools = ["read" "codemode" "mcp:context7" "mcp:exa" "contact_supervisor"];
       systemPrompt = ''
         You are a read-only research subagent. Use Context7 for current library
         documentation and Exa for web research. Discover available MCP tools with
@@ -39,7 +39,7 @@
       thinking = "high";
       defaultContext = "fresh";
       acceptanceRole = "read-only";
-      tools = [ "read" "codemode" "mcp:exa" "contact_supervisor" ];
+      tools = ["read" "codemode" "mcp:exa" "contact_supervisor"];
       systemPrompt = ''
         You are a read-only evidence auditor. Independently check decision-critical
         research claims against original sources using Exa's available MCP tools.
@@ -57,7 +57,7 @@
       thinking = "medium";
       defaultContext = "fresh";
       acceptanceRole = "read-only";
-      tools = [ "read" "grep" "find" "ls" "bash" "codemode" "mcp:context7" "mcp:exa" "contact_supervisor" ];
+      tools = ["read" "grep" "find" "ls" "bash" "codemode" "mcp:context7" "mcp:exa" "contact_supervisor"];
     };
 
     planner = {
@@ -65,7 +65,7 @@
       thinking = "high";
       defaultContext = "fork";
       acceptanceRole = "read-only";
-      tools = [ "read" "grep" "find" "ls" "contact_supervisor" ];
+      tools = ["read" "grep" "find" "ls" "contact_supervisor"];
     };
 
     worker = {
@@ -73,7 +73,7 @@
       thinking = "high";
       defaultContext = "fork";
       acceptanceRole = "writer";
-      tools = [ "read" "grep" "find" "ls" "bash" "edit" "write" "contact_supervisor" ];
+      tools = ["read" "grep" "find" "ls" "bash" "edit" "write" "contact_supervisor"];
     };
 
     reviewer = {
@@ -81,7 +81,7 @@
       thinking = "high";
       defaultContext = "fresh";
       acceptanceRole = "read-only";
-      tools = [ "read" "grep" "find" "ls" "watchdog_diff" "contact_supervisor" ];
+      tools = ["read" "grep" "find" "ls" "watchdog_diff" "contact_supervisor"];
     };
 
     oracle = {
@@ -89,7 +89,7 @@
       thinking = "max";
       defaultContext = "fork";
       acceptanceRole = "read-only";
-      tools = [ "read" "grep" "find" "ls" "bash" "contact_supervisor" ];
+      tools = ["read" "grep" "find" "ls" "bash" "contact_supervisor"];
     };
   };
 

@@ -19,15 +19,20 @@
 in
   configuredApps.mkPi {
     inherit (home.config.programs.pi-coding-agent) package settings;
-    agentFiles = (lib.mapAttrs' (name: file:
-      lib.nameValuePair (lib.removePrefix ".pi/agent/" name) file.source
-    ) (lib.filterAttrs (name: _: lib.hasPrefix ".pi/agent/" name) home.config.home.file)) // {
-      "extensions/pi-permission-system/config.json" = pkgs.writeText "pi-portable-permissions.json"
-        (lib.replaceStrings ["~/.pi/agent"] ["~/.pi/nix-config/agent"]
-          (builtins.readFile home.config.home.file.".pi/agent/extensions/pi-permission-system/config.json".source));
-    };
+    agentFiles =
+      (lib.mapAttrs' (
+        name: file:
+          lib.nameValuePair (lib.removePrefix ".pi/agent/" name) file.source
+      ) (lib.filterAttrs (name: _: lib.hasPrefix ".pi/agent/" name) home.config.home.file))
+      // {
+        "extensions/pi-permission-system/config.json" =
+          pkgs.writeText "pi-portable-permissions.json"
+          (lib.replaceStrings ["~/.pi/agent"] ["~/.pi/nix-config/agent"]
+            (builtins.readFile home.config.home.file.".pi/agent/extensions/pi-permission-system/config.json".source));
+      };
     compactionRatio = (builtins.fromJSON home.config.home.file.".pi/agent/openai-server-compaction.json".text).thresholdRatio;
-    runtimeInputs = [(pkgs.callPackage ../../pkgs/rtk {})]
+    runtimeInputs =
+      [(pkgs.callPackage ../../pkgs/rtk {})]
       ++ builtins.filter (package: builtins.elem (lib.getName package) ["skill-sec-check.sh" "pi-tmp-rm"]) home.config.home.packages
       ++ [(pkgs.callPackage ../../pkgs/plannotator {})];
   }

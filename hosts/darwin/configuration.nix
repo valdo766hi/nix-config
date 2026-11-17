@@ -1,7 +1,4 @@
-{
-  inputs,
-  ...
-}: {
+{inputs, ...}: {
   imports = [
     inputs.self.darwinModules.omniwm
     inputs.self.darwinModules.common

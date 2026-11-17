@@ -1,23 +1,29 @@
-{inputs, lib, pkgs, ...}: let
+{
+  inputs,
+  lib,
+  pkgs,
+  ...
+}: let
   mkModel = {
     name,
     context,
     output,
     inputs,
     variants ? null,
-  }: {
-    inherit name;
-    limit = {
-      inherit context output;
+  }:
+    {
+      inherit name;
+      limit = {
+        inherit context output;
+      };
+      modalities = {
+        input = inputs;
+        output = ["text"];
+      };
+    }
+    // lib.optionalAttrs (variants != null) {
+      inherit variants;
     };
-    modalities = {
-      input = inputs;
-      output = ["text"];
-    };
-  } // lib.optionalAttrs (variants != null) {
-    inherit variants;
-  };
-
 in {
   xdg.configFile."opencode/plugins/rtk.ts".source = ./rtk.ts;
 
@@ -25,7 +31,7 @@ in {
     enable = lib.mkDefault true;
     package = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.opencode2;
     settings = lib.mkDefault {
-      plugin = [ ];
+      plugin = [];
 
       skills.paths = [
         "{env:HOME}/.config/opencode/skills"
