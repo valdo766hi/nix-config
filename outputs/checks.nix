@@ -1,6 +1,9 @@
-{inputs}: let
+{
+  inputs,
+  pkgsFor,
+}: let
   inherit (inputs) self;
-  pkgs = inputs.nixpkgs.legacyPackages.x86_64-linux;
+  pkgs = pkgsFor.x86_64-linux;
   home = self.homeConfigurations."rivaldo@thinker";
   files = home.config.home.file;
   nushellTests = testPkgs:
@@ -29,7 +32,7 @@
       '')
     self.homeConfigurations;
   mkNushellCheck = system: let
-    testPkgs = inputs.nixpkgs.legacyPackages.${system};
+    testPkgs = pkgsFor.${system};
     profile =
       self.homeConfigurations."rivaldo@${
         if testPkgs.stdenv.hostPlatform.isDarwin
@@ -85,7 +88,7 @@
       touch $out
     '';
   mkClaudeCheck = system: let
-    testPkgs = inputs.nixpkgs.legacyPackages.${system};
+    testPkgs = pkgsFor.${system};
     profile = self.homeConfigurations."rivaldo@${
       if testPkgs.stdenv.hostPlatform.isDarwin then "Rivaldos-MacBook-Pro" else "thinker"
     }";
@@ -100,13 +103,13 @@
     touch $out
   '';
   mkPiCheck = system: let
-    testPkgs = inputs.nixpkgs.legacyPackages.${system};
+    testPkgs = pkgsFor.${system};
   in testPkgs.runCommand "check-pi-config" {nativeBuildInputs = [testPkgs.python3];} ''
     python ${../pkgs/configured-apps/pi-smoke-test.py} ${self.packages.${system}.pi}/bin/pi
     touch $out
   '';
   mkNeovimCheck = system:
-    inputs.nixpkgs.legacyPackages.${system}.runCommand "check-neovim-config" {} ''
+    pkgsFor.${system}.runCommand "check-neovim-config" {} ''
       export HOME="$TMPDIR/home"
       export XDG_CONFIG_HOME="$HOME/.config"
       export XDG_DATA_HOME="$HOME/.local/share"
@@ -121,7 +124,7 @@
 in {
   aarch64-darwin = {
     claude-settings = mkClaudeCheck "aarch64-darwin";
-    pi-tools = inputs.nixpkgs.legacyPackages.aarch64-darwin.callPackage ../home-manager/common/pi/check.nix {
+    pi-tools = pkgsFor.aarch64-darwin.callPackage ../home-manager/common/pi/check.nix {
       packageSpecs = home.config.programs.pi-coding-agent.settings.packages;
     };
     pi-config = mkPiCheck "aarch64-darwin";
@@ -133,6 +136,14 @@ in {
     configurations = assert self.nixosConfigurations.thinker.config.system.build.toplevel.drvPath != "";
     assert self.darwinConfigurations."Rivaldos-MacBook-Pro".system.drvPath != "";
       pkgs.runCommand "check-configurations" {} "touch $out";
+
+    cache-sync = let
+      flakeCaches = (import ../flake.nix).nixConfig;
+      caches = import ../caches.nix;
+    in
+      assert flakeCaches."extra-substituters" == caches.substituters;
+      assert flakeCaches."extra-trusted-public-keys" == caches.trustedPublicKeys;
+        pkgs.runCommand "check-cache-sync" {} "touch $out";
 
     inherit (self.packages.x86_64-linux) rtk neovim yazi lazygit pi pig;
 
