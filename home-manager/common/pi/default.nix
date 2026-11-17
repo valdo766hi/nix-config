@@ -9,6 +9,7 @@
     text = ''
       exec env -i \
         HOME="$HOME" \
+        USER="''${USER:-$(id -un)}" \
         PI_CODING_AGENT_DIR="''${PI_CODING_AGENT_DIR:-$HOME/.pi/agent}" \
         PI_OPENAI_SERVER_COMPACTION_RATIO="''${PI_OPENAI_SERVER_COMPACTION_RATIO:-}" \
         TMPDIR=/tmp \
@@ -114,18 +115,18 @@ in {
       defaultTools = ["+codemode"];
       compaction.enabled = true;
       packages = [
-        "npm:pi-lens@4.4.8"
+        "npm:pi-lens@4.5.0"
         # npm:pi-mcp-adapter@5.0.0 (unquoted so pi-package-update skips it)
         "git:github.com/algal/pi-openai-server-compaction@8a3de2f3b0c178fdd6f73f2f94172dfc3943e466"
         "git:github.com/dmmulroy/pi-claude-cli@31e02ea41081b99a6e2f1903eec6c53abad82103"
-        "npm:@plannotator/pi-extension@0.28.45"
-        "npm:pi-subagents@0.84.0"
+        "npm:@plannotator/pi-extension@0.28.66"
+        "npm:pi-subagents@0.88.1"
         "npm:@gotgenes/pi-permission-system@39.1.2"
         "npm:@valdo766hi/pi-fast@0.1.5"
         "npm:@valdo766hi/pi-footer@0.3.0"
         "npm:@valdo766hi/pi-yolo@0.1.9"
         "npm:@valdo766hi/pi-lazy-skill-tool@0.3.1"
-        "npm:@mtrojnar/pi-usage@0.2.0"
+        "npm:@mtrojnar/pi-usage@0.2.1"
         "npm:@ff-labs/pi-fff@0.11.0"
       ];
     };
