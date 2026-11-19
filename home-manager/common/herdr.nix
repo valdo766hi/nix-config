@@ -41,6 +41,16 @@
     colors.foreground = "#cdd6f4";
   };
 
+  # Per-file links: Herdr writes jsconfig.json and .d.ts files into every mod folder.
+  xdg.configFile."herdr-app/layouts" = {
+    source = ./herdr-app/layouts;
+    recursive = true;
+  };
+  xdg.configFile."herdr-app/mods" = {
+    source = ./herdr-app/mods;
+    recursive = true;
+  };
+
   # Keep settings writable so Herdr can still save preferences from its UI.
   home.activation.herdrAppSettings = lib.hm.dag.entryAfter ["linkGeneration"] (
     lib.hm.generators.mkImpureConfigMerger {
