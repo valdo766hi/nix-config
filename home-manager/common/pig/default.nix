@@ -3,9 +3,8 @@
     inherit pkgs;
     inherit (pkgs) lib;
   };
-  pig = pkgs.callPackage ../../../pkgs/pig {};
 in {
-  home.packages = [(configuredApps.mkPiG {package = pig;})];
+  home.packages = [(configuredApps.mkPiG {package = pkgs.local.pig;})];
 
   home.file = {
     ".pig/agent/settings.json".text = builtins.toJSON {

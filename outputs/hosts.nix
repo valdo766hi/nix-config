@@ -1,4 +1,7 @@
-{inputs}: let
+{
+  inputs,
+  overlay,
+}: let
   inherit (inputs) nixpkgs nix-darwin home-manager;
   specialArgs = {inherit inputs;};
   homeManagerModule = module: {
@@ -15,6 +18,7 @@ in {
     inherit specialArgs;
     modules = [
       ../hosts/nixos/thinker/configuration.nix
+      {nixpkgs.overlays = [overlay];}
       home-manager.nixosModules.home-manager
       (homeManagerModule ../home-manager/nixos)
     ];
@@ -25,6 +29,7 @@ in {
     inherit specialArgs;
     modules = [
       ../hosts/darwin/configuration.nix
+      {nixpkgs.overlays = [overlay];}
       home-manager.darwinModules.home-manager
       (homeManagerModule ../home-manager/darwin)
     ];

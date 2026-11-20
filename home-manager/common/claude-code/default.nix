@@ -1,11 +1,10 @@
 {
-  inputs,
   lib,
   pkgs,
   ...
 }: let
-  claudeCode = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.claude-code;
-  plannotator = pkgs.callPackage ../../../pkgs/plannotator {};
+  claudeCode = pkgs.llm-agents.claude-code;
+  inherit (pkgs.local) plannotator;
   statusline = pkgs.writeShellApplication {
     name = "claude-statusline";
     runtimeInputs = [pkgs.coreutils pkgs.git pkgs.jq];
@@ -107,7 +106,7 @@
         hooks = [
           {
             type = "command";
-            command = "${lib.getExe (pkgs.callPackage ../../../pkgs/rtk {})} hook claude";
+            command = "${lib.getExe pkgs.local.rtk} hook claude";
           }
         ];
       }

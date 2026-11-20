@@ -17,8 +17,6 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
-    # Keep Darwin Atuin on the previous snapshot while 18.23.0's PTY test fails.
-    nixpkgs-atuin.url = "github:nixos/nixpkgs/8edc0c72e3a38faf5434e40d1f19431125fe4b30";
 
     nix-darwin = {
       url = "github:nix-darwin/nix-darwin/master";
@@ -27,6 +25,11 @@
 
     home-manager = {
       url = "github:nix-community/home-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    nix-index-database = {
+      url = "github:nix-community/nix-index-database";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -49,8 +52,7 @@
       flake = false;
     };
 
-    # DankMaterialShell, now published as dux-shell; its module keeps the old name.
-    dankMaterialShell = {
+    dux-shell = {
       url = "github:duxlabs-dev/dux-shell";
       inputs.nixpkgs.follows = "nixpkgs";
     };
@@ -108,10 +110,12 @@
       "x86_64-linux"
       "aarch64-darwin"
     ];
+    overlay = import ./overlays {inherit inputs;};
     pkgsFor = forAllSystems (system:
       import nixpkgs {
         inherit system;
         config.allowUnfree = true;
+        overlays = [overlay];
       });
     homeConfigurations = import ./outputs/home.nix {inherit inputs pkgsFor;};
     homes = {
@@ -119,9 +123,11 @@
       "aarch64-darwin" = homeConfigurations."rivaldo@Rivaldos-MacBook-Pro";
     };
   in
-    (import ./outputs/hosts.nix {inherit inputs;})
+    (import ./outputs/hosts.nix {inherit inputs overlay;})
     // {
       inherit homeConfigurations;
+
+      overlays.default = overlay;
 
       nixosModules = {
         common = ./modules/nixos/common/default.nix;

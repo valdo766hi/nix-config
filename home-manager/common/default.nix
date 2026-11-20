@@ -2,8 +2,10 @@
   imports = [
     ./atuin.nix
     ./bat.nix
+    ./changes-report.nix
     ./claude-code/default.nix
     ./codex/default.nix
+    ./dotfiles.nix
     ./eza.nix
     ./git.nix
     ./ghostty.nix
@@ -11,12 +13,15 @@
     ./hunk.nix
     ./kitty.nix
     ./lazygit.nix
+    ./nh.nix
+    ./nix-index.nix
     ./opencode/default.nix
     ./pi/default.nix
     ./pig/default.nix
     ./nvf/default.nix
     ./nushell.nix
     ./packages.nix
+    ./palette.nix
     ./shell.nix
     ./ssh.nix
     ./starship.nix

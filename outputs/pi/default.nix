@@ -32,7 +32,7 @@ in
       };
     compactionRatio = (builtins.fromJSON home.config.home.file.".pi/agent/openai-server-compaction.json".text).thresholdRatio;
     runtimeInputs =
-      [(pkgs.callPackage ../../pkgs/rtk {})]
+      [pkgs.local.rtk]
       ++ builtins.filter (package: builtins.elem (lib.getName package) ["skill-sec-check.sh" "pi-tmp-rm"]) home.config.home.packages
-      ++ [(pkgs.callPackage ../../pkgs/plannotator {})];
+      ++ [pkgs.local.plannotator];
   }

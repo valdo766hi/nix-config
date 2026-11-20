@@ -27,6 +27,7 @@ This repo manages one NixOS host (`thinker`) and one macOS host (`Rivaldos-MacBo
 - `home-manager/darwin/`: macOS-only Home Manager modules
 - `secrets/secrets.yaml`: encrypted secrets source, including private SSH host configuration
 - `pkgs/rtk/`: repository-owned package exported through `packages.<system>.rtk`
+- `overlays/default.nix`: exposes repository-owned packages as `pkgs.local.*` and `llm-agents` packages as `pkgs.llm-agents.*`; applied to every `pkgs` instance and exported as `overlays.default`
 - `pkgs/configured-apps/`: wrappers for configured Neovim, Yazi, LazyGit, and Pi outputs
 - `docs/`: reference docs and keybindings
 
@@ -59,6 +60,11 @@ This repo manages one NixOS host (`thinker`) and one macOS host (`Rivaldos-MacBo
 - Integrated and standalone Home Manager both use `home-manager/nixos/default.nix` or `home-manager/darwin/default.nix`; each imports `home-manager/home.nix`.
 - External Home Manager modules are imported beside their configuration, not listed in `flake.nix`.
 - `backupFileExtension = "hm-bak"` is enabled.
+- Use `pkgs.local.<name>` for packages under `pkgs/`; never `callPackage` them from modules. They stay namespaced because nixpkgs has its own `rtk` and an unrelated `pig`.
+- Colors in Nix-generated configs come from `config.palette` (`home-manager/common/palette.nix`, Catppuccin Mocha); do not hard-code hex values in Nix.
+- `config.dotfiles.make ./file` links a file to the checkout at `~/.config/nix` when `dotfiles.mutable` is set (Darwin only), so edits apply without a rebuild; otherwise it is a store copy. New files still need a rebuild.
+- Home Manager prints a `dix` diff of the previous and new generation on every switch.
+- Darwin garbage collection belongs to Determinate Nix; a weekly root launchd job (`nh clean all --no-gc`) only prunes generations older than 7 days, keeping at least 3. Do not add another GC job there.
 - Flake mode only sees tracked files. If a new file is added and Nix reports a missing path, stage that path explicitly with `git add path/to/file`.
 - Darwin Home Manager uses `/Users/rivaldo`; NixOS uses `/home/rivaldo`.
 - Current secrets include `shell_secrets`, `ssh_config`, and on NixOS also `winapps_rdp_user` and `winapps_rdp_pass`.

@@ -1,5 +1,4 @@
 {
-  inputs,
   lib,
   pkgs,
   ...
@@ -29,7 +28,7 @@ in {
 
   programs.opencode = {
     enable = lib.mkDefault true;
-    package = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.opencode2;
+    package = pkgs.llm-agents.opencode2;
     settings = lib.mkDefault {
       plugin = [];
 

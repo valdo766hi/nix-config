@@ -6,7 +6,7 @@
   inherit (pkgs) lib;
   inherit (pkgs.stdenv.hostPlatform) system;
   configuredApps = import ../pkgs/configured-apps {inherit lib pkgs;};
-  rtk = pkgs.callPackage ../pkgs/rtk {};
+  inherit (pkgs.local) rtk;
 in {
   inherit rtk;
   home-manager = inputs.home-manager.packages.${system}.home-manager;
@@ -25,6 +25,6 @@ in {
   };
   pi = import ./pi {inherit inputs pkgs;};
   pig = configuredApps.mkPiG {
-    package = pkgs.callPackage ../pkgs/pig {};
+    package = pkgs.local.pig;
   };
 }

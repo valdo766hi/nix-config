@@ -1,5 +1,5 @@
 {inputs, ...}: {
-  imports = [inputs.dankMaterialShell.homeModules.dank-material-shell];
+  imports = [inputs.dux-shell.homeModules.dank-material-shell];
 
   programs.dank-material-shell = {
     enable = true;

@@ -106,6 +106,14 @@ On the configured Mac:
 sudo darwin-rebuild switch --flake .#Rivaldos-MacBook-Pro
 ```
 
+`nh` wraps the same switch with build progress and a closure diff. `NH_FLAKE`
+points at this checkout, and `nh` asks for `sudo` itself:
+
+```sh
+nh os switch        # thinker
+nh darwin switch    # the Mac
+```
+
 For a user-only change, standalone profiles are also exported:
 
 ```sh

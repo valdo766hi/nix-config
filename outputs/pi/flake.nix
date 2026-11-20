@@ -20,6 +20,7 @@
       pkgs = import nixpkgs {
         inherit system;
         config.allowUnfree = true;
+        overlays = [(import ../../overlays {inherit inputs;})];
       };
       pi = import ./. {inherit inputs pkgs;};
     in {

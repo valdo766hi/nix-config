@@ -1,11 +1,4 @@
-{
-  inputs,
-  pkgs,
-  ...
-}: let
-  rtk = pkgs.callPackage ../../pkgs/rtk {};
-  antigravityCli = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.antigravity-cli;
-in {
+{pkgs, ...}: {
   home.packages = with pkgs; [
     btop
     pwgen
@@ -30,12 +23,12 @@ in {
     pandoc
     ripgrep
     antigravity-ide
-    rtk
+    local.rtk
     nixd
     fd
     hunk
     tree
     fastfetch
-    antigravityCli
+    llm-agents.antigravity-cli
   ];
 }

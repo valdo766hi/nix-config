@@ -2,21 +2,23 @@
   config,
   pkgs,
   ...
-}: {
+}: let
+  p = config.palette;
+in {
   programs.lazygit = {
     enable = true;
     settings = {
       gui.theme = {
-        activeBorderColor = ["#89b4fa" "bold"];
-        inactiveBorderColor = ["#a6adc8"];
-        searchingActiveBorderColor = ["#f9e2af" "bold"];
-        optionsTextColor = ["#89b4fa"];
-        selectedLineBgColor = ["#313244"];
-        selectedRangeBgColor = ["#313244"];
-        cherryPickedCommitBgColor = ["#45475a"];
-        cherryPickedCommitFgColor = ["#89b4fa"];
-        unstagedChangesColor = ["#f38ba8"];
-        defaultFgColor = ["#cdd6f4"];
+        activeBorderColor = [p.blue "bold"];
+        inactiveBorderColor = [p.subtext0];
+        searchingActiveBorderColor = [p.yellow "bold"];
+        optionsTextColor = [p.blue];
+        selectedLineBgColor = [p.surface0];
+        selectedRangeBgColor = [p.surface0];
+        cherryPickedCommitBgColor = [p.surface1];
+        cherryPickedCommitFgColor = [p.blue];
+        unstagedChangesColor = [p.red];
+        defaultFgColor = [p.text];
       };
       git.diffRenderers = [
         {

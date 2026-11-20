@@ -1,13 +1,10 @@
-{
-  inputs,
-  lib,
-  ...
-}: {
+{lib, ...}: {
   imports = [
     ../home.nix
     ./omniwm
   ];
 
   home.homeDirectory = lib.mkForce "/Users/rivaldo";
-  programs.atuin.package = inputs.nixpkgs-atuin.legacyPackages.aarch64-darwin.atuin;
+  # The checkout lives at ~/.config/nix here; edits to linked files skip the rebuild.
+  dotfiles.mutable = true;
 }

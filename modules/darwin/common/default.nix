@@ -1,22 +1,12 @@
 {
   inputs,
+  lib,
   pkgs,
   ...
 }: let
   caches = import ../../../caches.nix;
 in {
-  nixpkgs = {
-    config.allowUnfree = true;
-
-    overlays = [
-      (_final: _super: {
-        direnv = _super.direnv.overrideAttrs (_: {
-          # TODO: Remove when https://github.com/NixOS/nixpkgs/issues/507531 is fixed.
-          doCheck = false;
-        });
-      })
-    ];
-  };
+  nixpkgs.config.allowUnfree = true;
 
   nixpkgs.hostPlatform = "aarch64-darwin";
 
@@ -29,6 +19,23 @@ in {
     extra-substituters = ${builtins.concatStringsSep " " caches.substituters}
     extra-trusted-public-keys = ${builtins.concatStringsSep " " caches.trustedPublicKeys}
   '';
+
+  # Determinate Nix collects garbage on its own but keeps every generation alive.
+  # Prune generations weekly, as nix.gc does on NixOS, and leave collection to it.
+  launchd.daemons.nh-clean = {
+    command = "${lib.getExe pkgs.nh} clean all --keep 3 --keep-since 7d --no-gc --no-gcroots";
+    serviceConfig = {
+      StartCalendarInterval = [
+        {
+          Weekday = 0;
+          Hour = 12;
+          Minute = 0;
+        }
+      ];
+      StandardOutPath = "/var/log/nh-clean.log";
+      StandardErrorPath = "/var/log/nh-clean.log";
+    };
+  };
 
   environment.systemPackages = [pkgs.devenv];
 
