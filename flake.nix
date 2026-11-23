@@ -40,6 +40,9 @@
 
     nix-homebrew = {
       url = "github:zhaofengli/nix-homebrew";
+      # Pinned brew 7.0.11 can't parse homebrew-core's manifest_sha256 bottles (added in 7.0.14).
+      # Drop once nix-homebrew pins brew-src >= 7.0.14.
+      inputs.brew-src.url = "github:Homebrew/brew/7.0.15";
     };
 
     homebrew-core = {
