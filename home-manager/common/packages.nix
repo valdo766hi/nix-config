@@ -30,5 +30,6 @@
     tree
     fastfetch
     llm-agents.antigravity-cli
+    ladybird
   ];
 }

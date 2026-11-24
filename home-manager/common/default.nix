@@ -31,4 +31,5 @@
   ];
 
   home.file.".gemini/GEMINI.md".source = ./agent-instructions.md;
+  home.file.".codex/AGENTS.md".source = ./agent-instructions.md;
 }
