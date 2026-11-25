@@ -121,6 +121,7 @@ in {
           DBUS_SESSION_BUS_ADDRESS="''${DBUS_SESSION_BUS_ADDRESS:-}" \
           CONTEXT7_API_KEY="''${CONTEXT7_API_KEY:-}" \
           EXA_API_KEY="''${EXA_API_KEY:-}" \
+          GEMINI_API_KEY="''${GEMINI_API_KEY:-}" \
           OPENCODE_API_KEY="''${OPENCODE_GO_API_KEY:-}" \
           PI_TELEMETRY=0 \
           ${package}/bin/pig "$@"

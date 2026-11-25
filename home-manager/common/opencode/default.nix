@@ -58,6 +58,10 @@ in {
       };
 
       provider = {
+        google = {
+          options.apiKey = "{env:GEMINI_API_KEY}";
+        };
+
         minimax = {
           options.apiKey = "{env:MINIMAX_API_KEY}";
         };
