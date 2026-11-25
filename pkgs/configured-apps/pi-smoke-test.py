@@ -27,7 +27,7 @@ try:
         for name, role in roles.items():
             assert not {"mcp", "intercom"} & set(role["tools"])
             assert "contact_supervisor" in role["tools"]
-            model = "gpt-6-luna" if name in {"scout", "delegate"} else "gpt-6.1-sol"
+            model = "gpt-6-luna" if name in {"scout", "delegate"} else "gpt-6.2-sol"
             assert role["model"] == f"openai-codex/{model}"
         for name in ["scout", "researcher", "context-builder"]:
             assert {"codemode", "mcp:context7", "mcp:exa"} <= set(roles[name]["tools"])

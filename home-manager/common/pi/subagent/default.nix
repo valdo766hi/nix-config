@@ -17,7 +17,7 @@
     };
 
     researcher = {
-      model = "openai-codex/gpt-6.1-sol";
+      model = "openai-codex/gpt-6.2-sol";
       thinking = "medium";
       defaultContext = "fresh";
       acceptanceRole = "read-only";
@@ -35,7 +35,7 @@
     };
 
     "evidence-auditor" = {
-      model = "openai-codex/gpt-6.1-sol";
+      model = "openai-codex/gpt-6.2-sol";
       thinking = "high";
       defaultContext = "fresh";
       acceptanceRole = "read-only";
@@ -53,7 +53,7 @@
     };
 
     "context-builder" = {
-      model = "openai-codex/gpt-6.1-sol";
+      model = "openai-codex/gpt-6.2-sol";
       thinking = "medium";
       defaultContext = "fresh";
       acceptanceRole = "read-only";
@@ -61,7 +61,7 @@
     };
 
     planner = {
-      model = "openai-codex/gpt-6.1-sol";
+      model = "openai-codex/gpt-6.2-sol";
       thinking = "high";
       defaultContext = "fork";
       acceptanceRole = "read-only";
@@ -69,7 +69,7 @@
     };
 
     worker = {
-      model = "openai-codex/gpt-6.1-sol";
+      model = "openai-codex/gpt-6.2-sol";
       thinking = "high";
       defaultContext = "fork";
       acceptanceRole = "writer";
@@ -77,7 +77,7 @@
     };
 
     reviewer = {
-      model = "openai-codex/gpt-6.1-sol";
+      model = "openai-codex/gpt-6.2-sol";
       thinking = "high";
       defaultContext = "fresh";
       acceptanceRole = "read-only";
@@ -85,7 +85,7 @@
     };
 
     oracle = {
-      model = "openai-codex/gpt-6.1-sol";
+      model = "openai-codex/gpt-6.2-sol";
       thinking = "max";
       defaultContext = "fork";
       acceptanceRole = "read-only";

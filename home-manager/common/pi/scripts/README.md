@@ -176,7 +176,7 @@ the package's default background behavior and resolve the SDK from the Node Pi
 installation; explicit `async: false` still selects foreground execution.
 Agent models, contexts, tools, and the custom `planner`/`context-builder` definitions
 are managed in [`../subagent/default.nix`](../subagent/default.nix) and included in
-the portable app. Scout and delegate use Luna 6; the other native roles use Sol 6.1.
+the portable app. Scout and delegate use Luna 6; the other native roles use Sol 6.2.
 Restart Pi after normal activation to load changes.
 
 Tool arrays are still supported, but use current names:

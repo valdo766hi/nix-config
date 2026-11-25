@@ -114,7 +114,7 @@ in {
       tuiMode = "fullscreen";
       fullscreenExitOutput = "resume-hint";
       defaultProvider = "openai-codex";
-      defaultModel = "gpt-6.1-sol";
+      defaultModel = "gpt-6.2-sol";
       hideThinkingBlock = true;
       defaultThinkingLevel = "high";
       defaultTools = ["+codemode"];
