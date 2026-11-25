@@ -111,7 +111,7 @@
     testPkgs = pkgsFor.${system};
   in
     testPkgs.runCommand "check-pi-config" {nativeBuildInputs = [testPkgs.python3];} ''
-      python ${../pkgs/configured-apps/pi-smoke-test.py} ${self.packages.${system}.pi}/bin/pi
+      python ${../pkgs/configured-apps/pi_smoke_test.py} ${self.packages.${system}.pi}/bin/pi
       touch $out
     '';
   mkNeovimCheck = system:
